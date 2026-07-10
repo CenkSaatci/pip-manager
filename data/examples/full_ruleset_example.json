@@ -1,0 +1,955 @@
+{
+  "id": "00000000-0000-0000-0000-000000000001",
+  "name": "Wasteland-Testregelwerk v0.1 (Big-Apple-Kampfmotor, Hausregeln)",
+  "version": "0.1",
+  "diceSystem": "W10-Würfelpool: Pool = Skillwert + Luck-Bonus, jeder Wurf <= Zielwert ist ein Erfolg, natürliche 1 zählt immer",
+  "specialRange": [
+    1,
+    10
+  ],
+  "skillRange": [
+    0,
+    10
+  ],
+  "karmaRange": [
+    -10,
+    10
+  ],
+  "disabledMechanics": [
+    "karma",
+    "equipmentCondition",
+    "vats",
+    "cyborg",
+    "synths",
+    "criticalMultipliers",
+    "sustainedFire"
+  ],
+  "characterCreation": {
+    "specialStart": 5,
+    "freeSpecialPoints": 5,
+    "specialMin": 1,
+    "specialMax": 10,
+    "extremeValueThreshold": 2,
+    "freeSkillPoints": 8,
+    "tagSkillCount": 3,
+    "tagSkillBonus": 1,
+    "skillCapAtCreation": 6
+  },
+  "levelProgression": [
+    {
+      "level": 2,
+      "skillPoints": 5,
+      "note": "Platzhalter — Levelaufstieg ist im GM-Regelwerk noch nicht spezifiziert"
+    },
+    {
+      "level": 3,
+      "skillPoints": 5,
+      "perkSlots": 1
+    },
+    {
+      "level": 4,
+      "skillPoints": 5,
+      "specialPoints": 1,
+      "note": "SPECIAL-Erhöhung alle 4 Level (Platzhalter)"
+    },
+    {
+      "level": 5,
+      "skillPoints": 5,
+      "perkSlots": 1
+    },
+    {
+      "level": 6,
+      "skillPoints": 5,
+      "perkSlots": 1
+    }
+  ],
+  "hitLocations": [
+    {
+      "id": "torso",
+      "name": "Torso",
+      "penalty": 0
+    },
+    {
+      "id": "kopf",
+      "name": "Kopf",
+      "penalty": -4
+    },
+    {
+      "id": "arm_links",
+      "name": "Linker Arm",
+      "penalty": -2
+    },
+    {
+      "id": "arm_rechts",
+      "name": "Rechter Arm",
+      "penalty": -2
+    },
+    {
+      "id": "bein_links",
+      "name": "Linkes Bein",
+      "penalty": -2
+    },
+    {
+      "id": "bein_rechts",
+      "name": "Rechtes Bein",
+      "penalty": -2
+    }
+  ],
+  "formulas": {
+    "maxHp": "(STR+END)*5",
+    "maxApr": "1 + specialBonus(AGI)",
+    "carryWeight": "150 + (STR*10)",
+    "healingRate": "1 + specialBonus(END)",
+    "luckBonusDice": "specialBonus(LUK)",
+    "meleeDamageBonus": "Math.max(0, STR-5)",
+    "skillPointsPerLevel": "5"
+  },
+  "difficultyLevels": [
+    {
+      "name": "Sehr leicht",
+      "penalty": 0,
+      "successesRequired": 1
+    },
+    {
+      "name": "Leicht",
+      "penalty": -1,
+      "successesRequired": 2
+    },
+    {
+      "name": "Normal",
+      "penalty": -2,
+      "successesRequired": 3
+    },
+    {
+      "name": "Schwer",
+      "penalty": -3,
+      "successesRequired": 4
+    },
+    {
+      "name": "Sehr schwer",
+      "penalty": -4,
+      "successesRequired": 5
+    }
+  ],
+  "skills": [
+    {
+      "id": "handfeuerwaffen",
+      "name": "Handfeuerwaffen",
+      "governingStat": "AGI",
+      "baseFormula": "specialBonus(AGI)",
+      "description": "Pistolen, Revolver, Maschinenpistolen"
+    },
+    {
+      "id": "langwaffen",
+      "name": "Langwaffen",
+      "governingStat": "PER",
+      "baseFormula": "specialBonus(PER)",
+      "description": "Gewehre, Karabiner, Schrotflinten, Sturmgewehre, Sniper"
+    },
+    {
+      "id": "schwere_waffen",
+      "name": "Schwere Waffen",
+      "governingStat": "END",
+      "baseFormula": "specialBonus(END)",
+      "description": "MGs, Miniguns, Raketenwerfer, Granatwerfer, Flammenwerfer"
+    },
+    {
+      "id": "energiewaffen",
+      "name": "Energiewaffen",
+      "governingStat": "PER",
+      "baseFormula": "specialBonus(PER)",
+      "description": "Laser, Plasma, Gauss, Impulswaffen"
+    },
+    {
+      "id": "sprengstoff",
+      "name": "Sprengstoff",
+      "governingStat": "PER",
+      "baseFormula": "specialBonus(PER)",
+      "description": "Granaten, Minen, Sprengladungen, Entschärfen"
+    },
+    {
+      "id": "nahkampf",
+      "name": "Nahkampf",
+      "governingStat": "STR",
+      "baseFormula": "specialBonus(STR)",
+      "description": "Messer, Bajonett, Schlagstock, Axt, Knüppel"
+    },
+    {
+      "id": "waffenlos",
+      "name": "Waffenlos",
+      "governingStat": "STR",
+      "baseFormula": "specialBonus(STR)",
+      "description": "Faustkampf, Ringen, Tritte, Powerfist"
+    },
+    {
+      "id": "athletik",
+      "name": "Athletik",
+      "governingStat": "STR",
+      "alternateStats": [
+        "END"
+      ],
+      "baseFormula": "specialBonus(STR)",
+      "description": "Klettern, Sprinten, Springen, Schwimmen, Marschieren"
+    },
+    {
+      "id": "schleichen",
+      "name": "Schleichen",
+      "governingStat": "AGI",
+      "baseFormula": "specialBonus(AGI)",
+      "description": "Lautlos bewegen, Tarnung, Hinterhalt"
+    },
+    {
+      "id": "wahrnehmung",
+      "name": "Wahrnehmung",
+      "governingStat": "PER",
+      "baseFormula": "specialBonus(PER)",
+      "description": "Suchen, Lauschen, Minen erkennen, Hinterhalte bemerken"
+    },
+    {
+      "id": "langfinger",
+      "name": "Langfinger",
+      "governingStat": "AGI",
+      "baseFormula": "specialBonus(AGI)",
+      "description": "Schlossknacken, Taschendiebstahl, Fesseln lösen"
+    },
+    {
+      "id": "fahren",
+      "name": "Fahren",
+      "governingStat": "AGI",
+      "baseFormula": "specialBonus(AGI)",
+      "description": "Autos, Motorräder, LKW, Panzerfahrzeuge, einfache Boote"
+    },
+    {
+      "id": "pilot",
+      "name": "Pilot",
+      "governingStat": "PER",
+      "baseFormula": "specialBonus(PER)",
+      "description": "Flugzeuge, Helikopter, Vertibirds"
+    },
+    {
+      "id": "reparieren",
+      "name": "Reparieren",
+      "governingStat": "INT",
+      "baseFormula": "specialBonus(INT)",
+      "description": "Waffen, Rüstung, Fahrzeuge, Maschinen"
+    },
+    {
+      "id": "wissenschaft",
+      "name": "Wissenschaft",
+      "governingStat": "INT",
+      "baseFormula": "specialBonus(INT)",
+      "description": "Terminals, Computer, Robotik, Labore, elektronische Sicherungen"
+    },
+    {
+      "id": "medizin",
+      "name": "Medizin",
+      "governingStat": "INT",
+      "baseFormula": "specialBonus(INT)",
+      "description": "Erste Hilfe, Operationen, Chems, Krankheiten, Verwundungen"
+    },
+    {
+      "id": "ueberleben",
+      "name": "Überleben",
+      "governingStat": "END",
+      "baseFormula": "specialBonus(END)",
+      "description": "Ödland, Wasser, Nahrung, Wetter, Tiere, Strahlungszonen"
+    },
+    {
+      "id": "einfluss",
+      "name": "Einfluss",
+      "governingStat": "CHA",
+      "alternateStats": [
+        "STR",
+        "INT",
+        "PER"
+      ],
+      "baseFormula": "specialBonus(CHA)",
+      "description": "Überzeugen, Einschüchtern, Anführen, Lügen, Beruhigen, Verhören, Menschen lesen"
+    },
+    {
+      "id": "handel",
+      "name": "Handel",
+      "governingStat": "CHA",
+      "baseFormula": "specialBonus(CHA)",
+      "description": "Feilschen, Werte einschätzen, Versorgung, Schwarzmarktpreise"
+    },
+    {
+      "id": "militaerwissen",
+      "name": "Militärwissen",
+      "governingStat": "INT",
+      "baseFormula": "specialBonus(INT)",
+      "description": "Ränge, Taktik, Funk, Dienstvorschriften, Lagekarten"
+    },
+    {
+      "id": "strassenwissen",
+      "name": "Straßenwissen",
+      "governingStat": "PER",
+      "alternateStats": [
+        "CHA"
+      ],
+      "baseFormula": "specialBonus(PER)",
+      "description": "Banden, Raiderzeichen, Unterwelt, Gerüchte"
+    },
+    {
+      "id": "bildung",
+      "name": "Bildung",
+      "governingStat": "INT",
+      "baseFormula": "specialBonus(INT)",
+      "description": "Vorkriegswissen, Geschichte, Geografie, alte Nationen, Literatur, Kultur"
+    }
+  ],
+  "races": [
+    {
+      "id": "human",
+      "name": "Mensch",
+      "description": "Das Regelwerk definiert bisher keine spielbaren Nicht-Menschen (NCR-Setting). Bei Bedarf hier eigene Rassen ergänzen.",
+      "statModifiers": {}
+    }
+  ],
+  "traits": [
+    {
+      "id": "oedlandgeboren",
+      "name": "Ödlandgeboren",
+      "description": "Vorteil + gleichwertiger Nachteil (Regelwerk Abschnitt 23, Beispiel).",
+      "benefits": [
+        {
+          "target": "ueberleben",
+          "amount": 1,
+          "note": "Überleben im Ödland"
+        }
+      ],
+      "drawbacks": [
+        {
+          "target": "bildung",
+          "amount": -1,
+          "note": "Vorkriegswissen/Kultur"
+        }
+      ]
+    },
+    {
+      "id": "kampfnarbe",
+      "name": "Kampfnarbe",
+      "description": "Vorteil + gleichwertiger Nachteil (Regelwerk Abschnitt 23, Beispiel).",
+      "benefits": [
+        {
+          "target": "einfluss",
+          "amount": 1,
+          "note": "Einschüchtern"
+        }
+      ],
+      "drawbacks": [
+        {
+          "target": "einfluss",
+          "amount": -1,
+          "note": "Beruhigen/Vertrauen gewinnen"
+        }
+      ]
+    }
+  ],
+  "perks": [
+    {
+      "id": "power_armor_ausbildung",
+      "name": "Power-Armor-Ausbildung",
+      "description": "Hebt den -2-Malus für körperliche Aktionen in Power Armor auf und schaltet Spezialfunktionen frei.",
+      "maxRanks": 1,
+      "requirements": {
+        "requiresGmApproval": true
+      }
+    },
+    {
+      "id": "ranger_ausbildung",
+      "name": "Ranger-Ausbildung",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    },
+    {
+      "id": "feldsanitaeter",
+      "name": "Feldsanitäter",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    },
+    {
+      "id": "scharfschuetze",
+      "name": "Scharfschütze",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    },
+    {
+      "id": "truppfuehrer",
+      "name": "Truppführer",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    },
+    {
+      "id": "fahrzeugfuehrer",
+      "name": "Fahrzeugführer",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    },
+    {
+      "id": "vertibird_ausbildung",
+      "name": "Vertibird-Ausbildung",
+      "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+      "maxRanks": 1,
+      "requirements": {}
+    }
+  ],
+  "backgrounds": [
+    {
+      "id": "buerger",
+      "name": "Bürger",
+      "description": "Stadtbewohner, NCR-Zivilisten, Vault-Leute, Handwerker, Händler, Bürokraten, Ärzte, Techniker.",
+      "pointBuyPools": [
+        {
+          "poolName": "Bürger-Punkte (6, max +2/Skill)",
+          "points": 6,
+          "maxPerSkill": 2,
+          "eligibleSkillIds": [
+            "bildung",
+            "handel",
+            "einfluss",
+            "wissenschaft",
+            "reparieren",
+            "medizin",
+            "wahrnehmung",
+            "langfinger",
+            "strassenwissen",
+            "handfeuerwaffen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "oedlaender",
+      "name": "Ödländer",
+      "description": "Siedler, Jäger, Karawanenleute, Nomaden, Ex-Raider, Grenzgänger.",
+      "pointBuyPools": [
+        {
+          "poolName": "Ödländer-Punkte (6, max +2/Skill)",
+          "points": 6,
+          "maxPerSkill": 2,
+          "eligibleSkillIds": [
+            "ueberleben",
+            "wahrnehmung",
+            "schleichen",
+            "athletik",
+            "handfeuerwaffen",
+            "langwaffen",
+            "nahkampf",
+            "reparieren",
+            "strassenwissen",
+            "langfinger",
+            "medizin"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "militaer_ncr",
+      "name": "Militär / NCR",
+      "description": "Soldaten, Ranger-Anwärter, Militärsanis, Rekruten, Veteranen, Offiziersanwärter. Grundausbildung, keine Elite.",
+      "fixedSkillBonuses": {
+        "handfeuerwaffen": 1,
+        "langwaffen": 1,
+        "athletik": 1,
+        "medizin": 1,
+        "militaerwissen": 1,
+        "ueberleben": 1
+      }
+    },
+    {
+      "id": "bruderschaft",
+      "name": "Bruderschaft",
+      "description": "Nur mit Meistergenehmigung. Gibt keine automatische Power-Armor-Ausbildung und keine Gratis-Powerrüstung.",
+      "requiresGmApproval": true,
+      "fixedSkillBonuses": {
+        "energiewaffen": 1,
+        "wissenschaft": 1,
+        "reparieren": 1,
+        "militaerwissen": 1,
+        "bildung": 1
+      },
+      "pointBuyPools": [
+        {
+          "poolName": "Waffenspezialisierung (1, max +1)",
+          "points": 1,
+          "maxPerSkill": 1,
+          "eligibleSkillIds": [
+            "langwaffen",
+            "schwere_waffen"
+          ]
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "pistole_22",
+      "name": ".22 Pistole",
+      "type": "weapon",
+      "weight": 1,
+      "value": 40,
+      "damage": 2,
+      "skillId": "handfeuerwaffen"
+    },
+    {
+      "id": "pistole_9mm",
+      "name": "9mm Pistole",
+      "type": "weapon",
+      "weight": 1.2,
+      "value": 80,
+      "damage": 4,
+      "skillId": "handfeuerwaffen"
+    },
+    {
+      "id": "pistole_10mm",
+      "name": "10mm Pistole",
+      "type": "weapon",
+      "weight": 1.5,
+      "value": 120,
+      "damage": 5,
+      "skillId": "handfeuerwaffen"
+    },
+    {
+      "id": "revolver_357",
+      "name": ".357 Revolver",
+      "type": "weapon",
+      "weight": 1.5,
+      "value": 150,
+      "damage": 7,
+      "skillId": "handfeuerwaffen"
+    },
+    {
+      "id": "magnum_44",
+      "name": ".44 Magnum",
+      "type": "weapon",
+      "weight": 1.8,
+      "value": 200,
+      "damage": 10,
+      "skillId": "handfeuerwaffen"
+    },
+    {
+      "id": "smg_9mm",
+      "name": "9mm Maschinenpistole",
+      "type": "weapon",
+      "weight": 2.5,
+      "value": 180,
+      "damage": 4,
+      "skillId": "handfeuerwaffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "smg_10mm",
+      "name": "10mm Maschinenpistole",
+      "type": "weapon",
+      "weight": 2.8,
+      "value": 220,
+      "damage": 5,
+      "skillId": "handfeuerwaffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "varmint_rifle",
+      "name": "Varmint Rifle",
+      "type": "weapon",
+      "weight": 3,
+      "value": 90,
+      "damage": 2,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "service_rifle",
+      "name": "Service Rifle",
+      "type": "weapon",
+      "weight": 3.5,
+      "value": 250,
+      "damage": 5,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "assault_rifle",
+      "name": "Assault Rifle",
+      "type": "weapon",
+      "weight": 4,
+      "value": 300,
+      "damage": 4,
+      "skillId": "langwaffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "chinese_assault_rifle",
+      "name": "Chinese Assault Rifle",
+      "type": "weapon",
+      "weight": 4,
+      "value": 320,
+      "damage": 6,
+      "skillId": "langwaffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "marksman_carbine",
+      "name": "Marksman Carbine",
+      "type": "weapon",
+      "weight": 3.5,
+      "value": 350,
+      "damage": 8,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "hunting_rifle",
+      "name": "Hunting Rifle",
+      "type": "weapon",
+      "weight": 4,
+      "value": 400,
+      "damage": 13,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "sniper_rifle",
+      "name": "Sniper Rifle",
+      "type": "weapon",
+      "weight": 5,
+      "value": 600,
+      "damage": 16,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "anti_material_rifle",
+      "name": "Anti-Material Rifle",
+      "type": "weapon",
+      "weight": 8,
+      "value": 1200,
+      "damage": 28,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "caravan_shotgun",
+      "name": "Caravan Shotgun",
+      "type": "weapon",
+      "weight": 4.5,
+      "value": 280,
+      "damage": 11,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "combat_shotgun",
+      "name": "Combat Shotgun",
+      "type": "weapon",
+      "weight": 5,
+      "value": 350,
+      "damage": 13,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "riot_shotgun",
+      "name": "Riot Shotgun",
+      "type": "weapon",
+      "weight": 5.5,
+      "value": 450,
+      "damage": 16,
+      "skillId": "langwaffen"
+    },
+    {
+      "id": "lmg",
+      "name": "LMG",
+      "type": "weapon",
+      "weight": 8,
+      "value": 500,
+      "damage": 6,
+      "skillId": "schwere_waffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "minigun",
+      "name": "Minigun",
+      "type": "weapon",
+      "weight": 15,
+      "value": 900,
+      "damage": 4,
+      "skillId": "schwere_waffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "flamer",
+      "name": "Flamer",
+      "type": "weapon",
+      "weight": 9,
+      "value": 700,
+      "damage": 8,
+      "skillId": "schwere_waffen"
+    },
+    {
+      "id": "gatling_laser",
+      "name": "Gatling Laser",
+      "type": "weapon",
+      "weight": 14,
+      "value": 1400,
+      "damage": 8,
+      "skillId": "schwere_waffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "heavy_machinegun",
+      "name": "Heavy Machinegun",
+      "type": "weapon",
+      "weight": 16,
+      "value": 1500,
+      "damage": 28,
+      "skillId": "schwere_waffen",
+      "isAutomatic": true,
+      "burstAmmoCost": 3,
+      "burstDamageBonus": 2
+    },
+    {
+      "id": "missile_launcher",
+      "name": "Missile Launcher",
+      "type": "weapon",
+      "weight": 12,
+      "value": 2000,
+      "damage": 60,
+      "skillId": "schwere_waffen"
+    },
+    {
+      "id": "keine_hose",
+      "name": "Keine Hose",
+      "type": "armor",
+      "weight": 0,
+      "value": 0,
+      "damageResistance": 0,
+      "description": "Keine Rüstung."
+    },
+    {
+      "id": "normale_kleidung",
+      "name": "Normale Kleidung / Uniform",
+      "type": "armor",
+      "weight": 1,
+      "value": 5,
+      "damageResistance": 0
+    },
+    {
+      "id": "dicker_mantel",
+      "name": "Dicker Mantel / Ödlandkleidung",
+      "type": "armor",
+      "weight": 2,
+      "value": 20,
+      "damageResistance": 1
+    },
+    {
+      "id": "einfache_lederruestung",
+      "name": "Einfache Lederrüstung",
+      "type": "armor",
+      "weight": 6,
+      "value": 60,
+      "damageResistance": 2
+    },
+    {
+      "id": "gute_lederruestung",
+      "name": "Gute Lederrüstung",
+      "type": "armor",
+      "weight": 7,
+      "value": 100,
+      "damageResistance": 3
+    },
+    {
+      "id": "verstaerkte_lederruestung",
+      "name": "Verstärkte Lederrüstung",
+      "type": "armor",
+      "weight": 9,
+      "value": 160,
+      "damageResistance": 4
+    },
+    {
+      "id": "ncr_kugelsichere_weste",
+      "name": "NCR-kugelsichere Weste",
+      "type": "armor",
+      "weight": 5,
+      "value": 150,
+      "damageResistance": 3,
+      "description": "Standard-Soldatenweste, Schutzweste/Plattenträger"
+    },
+    {
+      "id": "ncr_soldatenruestung",
+      "name": "NCR-Soldatenrüstung",
+      "type": "armor",
+      "weight": 8,
+      "value": 250,
+      "damageResistance": 4,
+      "description": "Weste + Platten/Schutzteile/Helm, normale Feldrüstung",
+      "isHelmet": true
+    },
+    {
+      "id": "combat_armor",
+      "name": "Combat Armor",
+      "type": "armor",
+      "weight": 9,
+      "value": 300,
+      "damageResistance": 4
+    },
+    {
+      "id": "schwere_kampfruestung",
+      "name": "Schwere Kampfrüstung",
+      "type": "armor",
+      "weight": 12,
+      "value": 400,
+      "damageResistance": 5
+    },
+    {
+      "id": "riot_gear",
+      "name": "Riot Gear",
+      "type": "armor",
+      "weight": 11,
+      "value": 450,
+      "damageResistance": 5,
+      "description": "Top notch, sehr guter Schutz"
+    },
+    {
+      "id": "ranger_combat_armor",
+      "name": "Ranger Combat Armor",
+      "type": "armor",
+      "weight": 10,
+      "value": 500,
+      "damageResistance": 5,
+      "description": "Elite-/Ranger-Schutz"
+    },
+    {
+      "id": "elite_riot_gear",
+      "name": "Elite Riot Gear",
+      "type": "armor",
+      "weight": 12,
+      "value": 700,
+      "damageResistance": 6,
+      "description": "Sehr selten, sehr hochwertig"
+    },
+    {
+      "id": "t45_power_armor",
+      "name": "T-45 Power Armor",
+      "type": "armor",
+      "weight": 25,
+      "value": 3000,
+      "damageResistance": 5,
+      "requiresTraining": true,
+      "description": "Alte/leichtere Powerrüstung. Ohne Ausbildung: -2 auf körperliche Aktionen, keine Spezialfunktionen."
+    },
+    {
+      "id": "t51_power_armor",
+      "name": "T-51 Power Armor",
+      "type": "armor",
+      "weight": 28,
+      "value": 4500,
+      "damageResistance": 6,
+      "requiresTraining": true,
+      "description": "Starke Powerrüstung. Ohne Ausbildung: -2 auf körperliche Aktionen, keine Spezialfunktionen."
+    },
+    {
+      "id": "schwere_moderne_power_armor",
+      "name": "Schwere moderne Power Armor",
+      "type": "armor",
+      "weight": 32,
+      "value": 6000,
+      "damageResistance": 7,
+      "requiresTraining": true,
+      "description": "Selten und furchteinflößend."
+    },
+    {
+      "id": "boss_power_armor",
+      "name": "Extrem-/Boss-Power-Armor",
+      "type": "armor",
+      "weight": 35,
+      "value": 9000,
+      "damageResistance": 8,
+      "requiresTraining": true,
+      "description": "Nur Sonderfall."
+    },
+    {
+      "id": "stimpak",
+      "name": "Stimpak",
+      "type": "consumable",
+      "weight": 0.1,
+      "value": 50,
+      "effects": [
+        {
+          "target": "hp",
+          "amount": 20
+        }
+      ]
+    },
+    {
+      "id": "rad_x",
+      "name": "Rad-X",
+      "type": "consumable",
+      "weight": 0.1,
+      "value": 40,
+      "effects": [
+        {
+          "target": "radResistance",
+          "amount": 50
+        }
+      ]
+    }
+  ],
+  "enemies": [
+    {
+      "id": "raider_ohne_hose",
+      "name": "Raider ohne Hose",
+      "hp": 40,
+      "damageResistance": 0,
+      "skillValue": 4,
+      "weaponId": "pistole_10mm",
+      "notes": "10mm Pistole oder Messer"
+    },
+    {
+      "id": "raider_mit_leder",
+      "name": "Raider mit Leder",
+      "hp": 45,
+      "damageResistance": 3,
+      "skillValue": 4,
+      "weaponId": "pistole_10mm",
+      "notes": "DR 2-3 laut Regelwerk, hier 3 gewählt. 10mm Pistole / Shotgun"
+    },
+    {
+      "id": "ncr_soldat",
+      "name": "NCR-Soldat",
+      "hp": 50,
+      "damageResistance": 4,
+      "skillValue": 5,
+      "weaponId": "service_rifle",
+      "notes": "DR 3 mit kugelsicherer Weste, DR 4 mit Soldatenrüstung (hier 4 gewählt)"
+    },
+    {
+      "id": "veteran_ranger",
+      "name": "Veteran / Ranger",
+      "hp": 60,
+      "damageResistance": 5,
+      "skillValue": 6,
+      "weaponId": "hunting_rifle",
+      "notes": "Service Rifle / Hunting Rifle / Revolver"
+    },
+    {
+      "id": "power_armor_gegner",
+      "name": "Power-Armor-Gegner",
+      "hp": 70,
+      "damageResistance": 7,
+      "skillValue": 6,
+      "notes": "DR 6-7 laut Regelwerk, hier 7 gewählt. Schwere Waffe oder Energiewaffe"
+    }
+  ]
+}

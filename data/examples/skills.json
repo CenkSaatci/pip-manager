@@ -1,0 +1,167 @@
+[
+  {
+    "id": "handfeuerwaffen",
+    "name": "Handfeuerwaffen",
+    "governingStat": "AGI",
+    "baseFormula": "specialBonus(AGI)",
+    "description": "Pistolen, Revolver, Maschinenpistolen"
+  },
+  {
+    "id": "langwaffen",
+    "name": "Langwaffen",
+    "governingStat": "PER",
+    "baseFormula": "specialBonus(PER)",
+    "description": "Gewehre, Karabiner, Schrotflinten, Sturmgewehre, Sniper"
+  },
+  {
+    "id": "schwere_waffen",
+    "name": "Schwere Waffen",
+    "governingStat": "END",
+    "baseFormula": "specialBonus(END)",
+    "description": "MGs, Miniguns, Raketenwerfer, Granatwerfer, Flammenwerfer"
+  },
+  {
+    "id": "energiewaffen",
+    "name": "Energiewaffen",
+    "governingStat": "PER",
+    "baseFormula": "specialBonus(PER)",
+    "description": "Laser, Plasma, Gauss, Impulswaffen"
+  },
+  {
+    "id": "sprengstoff",
+    "name": "Sprengstoff",
+    "governingStat": "PER",
+    "baseFormula": "specialBonus(PER)",
+    "description": "Granaten, Minen, Sprengladungen, Entschärfen"
+  },
+  {
+    "id": "nahkampf",
+    "name": "Nahkampf",
+    "governingStat": "STR",
+    "baseFormula": "specialBonus(STR)",
+    "description": "Messer, Bajonett, Schlagstock, Axt, Knüppel"
+  },
+  {
+    "id": "waffenlos",
+    "name": "Waffenlos",
+    "governingStat": "STR",
+    "baseFormula": "specialBonus(STR)",
+    "description": "Faustkampf, Ringen, Tritte, Powerfist"
+  },
+  {
+    "id": "athletik",
+    "name": "Athletik",
+    "governingStat": "STR",
+    "alternateStats": [
+      "END"
+    ],
+    "baseFormula": "specialBonus(STR)",
+    "description": "Klettern, Sprinten, Springen, Schwimmen, Marschieren"
+  },
+  {
+    "id": "schleichen",
+    "name": "Schleichen",
+    "governingStat": "AGI",
+    "baseFormula": "specialBonus(AGI)",
+    "description": "Lautlos bewegen, Tarnung, Hinterhalt"
+  },
+  {
+    "id": "wahrnehmung",
+    "name": "Wahrnehmung",
+    "governingStat": "PER",
+    "baseFormula": "specialBonus(PER)",
+    "description": "Suchen, Lauschen, Minen erkennen, Hinterhalte bemerken"
+  },
+  {
+    "id": "langfinger",
+    "name": "Langfinger",
+    "governingStat": "AGI",
+    "baseFormula": "specialBonus(AGI)",
+    "description": "Schlossknacken, Taschendiebstahl, Fesseln lösen"
+  },
+  {
+    "id": "fahren",
+    "name": "Fahren",
+    "governingStat": "AGI",
+    "baseFormula": "specialBonus(AGI)",
+    "description": "Autos, Motorräder, LKW, Panzerfahrzeuge, einfache Boote"
+  },
+  {
+    "id": "pilot",
+    "name": "Pilot",
+    "governingStat": "PER",
+    "baseFormula": "specialBonus(PER)",
+    "description": "Flugzeuge, Helikopter, Vertibirds"
+  },
+  {
+    "id": "reparieren",
+    "name": "Reparieren",
+    "governingStat": "INT",
+    "baseFormula": "specialBonus(INT)",
+    "description": "Waffen, Rüstung, Fahrzeuge, Maschinen"
+  },
+  {
+    "id": "wissenschaft",
+    "name": "Wissenschaft",
+    "governingStat": "INT",
+    "baseFormula": "specialBonus(INT)",
+    "description": "Terminals, Computer, Robotik, Labore, elektronische Sicherungen"
+  },
+  {
+    "id": "medizin",
+    "name": "Medizin",
+    "governingStat": "INT",
+    "baseFormula": "specialBonus(INT)",
+    "description": "Erste Hilfe, Operationen, Chems, Krankheiten, Verwundungen"
+  },
+  {
+    "id": "ueberleben",
+    "name": "Überleben",
+    "governingStat": "END",
+    "baseFormula": "specialBonus(END)",
+    "description": "Ödland, Wasser, Nahrung, Wetter, Tiere, Strahlungszonen"
+  },
+  {
+    "id": "einfluss",
+    "name": "Einfluss",
+    "governingStat": "CHA",
+    "alternateStats": [
+      "STR",
+      "INT",
+      "PER"
+    ],
+    "baseFormula": "specialBonus(CHA)",
+    "description": "Überzeugen, Einschüchtern, Anführen, Lügen, Beruhigen, Verhören, Menschen lesen"
+  },
+  {
+    "id": "handel",
+    "name": "Handel",
+    "governingStat": "CHA",
+    "baseFormula": "specialBonus(CHA)",
+    "description": "Feilschen, Werte einschätzen, Versorgung, Schwarzmarktpreise"
+  },
+  {
+    "id": "militaerwissen",
+    "name": "Militärwissen",
+    "governingStat": "INT",
+    "baseFormula": "specialBonus(INT)",
+    "description": "Ränge, Taktik, Funk, Dienstvorschriften, Lagekarten"
+  },
+  {
+    "id": "strassenwissen",
+    "name": "Straßenwissen",
+    "governingStat": "PER",
+    "alternateStats": [
+      "CHA"
+    ],
+    "baseFormula": "specialBonus(PER)",
+    "description": "Banden, Raiderzeichen, Unterwelt, Gerüchte"
+  },
+  {
+    "id": "bildung",
+    "name": "Bildung",
+    "governingStat": "INT",
+    "baseFormula": "specialBonus(INT)",
+    "description": "Vorkriegswissen, Geschichte, Geografie, alte Nationen, Literatur, Kultur"
+  }
+]

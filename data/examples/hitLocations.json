@@ -1,0 +1,32 @@
+[
+  {
+    "id": "torso",
+    "name": "Torso",
+    "penalty": 0
+  },
+  {
+    "id": "kopf",
+    "name": "Kopf",
+    "penalty": -4
+  },
+  {
+    "id": "arm_links",
+    "name": "Linker Arm",
+    "penalty": -2
+  },
+  {
+    "id": "arm_rechts",
+    "name": "Rechter Arm",
+    "penalty": -2
+  },
+  {
+    "id": "bein_links",
+    "name": "Linkes Bein",
+    "penalty": -2
+  },
+  {
+    "id": "bein_rechts",
+    "name": "Rechtes Bein",
+    "penalty": -2
+  }
+]

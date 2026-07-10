@@ -1,0 +1,419 @@
+[
+  {
+    "id": "pistole_22",
+    "name": ".22 Pistole",
+    "type": "weapon",
+    "weight": 1,
+    "value": 40,
+    "damage": 2,
+    "skillId": "handfeuerwaffen"
+  },
+  {
+    "id": "pistole_9mm",
+    "name": "9mm Pistole",
+    "type": "weapon",
+    "weight": 1.2,
+    "value": 80,
+    "damage": 4,
+    "skillId": "handfeuerwaffen"
+  },
+  {
+    "id": "pistole_10mm",
+    "name": "10mm Pistole",
+    "type": "weapon",
+    "weight": 1.5,
+    "value": 120,
+    "damage": 5,
+    "skillId": "handfeuerwaffen"
+  },
+  {
+    "id": "revolver_357",
+    "name": ".357 Revolver",
+    "type": "weapon",
+    "weight": 1.5,
+    "value": 150,
+    "damage": 7,
+    "skillId": "handfeuerwaffen"
+  },
+  {
+    "id": "magnum_44",
+    "name": ".44 Magnum",
+    "type": "weapon",
+    "weight": 1.8,
+    "value": 200,
+    "damage": 10,
+    "skillId": "handfeuerwaffen"
+  },
+  {
+    "id": "smg_9mm",
+    "name": "9mm Maschinenpistole",
+    "type": "weapon",
+    "weight": 2.5,
+    "value": 180,
+    "damage": 4,
+    "skillId": "handfeuerwaffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "smg_10mm",
+    "name": "10mm Maschinenpistole",
+    "type": "weapon",
+    "weight": 2.8,
+    "value": 220,
+    "damage": 5,
+    "skillId": "handfeuerwaffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "varmint_rifle",
+    "name": "Varmint Rifle",
+    "type": "weapon",
+    "weight": 3,
+    "value": 90,
+    "damage": 2,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "service_rifle",
+    "name": "Service Rifle",
+    "type": "weapon",
+    "weight": 3.5,
+    "value": 250,
+    "damage": 5,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "assault_rifle",
+    "name": "Assault Rifle",
+    "type": "weapon",
+    "weight": 4,
+    "value": 300,
+    "damage": 4,
+    "skillId": "langwaffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "chinese_assault_rifle",
+    "name": "Chinese Assault Rifle",
+    "type": "weapon",
+    "weight": 4,
+    "value": 320,
+    "damage": 6,
+    "skillId": "langwaffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "marksman_carbine",
+    "name": "Marksman Carbine",
+    "type": "weapon",
+    "weight": 3.5,
+    "value": 350,
+    "damage": 8,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "hunting_rifle",
+    "name": "Hunting Rifle",
+    "type": "weapon",
+    "weight": 4,
+    "value": 400,
+    "damage": 13,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "sniper_rifle",
+    "name": "Sniper Rifle",
+    "type": "weapon",
+    "weight": 5,
+    "value": 600,
+    "damage": 16,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "anti_material_rifle",
+    "name": "Anti-Material Rifle",
+    "type": "weapon",
+    "weight": 8,
+    "value": 1200,
+    "damage": 28,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "caravan_shotgun",
+    "name": "Caravan Shotgun",
+    "type": "weapon",
+    "weight": 4.5,
+    "value": 280,
+    "damage": 11,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "combat_shotgun",
+    "name": "Combat Shotgun",
+    "type": "weapon",
+    "weight": 5,
+    "value": 350,
+    "damage": 13,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "riot_shotgun",
+    "name": "Riot Shotgun",
+    "type": "weapon",
+    "weight": 5.5,
+    "value": 450,
+    "damage": 16,
+    "skillId": "langwaffen"
+  },
+  {
+    "id": "lmg",
+    "name": "LMG",
+    "type": "weapon",
+    "weight": 8,
+    "value": 500,
+    "damage": 6,
+    "skillId": "schwere_waffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "minigun",
+    "name": "Minigun",
+    "type": "weapon",
+    "weight": 15,
+    "value": 900,
+    "damage": 4,
+    "skillId": "schwere_waffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "flamer",
+    "name": "Flamer",
+    "type": "weapon",
+    "weight": 9,
+    "value": 700,
+    "damage": 8,
+    "skillId": "schwere_waffen"
+  },
+  {
+    "id": "gatling_laser",
+    "name": "Gatling Laser",
+    "type": "weapon",
+    "weight": 14,
+    "value": 1400,
+    "damage": 8,
+    "skillId": "schwere_waffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "heavy_machinegun",
+    "name": "Heavy Machinegun",
+    "type": "weapon",
+    "weight": 16,
+    "value": 1500,
+    "damage": 28,
+    "skillId": "schwere_waffen",
+    "isAutomatic": true,
+    "burstAmmoCost": 3,
+    "burstDamageBonus": 2
+  },
+  {
+    "id": "missile_launcher",
+    "name": "Missile Launcher",
+    "type": "weapon",
+    "weight": 12,
+    "value": 2000,
+    "damage": 60,
+    "skillId": "schwere_waffen"
+  },
+  {
+    "id": "keine_hose",
+    "name": "Keine Hose",
+    "type": "armor",
+    "weight": 0,
+    "value": 0,
+    "damageResistance": 0,
+    "description": "Keine Rüstung."
+  },
+  {
+    "id": "normale_kleidung",
+    "name": "Normale Kleidung / Uniform",
+    "type": "armor",
+    "weight": 1,
+    "value": 5,
+    "damageResistance": 0
+  },
+  {
+    "id": "dicker_mantel",
+    "name": "Dicker Mantel / Ödlandkleidung",
+    "type": "armor",
+    "weight": 2,
+    "value": 20,
+    "damageResistance": 1
+  },
+  {
+    "id": "einfache_lederruestung",
+    "name": "Einfache Lederrüstung",
+    "type": "armor",
+    "weight": 6,
+    "value": 60,
+    "damageResistance": 2
+  },
+  {
+    "id": "gute_lederruestung",
+    "name": "Gute Lederrüstung",
+    "type": "armor",
+    "weight": 7,
+    "value": 100,
+    "damageResistance": 3
+  },
+  {
+    "id": "verstaerkte_lederruestung",
+    "name": "Verstärkte Lederrüstung",
+    "type": "armor",
+    "weight": 9,
+    "value": 160,
+    "damageResistance": 4
+  },
+  {
+    "id": "ncr_kugelsichere_weste",
+    "name": "NCR-kugelsichere Weste",
+    "type": "armor",
+    "weight": 5,
+    "value": 150,
+    "damageResistance": 3,
+    "description": "Standard-Soldatenweste, Schutzweste/Plattenträger"
+  },
+  {
+    "id": "ncr_soldatenruestung",
+    "name": "NCR-Soldatenrüstung",
+    "type": "armor",
+    "weight": 8,
+    "value": 250,
+    "damageResistance": 4,
+    "description": "Weste + Platten/Schutzteile/Helm, normale Feldrüstung",
+    "isHelmet": true
+  },
+  {
+    "id": "combat_armor",
+    "name": "Combat Armor",
+    "type": "armor",
+    "weight": 9,
+    "value": 300,
+    "damageResistance": 4
+  },
+  {
+    "id": "schwere_kampfruestung",
+    "name": "Schwere Kampfrüstung",
+    "type": "armor",
+    "weight": 12,
+    "value": 400,
+    "damageResistance": 5
+  },
+  {
+    "id": "riot_gear",
+    "name": "Riot Gear",
+    "type": "armor",
+    "weight": 11,
+    "value": 450,
+    "damageResistance": 5,
+    "description": "Top notch, sehr guter Schutz"
+  },
+  {
+    "id": "ranger_combat_armor",
+    "name": "Ranger Combat Armor",
+    "type": "armor",
+    "weight": 10,
+    "value": 500,
+    "damageResistance": 5,
+    "description": "Elite-/Ranger-Schutz"
+  },
+  {
+    "id": "elite_riot_gear",
+    "name": "Elite Riot Gear",
+    "type": "armor",
+    "weight": 12,
+    "value": 700,
+    "damageResistance": 6,
+    "description": "Sehr selten, sehr hochwertig"
+  },
+  {
+    "id": "t45_power_armor",
+    "name": "T-45 Power Armor",
+    "type": "armor",
+    "weight": 25,
+    "value": 3000,
+    "damageResistance": 5,
+    "requiresTraining": true,
+    "description": "Alte/leichtere Powerrüstung. Ohne Ausbildung: -2 auf körperliche Aktionen, keine Spezialfunktionen."
+  },
+  {
+    "id": "t51_power_armor",
+    "name": "T-51 Power Armor",
+    "type": "armor",
+    "weight": 28,
+    "value": 4500,
+    "damageResistance": 6,
+    "requiresTraining": true,
+    "description": "Starke Powerrüstung. Ohne Ausbildung: -2 auf körperliche Aktionen, keine Spezialfunktionen."
+  },
+  {
+    "id": "schwere_moderne_power_armor",
+    "name": "Schwere moderne Power Armor",
+    "type": "armor",
+    "weight": 32,
+    "value": 6000,
+    "damageResistance": 7,
+    "requiresTraining": true,
+    "description": "Selten und furchteinflößend."
+  },
+  {
+    "id": "boss_power_armor",
+    "name": "Extrem-/Boss-Power-Armor",
+    "type": "armor",
+    "weight": 35,
+    "value": 9000,
+    "damageResistance": 8,
+    "requiresTraining": true,
+    "description": "Nur Sonderfall."
+  },
+  {
+    "id": "stimpak",
+    "name": "Stimpak",
+    "type": "consumable",
+    "weight": 0.1,
+    "value": 50,
+    "effects": [
+      {
+        "target": "hp",
+        "amount": 20
+      }
+    ]
+  },
+  {
+    "id": "rad_x",
+    "name": "Rad-X",
+    "type": "consumable",
+    "weight": 0.1,
+    "value": 40,
+    "effects": [
+      {
+        "target": "radResistance",
+        "amount": 50
+      }
+    ]
+  }
+]

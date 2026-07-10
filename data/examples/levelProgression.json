@@ -1,0 +1,28 @@
+[
+  {
+    "level": 2,
+    "skillPoints": 5,
+    "note": "Platzhalter — Levelaufstieg ist im GM-Regelwerk noch nicht spezifiziert"
+  },
+  {
+    "level": 3,
+    "skillPoints": 5,
+    "perkSlots": 1
+  },
+  {
+    "level": 4,
+    "skillPoints": 5,
+    "specialPoints": 1,
+    "note": "SPECIAL-Erhöhung alle 4 Level (Platzhalter)"
+  },
+  {
+    "level": 5,
+    "skillPoints": 5,
+    "perkSlots": 1
+  },
+  {
+    "level": 6,
+    "skillPoints": 5,
+    "perkSlots": 1
+  }
+]

@@ -1,0 +1,53 @@
+[
+  {
+    "id": "power_armor_ausbildung",
+    "name": "Power-Armor-Ausbildung",
+    "description": "Hebt den -2-Malus für körperliche Aktionen in Power Armor auf und schaltet Spezialfunktionen frei.",
+    "maxRanks": 1,
+    "requirements": {
+      "requiresGmApproval": true
+    }
+  },
+  {
+    "id": "ranger_ausbildung",
+    "name": "Ranger-Ausbildung",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  },
+  {
+    "id": "feldsanitaeter",
+    "name": "Feldsanitäter",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  },
+  {
+    "id": "scharfschuetze",
+    "name": "Scharfschütze",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  },
+  {
+    "id": "truppfuehrer",
+    "name": "Truppführer",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  },
+  {
+    "id": "fahrzeugfuehrer",
+    "name": "Fahrzeugführer",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  },
+  {
+    "id": "vertibird_ausbildung",
+    "name": "Vertibird-Ausbildung",
+    "description": "Geplant, noch nicht mechanisch ausgestaltet.",
+    "maxRanks": 1,
+    "requirements": {}
+  }
+]

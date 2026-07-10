@@ -1,0 +1,88 @@
+[
+  {
+    "id": "buerger",
+    "name": "Bürger",
+    "description": "Stadtbewohner, NCR-Zivilisten, Vault-Leute, Handwerker, Händler, Bürokraten, Ärzte, Techniker.",
+    "pointBuyPools": [
+      {
+        "poolName": "Bürger-Punkte (6, max +2/Skill)",
+        "points": 6,
+        "maxPerSkill": 2,
+        "eligibleSkillIds": [
+          "bildung",
+          "handel",
+          "einfluss",
+          "wissenschaft",
+          "reparieren",
+          "medizin",
+          "wahrnehmung",
+          "langfinger",
+          "strassenwissen",
+          "handfeuerwaffen"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "oedlaender",
+    "name": "Ödländer",
+    "description": "Siedler, Jäger, Karawanenleute, Nomaden, Ex-Raider, Grenzgänger.",
+    "pointBuyPools": [
+      {
+        "poolName": "Ödländer-Punkte (6, max +2/Skill)",
+        "points": 6,
+        "maxPerSkill": 2,
+        "eligibleSkillIds": [
+          "ueberleben",
+          "wahrnehmung",
+          "schleichen",
+          "athletik",
+          "handfeuerwaffen",
+          "langwaffen",
+          "nahkampf",
+          "reparieren",
+          "strassenwissen",
+          "langfinger",
+          "medizin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "militaer_ncr",
+    "name": "Militär / NCR",
+    "description": "Soldaten, Ranger-Anwärter, Militärsanis, Rekruten, Veteranen, Offiziersanwärter. Grundausbildung, keine Elite.",
+    "fixedSkillBonuses": {
+      "handfeuerwaffen": 1,
+      "langwaffen": 1,
+      "athletik": 1,
+      "medizin": 1,
+      "militaerwissen": 1,
+      "ueberleben": 1
+    }
+  },
+  {
+    "id": "bruderschaft",
+    "name": "Bruderschaft",
+    "description": "Nur mit Meistergenehmigung. Gibt keine automatische Power-Armor-Ausbildung und keine Gratis-Powerrüstung.",
+    "requiresGmApproval": true,
+    "fixedSkillBonuses": {
+      "energiewaffen": 1,
+      "wissenschaft": 1,
+      "reparieren": 1,
+      "militaerwissen": 1,
+      "bildung": 1
+    },
+    "pointBuyPools": [
+      {
+        "poolName": "Waffenspezialisierung (1, max +1)",
+        "points": 1,
+        "maxPerSkill": 1,
+        "eligibleSkillIds": [
+          "langwaffen",
+          "schwere_waffen"
+        ]
+      }
+    ]
+  }
+]

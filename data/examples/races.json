@@ -1,0 +1,8 @@
+[
+  {
+    "id": "human",
+    "name": "Mensch",
+    "description": "Das Regelwerk definiert bisher keine spielbaren Nicht-Menschen (NCR-Setting). Bei Bedarf hier eigene Rassen ergänzen.",
+    "statModifiers": {}
+  }
+]

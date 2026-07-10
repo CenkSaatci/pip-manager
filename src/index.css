@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #050a07;
+}
+
+body {
+  font-family: "Share Tech Mono", ui-monospace, monospace;
+  color: #5fff8f;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* CRT scanline + vignette overlay, layered over the whole app shell */
+.crt-frame {
+  position: relative;
+  background: radial-gradient(ellipse at center, #0f1f16 0%, #05100a 70%, #020604 100%);
+  overflow: hidden;
+}
+
+.crt-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 2px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+  z-index: 40;
+}
+
+.crt-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 140px rgba(0, 0, 0, 0.85);
+  z-index: 41;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #061008;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c3a26;
+  border: 1px solid #2fae5e;
+}
+
+.pip-panel {
+  background: rgba(10, 24, 16, 0.55);
+  border: 1px solid #1c3a26;
+  box-shadow: 0 0 0 1px rgba(95, 255, 143, 0.05), 0 0 18px rgba(95, 255, 143, 0.06);
+}
+
+.pip-input {
+  background: #081209;
+  border: 1px solid #1c3a26;
+  color: #5fff8f;
+}
+.pip-input:focus {
+  outline: none;
+  border-color: #5fff8f;
+  box-shadow: 0 0 8px rgba(95, 255, 143, 0.5);
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 6px currentColor;
+  }
+}
+
+@layer components {
+  .pip-btn {
+    @apply border border-pip-green bg-pip-green/10 px-3 py-1.5 font-display text-lg tracking-wider text-pip-green transition-colors hover:bg-pip-green/20 hover:text-glow;
+  }
+  .pip-btn-ghost {
+    @apply border border-pip-line px-3 py-1.5 font-display text-lg tracking-wider text-pip-greendim transition-colors hover:border-pip-green hover:text-pip-green;
+  }
+  .pip-label {
+    @apply text-xs uppercase tracking-widest text-pip-greendim;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-only,
+  .print-only * {
+    visibility: visible;
+  }
+  .print-only {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    color: #000;
+  }
+}

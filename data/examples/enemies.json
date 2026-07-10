@@ -1,0 +1,46 @@
+[
+  {
+    "id": "raider_ohne_hose",
+    "name": "Raider ohne Hose",
+    "hp": 40,
+    "damageResistance": 0,
+    "skillValue": 4,
+    "weaponId": "pistole_10mm",
+    "notes": "10mm Pistole oder Messer"
+  },
+  {
+    "id": "raider_mit_leder",
+    "name": "Raider mit Leder",
+    "hp": 45,
+    "damageResistance": 3,
+    "skillValue": 4,
+    "weaponId": "pistole_10mm",
+    "notes": "DR 2-3 laut Regelwerk, hier 3 gewählt. 10mm Pistole / Shotgun"
+  },
+  {
+    "id": "ncr_soldat",
+    "name": "NCR-Soldat",
+    "hp": 50,
+    "damageResistance": 4,
+    "skillValue": 5,
+    "weaponId": "service_rifle",
+    "notes": "DR 3 mit kugelsicherer Weste, DR 4 mit Soldatenrüstung (hier 4 gewählt)"
+  },
+  {
+    "id": "veteran_ranger",
+    "name": "Veteran / Ranger",
+    "hp": 60,
+    "damageResistance": 5,
+    "skillValue": 6,
+    "weaponId": "hunting_rifle",
+    "notes": "Service Rifle / Hunting Rifle / Revolver"
+  },
+  {
+    "id": "power_armor_gegner",
+    "name": "Power-Armor-Gegner",
+    "hp": 70,
+    "damageResistance": 7,
+    "skillValue": 6,
+    "notes": "DR 6-7 laut Regelwerk, hier 7 gewählt. Schwere Waffe oder Energiewaffe"
+  }
+]

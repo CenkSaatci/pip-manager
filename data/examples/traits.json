@@ -1,0 +1,40 @@
+[
+  {
+    "id": "oedlandgeboren",
+    "name": "Ödlandgeboren",
+    "description": "Vorteil + gleichwertiger Nachteil (Regelwerk Abschnitt 23, Beispiel).",
+    "benefits": [
+      {
+        "target": "ueberleben",
+        "amount": 1,
+        "note": "Überleben im Ödland"
+      }
+    ],
+    "drawbacks": [
+      {
+        "target": "bildung",
+        "amount": -1,
+        "note": "Vorkriegswissen/Kultur"
+      }
+    ]
+  },
+  {
+    "id": "kampfnarbe",
+    "name": "Kampfnarbe",
+    "description": "Vorteil + gleichwertiger Nachteil (Regelwerk Abschnitt 23, Beispiel).",
+    "benefits": [
+      {
+        "target": "einfluss",
+        "amount": 1,
+        "note": "Einschüchtern"
+      }
+    ],
+    "drawbacks": [
+      {
+        "target": "einfluss",
+        "amount": -1,
+        "note": "Beruhigen/Vertrauen gewinnen"
+      }
+    ]
+  }
+]

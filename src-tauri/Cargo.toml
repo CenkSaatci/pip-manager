@@ -1,0 +1,34 @@
+[package]
+name = "pip-manager"
+version = "0.1.0"
+description = "Charakterverwaltung für Fallout-Pen-and-Paper (Big Apple Wasteland Hausregeln)"
+edition = "2021"
+
+# lib-Ziel wird für den Mobile-Build (Android/iOS) benötigt: Tauri bindet
+# dort #[tauri::mobile_entry_point] aus lib.rs als nativen Einstiegspunkt
+# ein (main.rs wird nur für den klassischen Desktop-Build verwendet).
+[lib]
+name = "pip_manager_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.31", features = ["bundled"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
