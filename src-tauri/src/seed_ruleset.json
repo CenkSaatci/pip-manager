@@ -19,11 +19,25 @@
     "skillCapAtCreation": 6
   },
   "levelProgression": [
-    { "level": 2, "skillPoints": 5, "note": "Platzhalter — Levelaufstieg ist im GM-Regelwerk noch nicht spezifiziert" },
+    { "level": 2, "skillPoints": 5 },
     { "level": 3, "skillPoints": 5, "perkSlots": 1 },
-    { "level": 4, "skillPoints": 5, "specialPoints": 1, "note": "SPECIAL-Erhöhung alle 4 Level (Platzhalter)" },
+    { "level": 4, "skillPoints": 5, "specialPoints": 1 },
     { "level": 5, "skillPoints": 5, "perkSlots": 1 },
-    { "level": 6, "skillPoints": 5, "perkSlots": 1 }
+    { "level": 6, "skillPoints": 5 },
+    { "level": 7, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 8, "skillPoints": 5, "specialPoints": 1 },
+    { "level": 9, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 10, "skillPoints": 5, "tagSkillSlots": 1 },
+    { "level": 11, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 12, "skillPoints": 5, "specialPoints": 1 },
+    { "level": 13, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 14, "skillPoints": 5 },
+    { "level": 15, "skillPoints": 5, "perkSlots": 1, "tagSkillSlots": 1 },
+    { "level": 16, "skillPoints": 5, "specialPoints": 1 },
+    { "level": 17, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 18, "skillPoints": 5 },
+    { "level": 19, "skillPoints": 5, "perkSlots": 1 },
+    { "level": 20, "skillPoints": 5, "specialPoints": 1 }
   ],
   "hitLocations": [
     { "id": "torso", "name": "Torso", "penalty": 0 },
@@ -98,13 +112,80 @@
     }
   ],
   "perks": [
-    { "id": "power_armor_ausbildung", "name": "Power-Armor-Ausbildung", "description": "Hebt den -2-Malus für körperliche Aktionen in Power Armor auf und schaltet Spezialfunktionen frei.", "maxRanks": 1, "requirements": { "requiresGmApproval": true } },
-    { "id": "ranger_ausbildung", "name": "Ranger-Ausbildung", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} },
-    { "id": "feldsanitaeter", "name": "Feldsanitäter", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} },
-    { "id": "scharfschuetze", "name": "Scharfschütze", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} },
-    { "id": "truppfuehrer", "name": "Truppführer", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} },
-    { "id": "fahrzeugfuehrer", "name": "Fahrzeugführer", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} },
-    { "id": "vertibird_ausbildung", "name": "Vertibird-Ausbildung", "description": "Geplant, noch nicht mechanisch ausgestaltet.", "maxRanks": 1, "requirements": {} }
+    {
+      "id": "power_armor_ausbildung",
+      "name": "Power-Armor-Ausbildung",
+      "description": "Hebt den -2-Malus für körperliche Aktionen in Power Armor auf und schaltet Spezialfunktionen frei.",
+      "maxRanks": 1,
+      "requirements": { "level": 5, "stats": { "STR": 6 }, "requiresGmApproval": true }
+    },
+    {
+      "id": "ranger_ausbildung",
+      "name": "Ranger-Ausbildung",
+      "description": "Elite-Fernaufklärer: verbesserte Langwaffen-Fertigkeit und Überlebensfähigkeit im Ödland.",
+      "maxRanks": 1,
+      "requirements": { "level": 3, "stats": { "PER": 6 } },
+      "effects": [
+        { "target": "langwaffen", "amount": 1, "note": "Präzisionsschießen" },
+        { "target": "ueberleben", "amount": 1, "note": "Ödland-Spurenlesen" },
+        { "target": "maxHp", "amount": 5, "note": "Abgehärtet durch Patrouillen" }
+      ]
+    },
+    {
+      "id": "feldsanitaeter",
+      "name": "Feldsanitäter",
+      "description": "Medizinische Grundausbildung für den Kampfeinsatz: stabilisiert Verwundete schneller.",
+      "maxRanks": 1,
+      "requirements": { "level": 3, "stats": { "INT": 6 } },
+      "effects": [
+        { "target": "medizin", "amount": 1, "note": "Erweiterte Erste Hilfe" },
+        { "target": "healingRate", "amount": 1, "note": "Schnellere Wundheilung" }
+      ]
+    },
+    {
+      "id": "scharfschuetze",
+      "name": "Scharfschütze",
+      "description": "Gezielte Schüsse auf große Distanz: verbesserte Wahrnehmung und Langwaffen-Präzision.",
+      "maxRanks": 1,
+      "requirements": { "level": 5, "stats": { "PER": 7 } },
+      "effects": [
+        { "target": "PER", "amount": 1, "note": "Geschulte Augen" },
+        { "target": "langwaffen", "amount": 2, "note": "Zielsicherheit" }
+      ]
+    },
+    {
+      "id": "truppfuehrer",
+      "name": "Truppführer",
+      "description": "Erfahrung in der Führung kleiner Einheiten: mehr Durchsetzungsvermögen und taktisches Verständnis.",
+      "maxRanks": 1,
+      "requirements": { "level": 5, "stats": { "CHA": 6 }, "skills": { "einfluss": 2 } },
+      "effects": [
+        { "target": "CHA", "amount": 1, "note": "Autorität" },
+        { "target": "einfluss", "amount": 1, "note": "Menschenführung" }
+      ]
+    },
+    {
+      "id": "fahrzeugfuehrer",
+      "name": "Fahrzeugführer",
+      "description": "Beherrschung von Landfahrzeugen: vom Motorrad bis zum LKW, inklusive Feldschnellreparaturen.",
+      "maxRanks": 1,
+      "requirements": { "level": 3, "stats": { "AGI": 5 } },
+      "effects": [
+        { "target": "fahren", "amount": 1, "note": "Sicheres Fahren" },
+        { "target": "reparieren", "amount": 1, "note": "Fahrzeug-Reparaturen" }
+      ]
+    },
+    {
+      "id": "vertibird_ausbildung",
+      "name": "Vertibird-Ausbildung",
+      "description": "Flugausbildung für Vertibirds und andere Luftfahrzeuge inklusive Luftaufklärung.",
+      "maxRanks": 1,
+      "requirements": { "level": 5, "stats": { "PER": 6 }, "skills": { "pilot": 2 } },
+      "effects": [
+        { "target": "pilot", "amount": 1, "note": "Erweiterte Flugausbildung" },
+        { "target": "PER", "amount": 1, "note": "Luftaufklärung" }
+      ]
+    }
   ],
   "backgrounds": [
     {

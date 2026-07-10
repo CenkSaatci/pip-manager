@@ -23,6 +23,19 @@ export function getTraitEffectSum(target: string, char: Character, rules: RuleSe
   return sum;
 }
 
+/** Summe aller Perk-Effekte für ein bestimmtes Ziel, gewichtet mit dem jeweiligen Rang. */
+export function getPerkEffectSum(target: string, char: Character, rules: RuleSet): number {
+  let sum = 0;
+  for (const entry of char.perks) {
+    const perk = rules.perks.find((p) => p.id === entry.perkId);
+    if (!perk?.effects) continue;
+    for (const effect of perk.effects) {
+      if (effect.target === target) sum += effect.amount * entry.rank;
+    }
+  }
+  return sum;
+}
+
 /** SPECIAL-Werte inklusive Rassen-Modifikatoren UND aktiver Trait-Effekte. */
 export function getEffectiveSpecial(char: Character, rules: RuleSet): Character["special"] {
   const race = rules.races.find((r) => r.id === char.raceId);
@@ -30,7 +43,8 @@ export function getEffectiveSpecial(char: Character, rules: RuleSet): Character[
   for (const key of SPECIAL_KEYS) {
     const raceMod = race?.statModifiers[key] ?? 0;
     const traitMod = getTraitEffectSum(key, char, rules);
-    special[key] = special[key] + raceMod + traitMod;
+    const perkMod = getPerkEffectSum(key, char, rules);
+    special[key] = special[key] + raceMod + traitMod + perkMod;
   }
   return special;
 }
@@ -39,21 +53,21 @@ export function getEffectiveSpecial(char: Character, rules: RuleSet): Character[
 export const applyRaceModifiers = getEffectiveSpecial;
 
 export function getMaxHp(char: Character, rules: RuleSet): number {
-  return evalFormula(rules.formulas.maxHp, baseScope(char, rules)) + getTraitEffectSum("maxHp", char, rules);
+  return evalFormula(rules.formulas.maxHp, baseScope(char, rules)) + getTraitEffectSum("maxHp", char, rules) + getPerkEffectSum("maxHp", char, rules);
 }
 
 export function getMaxApr(char: Character, rules: RuleSet): number {
-  return evalFormula(rules.formulas.maxApr, baseScope(char, rules)) + getTraitEffectSum("maxApr", char, rules);
+  return evalFormula(rules.formulas.maxApr, baseScope(char, rules)) + getTraitEffectSum("maxApr", char, rules) + getPerkEffectSum("maxApr", char, rules);
 }
 
 export function getCarryWeight(char: Character, rules: RuleSet): number {
   const race = rules.races.find((r) => r.id === char.raceId);
   const base = evalFormula(rules.formulas.carryWeight, baseScope(char, rules));
-  return base + (race?.carryWeightModifier ?? 0) + getTraitEffectSum("carryWeight", char, rules);
+  return base + (race?.carryWeightModifier ?? 0) + getTraitEffectSum("carryWeight", char, rules) + getPerkEffectSum("carryWeight", char, rules);
 }
 
 export function getHealingRate(char: Character, rules: RuleSet): number {
-  return evalFormula(rules.formulas.healingRate, baseScope(char, rules)) + getTraitEffectSum("healingRate", char, rules);
+  return evalFormula(rules.formulas.healingRate, baseScope(char, rules)) + getTraitEffectSum("healingRate", char, rules) + getPerkEffectSum("healingRate", char, rules);
 }
 
 export function getLuckBonusDice(char: Character, rules: RuleSet): number {
@@ -99,8 +113,9 @@ export function getSkillEffectiveValue(skill: Skill, char: Character, rules: Rul
   const tagBonus = isTagSkill(skill.id, char) ? rules.characterCreation.tagSkillBonus : 0;
   const invested = char.skills[skill.id] ?? 0;
   const traitMod = getTraitEffectSum(skill.id, char, rules);
+  const perkMod = getPerkEffectSum(skill.id, char, rules);
   const [min, max] = rules.skillRange;
-  return Math.min(max, Math.max(min, base + fixedBg + pointBuyBg + tagBonus + invested + traitMod));
+  return Math.min(max, Math.max(min, base + fixedBg + pointBuyBg + tagBonus + invested + traitMod + perkMod));
 }
 
 /** Größe des Würfelpools für einen Skillwurf: Skillwert + Luck-Bonus-Würfel (Abschnitt 1) */
