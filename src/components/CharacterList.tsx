@@ -1,19 +1,30 @@
+import { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { blankCharacter, Character } from "../types/character";
+import { CharacterWizard } from "./CharacterWizard";
 import * as api from "../lib/api";
 
 export function CharacterList() {
   const { characters, activeRuleSet, selectCharacter, upsertCharacter, removeCharacter } = useAppStore();
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   const handleCreate = async () => {
-    const c = blankCharacter(activeRuleSet.id);
-    await upsertCharacter(c);
-    selectCharacter(c.id);
+    setWizardOpen(true);
+  };
+
+  const handleFinishWizard = async (char: Character) => {
+    setWizardOpen(false);
+    await upsertCharacter(char);
+    selectCharacter(char.id);
   };
 
   const handleImport = async () => {
     const imported = await api.importJsonFile<Character>();
     if (!imported) return;
+    if (!imported.name || !imported.special) {
+      alert("Ungültige Charakter-Datei: 'name' und 'special' werden benötigt.");
+      return;
+    }
     imported.id = imported.id ?? crypto.randomUUID();
     imported.updatedAt = new Date().toISOString();
     await upsertCharacter(imported);
@@ -55,11 +66,20 @@ export function CharacterList() {
     }
   };
 
+  const handleQuickCreate = async () => {
+    const c = blankCharacter(activeRuleSet.id);
+    await upsertCharacter(c);
+    selectCharacter(c.id);
+  };
+
   return (
     <div>
       <div className="mb-4 flex flex-wrap gap-2">
         <button onClick={handleCreate} className="pip-btn">
-          + Neuer Wanderer
+          + Neuer Wanderer (geführt)
+        </button>
+        <button onClick={handleQuickCreate} className="pip-btn-ghost">
+          + Schnellerstellung
         </button>
         <button onClick={handleImport} className="pip-btn-ghost">
           Charakter importieren (JSON)
@@ -112,6 +132,14 @@ export function CharacterList() {
           );
         })}
       </div>
+
+      {wizardOpen && (
+        <CharacterWizard
+          rules={activeRuleSet}
+          onFinish={handleFinishWizard}
+          onCancel={() => setWizardOpen(false)}
+        />
+      )}
     </div>
   );
 }
