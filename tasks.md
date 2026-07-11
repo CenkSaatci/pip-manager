@@ -1,136 +1,65 @@
 # Tasks — Multi-System-Abstraktion
 
 **Branch:** `feature/multi-system-abstraction`  
-**Basis:** `develop`  
-**Ziel:** PIP-Manager von einem Fallout-only-Tool zu einem multi-system-fähigen Character-Manager abstrahieren.
+**Detailanalyse:** `docs/phase1-analysis.md`
 
 ---
 
-## Phase 1: Datenmodell (2–3 Sessions)
+## Phase 1a: Typen & Migration
 
-### 1.1 RuleSet um `ui`-Template erweitern
+Ziel: Character-Modell generisch machen + Migration alter Charaktere.
 
-**Datei:** `src/types/rules.ts`
+| # | Task | Datei | Aufwand |
+|---|---|---|---|
+| 1.1 | `UiTemplate`, `UiResourceDef`, `UiPanelDef` Interfaces definieren | `src/types/rules.ts` | ~30min |
+| 1.2 | `RuleSet.ui?: UiTemplate` + `CharacterCreationConfig.statConfig` hinzufügen | `src/types/rules.ts` | ~15min |
+| 1.3 | `stats`, `resources`, `tags` zu Character; alte Felder optional/deprecated | `src/types/character.ts` | ~30min |
+| 1.4 | `migrateCharacter()` – erkennt Legacy-Format, konvertiert `special→stats`, `currentHp→resources.hp` etc. | `src/lib/migration.ts` (NEU) | ~30min |
+| 1.5 | `loadAll()` ruft `migrateCharacter()` für jeden geladenen Charakter | `src/store/useAppStore.ts` | ~10min |
+| 1.6 | `blankCharacter()` auf neues Format umstellen | `src/types/character.ts` | ~10min |
+| 1.7 | `getStats()`, `getResources()` Helper in derived.ts | `src/lib/derived.ts` | ~15min |
+| 1.8 | Tests für migrateCharacter, getStats, getResources | `src/lib/derived.test.ts` | ~30min |
 
-- `UiTemplate`-Interface definieren:
-  - `statsLabel: string` (z.B. "Attribute", "Eigenschaften")
-  - `statKeys: string[]` (z.B. `["STR","PER","END","CHA","INT","AGI","LUK"]`)
-  - `statLabels: Record<string, string>` (z.B. `{ "STR": "Stärke", … }`)
-  - `resources: UiResource[]` mit `{ key, label, formula?, color }`
-  - `panels: string[]` – aktivierte Standard-Panels
-  - `optionalPanels: Record<string, { enabled: boolean, label: string }>`
-- `ui`-Feld an `RuleSet` anhängen (optional, Fallback auf Fallout-Default)
-- `emptyRuleSet()` mit Default-UI für Fallout aktualisieren
-
-### 1.2 Character-Modell generisch machen
-
-**Datei:** `src/types/character.ts`
-
-- `special: Record<SpecialKey, number>` → `stats: Record<string, number>`
-- `currentHp: number`, `currentApr: number`, `karma: number`, `hunger: number`, `thirst: number` → `resources: Record<string, number>`
-- `tagSkillIds: string[]` → `tags: string[]`
-- `backgroundAllocations: Record<string, Record<string, number>>` → `allocations: Record<string, Record<string, number>>`
-- `CharacterCap`-Interface mit `statsCap: Record<string, number>` und `resourcesCap: Record<string, number>` (für Maximalwerte)
-- `blankCharacter()` entsprechend aktualisieren
-
-### 1.3 Migration bestehender Charaktere
-
-**Datei:** `src/lib/migration.ts` (neu)
-
-- Funktion `migrateCharacter(old: any): Character`
-- Erkennt Alt-Format (`character.special` existiert)
-- Mappt `special` → `stats`, `currentHp` → `resources.hp`, etc.
-- Wird beim Laden aus der DB aufgerufen
-
-### 1.4 derived.ts anpassen
-
-- `getEffectiveSpecial()` → `getEffectiveStats(char, rules)` (liest statKeys aus RuleSet)
-- `getPerkEffectSum()`, `getTraitEffectSum()` → unverändert (arbeiten auf generischen Targets)
-- `getMaxHp()`, `getMaxApr()` → `getResourceMax(char, rules, resourceKey)`
-
-### 1.5 seed_ruleset.json & Beispiel-Rulesets
-
-- Fallout-seed auf neues Format migrieren (stats, resources, ui-template)
-- `data/examples/dnd5e_ruleset.json` anlegen
-- `data/examples/dsa_ruleset.json` anlegen
+**Checkpoint:** TypeScript kompiliert, Tests grün. Alte Charaktere werden automatisch migriert.
 
 ---
 
-## Phase 2: UI (2–3 Sessions)
+## Phase 1b: derived.ts & Berechnungen
 
-### 2.1 StatsPanel generisch
+Ziel: Alle derived-Funktionen nutzen `char.stats`/`char.resources` statt `char.special`/`char.currentHp`.
 
-**Datei:** `src/components/CharacterSheet/SpecialPanel.tsx` → `StatsPanel.tsx`
+| # | Task | Datei | Aufwand |
+|---|---|---|---|
+| 2.1 | `getEffectiveSpecial()` → `getEffectiveStats(char, rules)` – nutzt `char.stats` + `rules.ui.statKeys` | `src/lib/derived.ts` | ~20min |
+| 2.2 | `getMaxHp()` → `getResourceMax(char, rules, key)` – liest aus `rules.formulas.resourceMax[key]` oder Alt-Feld | `src/lib/derived.ts` | ~20min |
+| 2.3 | `baseScope()` liefert alle statKeys aus Ruleset statt festem SPECIAL | `src/lib/derived.ts` | ~15min |
+| 2.4 | Alle derived-Funktionen aktualisieren (getCarryWeight, getHealingRate, getSkillEffectiveValue, getDicePoolSize) | `src/lib/derived.ts` | ~30min |
+| 2.5 | `checkPerkRequirements()` stat-Prüfung auf generische stats umstellen | `src/lib/derived.ts` | ~15min |
+| 2.6 | Tests für neue generische Funktionen aktualisieren/ergänzen | `src/lib/derived.test.ts` | ~30min |
 
-- Liest `ruleSet.ui.statKeys` und `ruleSet.ui.statLabels`
-- Rendert generische Attribut-Anzeige mit +/- Buttons
-- Name, Label, Spaltenanzahl aus RuleSet
-
-### 2.2 Resource-Bars generisch
-
-**Datei:** `src/components/CharacterSheet/index.tsx` (ResourceBar-Bereich)
-
-- Iteriert über `ruleSet.ui.resources`
-- Rendert für jeden Eintrag einen ResourceBar mit passender Farbe/formula
-- Fallback für nicht-definierte Formeln
-
-### 2.3 Optionale Panels steuern
-
-**Datei:** `src/components/CharacterSheet/index.tsx`
-
-- `HitLocationPanel` nur rendern, wenn `ruleSet.ui.optionalPanels.hitLocations.enabled`
-- `NeedsPanel` nur rendern, wenn `ruleSet.ui.optionalPanels.needs.enabled`
-- `SessionLogPanel` immer (systemunabhängig)
-- Neues `SpellPanel` (z.B. für D&D), wenn `ruleSet.ui.optionalPanels.spells.enabled`
-
-### 2.4 CharacterWizard anpassen
-
-**Datei:** `src/components/CharacterWizard/index.tsx`
-
-- SPECIAL-Schritt → generischer Stats-Schritt (liest statKeys/labels aus RuleSet)
-- Hintergrund-Schritt → generischer Allocation-Schritt
-- Skills-Schritt bleibt (bereits generisch)
-- Traits-Schritt bleibt (bereits generisch)
-
-### 2.5 RulesManager erweitern
-
-**Datei:** `src/components/RulesManager/index.tsx`
-
-- Neuer Tab für UI-Template
-- Editor für statKeys, statLabels, resources, panels
-- Validierung des ui-Templates
+**Checkpoint:** `npm test` grün, alle Berechnungen funktionieren mit neuem und altem Charakter-Format.
 
 ---
 
-## Phase 3: Beispiel-Systeme (1 Session)
+## Phase 1c: seed_ruleset & Example-Rulesets
 
-### 3.1 D&D 5e Example-Ruleset
-
-- 6 Stats (STR/DEX/CON/INT/WIS/CHA)
-- ~18 Skills (Acrobatics, Arcana, Athletics, …)
-- 12+ Classes als Hintergründe/Perks
-- Races (Human, Elf, Dwarf, …)
-- HP, HD, Proficiency-Bonus als Resources
-- Spells als optionales Panel
-
-### 3.2 DSA Example-Ruleset
-
-- 8 Stats (MU/KL/IN/CH/FF/GE/KO/KK)
-- Talente als Skills
-- Vor-/Nachteile als Traits
-- Profan/Spontan/Verbreitung als Zauber-Kategorien
-
-### 3.3 Test-Charaktere
-
-- Je einen Beispiel-Charakter pro System anlegen
-- CharacterSheet-Rendering validieren
-- Würfelterminal-Test (W20 für D&D, W20 für DSA)
+| # | Task | Datei | Aufwand |
+|---|---|---|---|
+| 3.1 | Fallout-seed: `ui`-Template mit 7 SPECIALs, 4 Resources, allen Panels | `src-tauri/src/seed_ruleset.json` | ~20min |
+| 3.2 | `characterCreation.statConfig` für Fallout (Start 5, +5 frei, Min 1, Max 10) | `src-tauri/src/seed_ruleset.json` | ~10min |
+| 3.3 | D&D 5e Example-Ruleset (6 Stats, ~18 Skills, Races, Classes als Backgrounds) | `data/examples/dnd5e.json` (NEU) | ~60min |
+| 3.4 | DSA Example-Ruleset (8 Stats, Talente, Vor-/Nachteile) | `data/examples/dsa.json` (NEU) | ~60min |
+| 3.5 | Build verifizieren: TypeScript + Tests + Vite-Build | – | ~15min |
 
 ---
 
-## Offene Fragen / Design-Entscheidungen
+## Offene Punkte für Phase 2 (UI)
 
-- [ ] **Versionierung:** Wie umgehen mit alten Charakteren, wenn sich das Regelwerk ändert?
-- [ ] **Stats-Budget:** Aktuell Fallout-spezifisch (Start 5, +5 frei). Für D&D wäre Point-Buy oder Standard-Array nötig – in `characterCreation` abbildbar?
-- [ ] **Resources-Cap:** `currentHp` wird via `getMaxHp` gecappt. Für generische Resources bräuchte es `getResourceMax(key)` – aus Formula oder fixem Wert im RuleSet?
-- [ ] **Würfelmechanik:** Fallout nutzt W10-Pool, D&D W20+Modifier, DSA W20+W20+W6. Wie stark muss `dice.ts` abstrahiert werden?
+Hier nur auflisten, nicht umsetzen:
+
+- Wizard-Schritte aus `rules.ui.wizardSteps` generieren
+- StatsPanel aus `ruleSet.ui.stats` rendern
+- Resource-Bars aus `ruleSet.ui.resources` generieren
+- Optionale Panels (HitLocation, Needs, Spells) über `ruleSet.ui.panels` steuern
+- MetaTab: Stats-Konfiguration editierbar machen
+- Neue RulesManager-Tabs: `ui`-Template-Editor
