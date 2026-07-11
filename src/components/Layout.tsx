@@ -22,6 +22,19 @@ function saveCustomThemes(themes: CustomTheme[]) {
 
 const BUILTIN_IDS = new Set<string>(THEMES.map((t) => t.id));
 
+/** Mappt benutzerfreundliche Theme-Keys auf interne CSS-Variablen */
+const THEME_KEY_MAP: Record<string, string> = {
+  bg: "--pip-bg",
+  panel: "--pip-panel",
+  border: "--pip-line",
+  primary: "--pip-green",
+  muted: "--pip-greendim",
+  warning: "--pip-amber",
+  danger: "--pip-red",
+};
+
+const REQUIRED_THEME_KEYS = Object.keys(THEME_KEY_MAP);
+
 export function Layout({ children }: { children: ReactNode }) {
   const { view, setView, activeRuleSet, upsertRuleSet } = useAppStore();
   const ui = getUiTemplate(activeRuleSet);
@@ -54,10 +67,9 @@ export function Layout({ children }: { children: ReactNode }) {
           alert("Ungültiges Theme: 'id', 'label' und 'colors' (Objekt) werden benötigt.");
           return;
         }
-        const required = ["pip-bg", "pip-panel", "pip-line", "pip-green", "pip-greendim", "pip-amber", "pip-red"];
-        for (const key of required) {
+        for (const key of REQUIRED_THEME_KEYS) {
           if (typeof parsed.colors[key] !== "string") {
-            alert(`Ungültiges Theme: Farbe '${key}' fehlt in 'colors'.`);
+            alert(`Ungültiges Theme: Farbe '${key}' fehlt in 'colors'. Erwartet werden: ${REQUIRED_THEME_KEYS.join(", ")}`);
             return;
           }
         }
@@ -78,7 +90,9 @@ export function Layout({ children }: { children: ReactNode }) {
   };
 
   const customStyle = customTheme
-    ? Object.fromEntries(Object.entries(customTheme.colors).map(([k, v]) => [`--${k}`, v]))
+    ? Object.fromEntries(
+        Object.entries(customTheme.colors).map(([k, v]) => [THEME_KEY_MAP[k] ?? `--${k}`, v])
+      )
     : undefined;
 
   const tabs: { id: typeof view; label: string }[] = [
