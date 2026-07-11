@@ -41,6 +41,31 @@ const DOCS: DocEntry[] = [
     ],
   },
   {
+    title: "Themes & Custom-Designs",
+    intro: "PIP-Manager hat 4 integrierte Themes (Pip-Boy, Fantasy, Cyberpunk, Hell). Zusätzlich kannst du eigene Themes als JSON importieren und mit anderen teilen.",
+    example: `{
+  "id": "mein-theme",
+  "label": "Mein Lieblings-Theme",
+  "colors": {
+    "bg": "#0b1410",      // Hintergrund
+    "panel": "#0f1f16",   // Panel-Hintergrund
+    "border": "#1c3a26",  // Rahmenlinien
+    "primary": "#5fff8f", // Primärfarbe (Überschriften, Akzente)
+    "muted": "#2fae5e",   // Gedämpfte Texte
+    "warning": "#ffb238", // Warnungen, Hervorhebungen
+    "danger": "#ff5a4e"   // Gefahr, Fehler, Löschen
+  }
+}`,
+    fields: [
+      { name: "Theme erstellen", desc: "JSON mit id, label und 7 Farben (bg, panel, border, primary, muted, warning, danger) erstellen." },
+      { name: "Theme importieren", desc: "Button '+ Theme' oben rechts im Header → JSON-Datei auswählen. Theme erscheint sofort im Dropdown." },
+      { name: "Theme teilen", desc: "Die JSON-Datei kann per Discord, E-Mail etc. geteilt werden. Empfänger importiert sie einfach." },
+      { name: "Theme auswählen", desc: "Dropdown in der Navigationsleiste. Integrierte und eigene Themes sind getrennt gelistet." },
+      { name: "Speicherung", desc: "Eigene Themes werden im Browser (localStorage) gespeichert. Bei Browser-Wechsel erneut importieren." },
+      { name: "Monetarisierung", desc: "Theme-Packs können als ZIP mit mehreren JSON-Dateien verkauft werden." },
+    ],
+  },
+  {
     title: "Rassen",
     intro: `statModifiers ist ein Objekt Stat-Kürzel -> Zahl. ${SPECIAL_HINT}`,
     example: `{
