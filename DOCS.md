@@ -209,73 +209,63 @@ npm run test:watch    # Vitest im Watch-Modus
 
 ---
 
-## 7. Ausblick: Multi-System-Abstraktion
+## 7. Multi-System-Abstraktion (abgeschlossen)
 
-**Aktuelle Lage:** Die App ist fest auf das Fallout-Homebrew-System zugeschnitten – Character-Modell (`special`, `currentHp`, `karma`, `hunger` etc.) und UI-Panels (`SPECIALPanel`, `HitLocationPanel`, `NeedsPanel`) sind hardgecodet.
+Die App ist vollständig abstrahiert. Das Character-Modell nutzt `stats`/`resources`/`tags`.
+Jedes RuleSet kann ein `ui`-Template definieren, das Stats, Resources, Panels, Wizard-Schritte, Würfelmechanik und Theme steuert.
 
-**Ziel:** PIP-Manager so abstrahieren, dass jedes beliebige Regelwerk via JSON abgebildet werden kann – D&D 5e, Das Schwarze Auge, Shadowrun, etc. – und die UI sich automatisch anpasst.
+**Umgesetzt:**
+- Character-Modell generisch (`stats`/`resources`/`tags`)
+- RuleSet.ui-Template (Stats, Resources, Panels, Wizard, DiceType, Theme)
+- Migration alter Charaktere
+- Theme-System (4 Built-in + Custom-Import)
+- Würfelterminal generisch (d10-pool, d20-plus, 3d20)
+- i18n: DE/EN/FR/IT/ES/TR
 
-### Was bereits abstrakt ist
-- **RuleSet als JSON** – Skills, Rassen, Items, Formeln, alles konfigurierbar
-- **Mehrere Rulesets parallel** – Store unterstützt `listRuleSets`, `activateRuleSet`
-- **Formelevaluator** – `evalFormula` wertet Formeln aus dem RuleSet live aus
-- **Import/Export** – JSON-basiert, systemunabhängig
+## 8. System Creation Wizard (geplant)
 
-### Was geändert werden muss
+Ein geführter Assistent, der ohne JSON-Kenntnisse ein neues RuleSet + UiTemplate erstellt.
 
-#### 1. Character-Modell generisch machen
+### Konzept
 
-```typescript
-// Aktuell (Fallout-spezifisch):
-special: Record<SpecialKey, number>   // STR, PER, END, CHA, INT, AGI, LUK
-currentHp: number
-currentApr: number
-karma: number
-hunger: number
-thirst: number
-tagSkillIds: string[]
-backgroundAllocations: Record<string, Record<string, number>>
+5 Schritte, in denen der User perCheckboxen, Dropdowns und Eingabefeldern sein Wunschsystem zusammenstellt:
 
-// Ziel (systemunabhängig):
-stats: Record<string, number>          // "STR"=5, "INT"=10, "WIS"=14, …
-resources: Record<string, number>      // "hp"=30, "mana"=10, "karma"=0, …
-tags: string[]                         // "tagSkills" in Fallout, "proficiencies" in D&D
-allocations: Record<string, Record<string, number>>  // generischer Punkte-Kauf
-```
+**Schritt 1 – Basis**
+- Systemname, Beschreibung, Version
+- Währung (Dropdown + eigener Eintrag)
+- Theme (Dropdown)
 
-#### 2. UI-Templates im RuleSet
+**Schritt 2 – Attribute**
+- Anzahl Attribute (3–12 per Slider)
+- Pro Attribut: Name, Kürzel, Min/Max, Startwert, Extremwert-Schwelle
+- Attribut-Bonus-Formel (Dropdown: `specialBonus(x)` für Fallout, `Math.floor((x-10)/2)` für D&D, eigene)
 
-Jedes RuleSet definiert, wie die UI aussehen soll – **ohne Codeänderung**:
+**Schritt 3 – Mechaniken**
+- Würfeltyp (d10-pool, d20+mod, 3d20)
+- Resources: ☑ HP, ☐ Mana, ☑ Karma, ☐ Rüstungspunkte, …
+- ☐ Rüstungswurf, ☐ Automatikfeuer, ☐ Deckung, ☐ Gezielte Treffer
 
-```json
-{
-  "ui": {
-    "statsLabel": "Attribute",
-    "statKeys": ["STR","PER","END","CHA","INT","AGI","LUK"],
-    "statLabels": { "STR": "Stärke", "PER": "Wahrnehmung" },
-    "resources": [
-      { "key": "hp", "label": "TP", "formula": "maxHp", "color": "red" },
-      { "key": "mana", "label": "Mana", "formula": "maxMana", "color": "blue" }
-    ],
-    "panels": ["stats", "skills", "inventory", "dice", "perks"],
-    "optionalPanels": {
-      "hitLocations": { "enabled": false },
-      "needs": { "enabled": false },
-      "spells": { "enabled": true, "label": "Zauber" }
-    }
-  }
-}
-```
+**Schritt 4 – Panels & Wizard**
+- Aktivierte Panels: ☑ Skills, ☑ Perks, ☑ Traits, ☑ Inventar, ☑ Würfelterminal, ☐ Trefferzonen, ☐ Bedürfnisse, ☐ Zauber
+- Wizard-Schritte: ☑ Rasse, ☑ Hintergrund, ☑ Traits
+- ☑ Boni-Skills (Anzahl, Bonus pro Skill)
 
-Der `SPECIALPanel` wird zu einem generischen `StatsPanel`, das aus `ruleSet.ui.statKeys` und `ruleSet.ui.statLabels` die Anzeige baut. Fallout zeigt STR/PER/END/…, D&D zeigt STR/DEX/CON/INT/WIS/CHA, DSA zeigt MU/KL/IN/CH/FF/GE/KO/KK.
+**Schritt 5 – Review & Export**
+- Vollständige Vorschau des generierten JSON
+- Buttons: "Als JSON exportieren", "Direkt ins aktive Regelwerk importieren"
 
-Optionale Panels wie `hitLocations` (Fallout), `needs` (Fallout) oder `spells` (D&D) werden nur angezeigt, wenn das RuleSet sie aktiviert.
+### Technische Umsetzung
 
-#### 3. Fahrplan
+Ein React-Component `SystemWizard` in `src/components/SystemWizard/index.tsx`
+baut ein `RuleSet`-Objekt zusammen und gibt es als JSON aus oder importiert es direkt via `upsertRuleSet`.
 
-| Phase | Aufwand | Beschreibung |
-|---|---|---|
-| **1 – Datenmodell** | 2–3 Sessions | `special` → `stats`, `currentHp/karma/etc` → `resources`, RuleSet um `ui`-Template ergänzen, Migration bestehender Charaktere |
-| **2 – UI** | 2–3 Sessions | StatsPanel generisch machen, Resource-Bars aus RuleSet generieren, Wizard anpassen, optionale Panels steuern |
-| **3 – Beispielsysteme** | 1 Session | D&D 5e Example-Ruleset, DSA Example-Ruleset, Test-Charaktere in beiden Systemen |
+Keine neuen Typen nötig – das bestehende `RuleSet` + `UiTemplate` wird befüllt.
+
+### Aufwand
+
+~3–5 Sessions:
+1. Basis-Schritt + Attribut-Schritt – 1 Session
+2. Mechaniken + Panels – 1 Session
+3. Review + Export/Import – 1 Session
+4. Feinschliff + Tests – 1 Session
 
