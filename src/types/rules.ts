@@ -285,7 +285,8 @@ export interface RuleSet {
   diceSystem: string; // rein informativ, z.B. "W10-Würfelpool, roll-under"
   specialRange: [number, number];
   skillRange: [number, number];
-  karmaRange: [number, number];
+  /** @deprecated wird nur noch für Fallback verwendet, nutze stattdessen StatConfig.min/max */
+  karmaRange?: [number, number];
   disabledMechanics: OptionalMechanic[];
   characterCreation: CharacterCreationConfig;
   levelProgression: LevelReward[];

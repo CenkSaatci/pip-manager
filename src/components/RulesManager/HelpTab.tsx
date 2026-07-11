@@ -1,4 +1,4 @@
-const SPECIAL_HINT = "Gültige Kürzel: STR, PER, END, CHA, INT, AGI, LUK. Nur abweichende Werte angeben, alles andere bleibt 0.";
+const SPECIAL_HINT = "Die Stat-Kürzel richten sich nach dem UI-Template des Regelwerks. Für Fallout: STR, PER, END, CHA, INT, AGI, LUK. Nur abweichende Werte angeben, alles andere bleibt 0.";
 
 interface DocEntry {
   title: string;
@@ -9,8 +9,40 @@ interface DocEntry {
 
 const DOCS: DocEntry[] = [
   {
+    title: "Multi-System (UI-Template)",
+    intro: "PIP-Manager unterstützt mehrere Regelwerke nebeneinander. Jedes RuleSet kann ein eigenes UI-Template mitbringen, das Aussehen und Verhalten der App steuert – ohne Codeänderung.",
+    example: `{
+  "ui": {
+    "statsLabel": "Attribute",
+    "currencyLabel": "GM",
+    "diceType": "d20-plus",
+    "stats": [
+      { "key": "STR", "label": "Stärke", "min": 3, "max": 20 },
+      { "key": "DEX", "label": "Geschick", "min": 3, "max": 20 }
+    ],
+    "resources": [
+      { "key": "hp", "label": "TP", "formula": "maxHp", "color": "red" }
+    ],
+    "panels": {
+      "hitLocations": { "enabled": false, "label": "Trefferzonen" },
+      "needs": { "enabled": false, "label": "Bedürfnisse" }
+    },
+    "wizardSteps": { "traits": false }
+  }
+}`,
+    fields: [
+      { name: "statsLabel", desc: "Überschrift über den Stats (z.B. 'Attribute', 'Eigenschaften')." },
+      { name: "currencyLabel", desc: "Währungsbezeichnung (z.B. 'Caps', 'GM', 'Dukaten')." },
+      { name: "diceType", desc: "Würfelmechanik: 'd10-pool' (Fallout), 'd20-plus' (D&D), '3d20' (DSA)." },
+      { name: "stats[].key/label/min/max", desc: "Definition der Stats (Attributs-Kürzel, Anzeigename, Bereich)." },
+      { name: "resources[].formula", desc: "Formel-Name aus dem formulas-Block, z.B. 'maxHp' für den Maximalwert." },
+      { name: "panels.{name}.enabled", desc: "true/false – blendet optionale Panels (Trefferzonen, Bedürfnisse) ein/aus." },
+      { name: "wizardSteps", desc: "Optional: blendet Wizard-Schritte aus. Mögliche Keys: race, background, traits." },
+    ],
+  },
+  {
     title: "Rassen",
-    intro: `statModifiers ist ein Objekt SPECIAL-Kürzel -> Zahl. ${SPECIAL_HINT}`,
+    intro: `statModifiers ist ein Objekt Stat-Kürzel -> Zahl. ${SPECIAL_HINT}`,
     example: `{
   "id": "ghoul",
   "name": "Ghul",
@@ -27,7 +59,7 @@ const DOCS: DocEntry[] = [
   },
   {
     title: "Fertigkeiten (Skills)",
-    intro: "baseFormula wird mit specialBonus(x) ausgewertet (1-4→0, 5-7→1, 8-9→2, 10→3).",
+    intro: "baseFormula wird als JS-Ausdruck ausgewertet. Verfügbare Variablen: alle Stats + level + karma + Funktion specialBonus(x).",
     example: `{
   "id": "handfeuerwaffen",
   "name": "Handfeuerwaffen",
@@ -36,7 +68,7 @@ const DOCS: DocEntry[] = [
   "alternateStats": ["PER"]
 }`,
     fields: [
-      { name: "governingStat", desc: "Haupt-SPECIAL-Attribut des Skills." },
+      { name: "governingStat", desc: "Haupt-Attribut des Skills (Stat-Kürzel aus dem UI-Template)." },
       { name: "baseFormula", desc: "JS-Ausdruck für den Startwert, z.B. \"specialBonus(AGI)\" oder \"specialBonus(AGI)+1\"." },
       { name: "alternateStats", desc: "Optional, rein informativ, falls laut Regelwerk mehrere Attribute passen." },
     ],
@@ -59,7 +91,7 @@ const DOCS: DocEntry[] = [
     fields: [
       { name: "maxRanks", desc: "Wie oft der Perk gewählt werden kann (Ränge)." },
       { name: "requirements.level", desc: "Mindest-Charakterlevel." },
-      { name: "requirements.stats", desc: "Mindest-SPECIAL-Werte." },
+      { name: "requirements.stats", desc: "Mindest-Stat-Werte (Stat-Kürzel aus dem UI-Template)." },
       { name: "requirements.skills", desc: "Mindest-Skillwerte, Key = Skill-ID." },
       { name: "requirements.perkIds", desc: "Andere Perks, die vorher gewählt sein müssen." },
       { name: "requirements.requiresGmApproval", desc: "true = Perk ist im UI immer wählbar, aber mit Hinweis 'SL-Genehmigung nötig'." },
@@ -75,7 +107,7 @@ const DOCS: DocEntry[] = [
   "drawbacks": [{ "target": "carryWeight", "amount": -25, "note": "reduzierte Traglast" }]
 }`,
     fields: [
-      { name: "benefits / drawbacks", desc: "Listen von { target, amount, note? }. target ist frei wählbar (SPECIAL-Kürzel, Skill-ID, oder ein Stichwort wie 'hp')." },
+      { name: "benefits / drawbacks", desc: "Listen von { target, amount, note? }. target ist ein Stat-Kürzel, Skill-ID oder Stichwort wie 'maxHp'." },
       { name: "Hinweis", desc: "Diese Effekte werden aktuell nur angezeigt, nicht automatisch in Formeln eingerechnet." },
     ],
   },
@@ -150,7 +182,7 @@ const DOCS: DocEntry[] = [
   "note": "SPECIAL-Erhöhung alle 4 Level"
 }`,
     fields: [
-      { name: "specialPoints", desc: "Wie viele SPECIAL-Punkte auf diesem Level frei verteilt werden dürfen." },
+      { name: "specialPoints", desc: "Wie viele Stat-Punkte auf diesem Level frei verteilt werden dürfen." },
       { name: "skillPoints", desc: "Frei verteilbare Skillpunkte auf diesem Level." },
       { name: "tagSkillSlots", desc: "Anzahl zusätzlicher Tag-Skills, die auf diesem Level gewählt werden dürfen." },
       { name: "perkSlots", desc: "Anzahl Perks, die auf diesem Level gewählt werden dürfen (Voraussetzungen werden geprüft)." },
@@ -171,11 +203,13 @@ const DOCS: DocEntry[] = [
   },
   {
     title: "Formeln",
-    intro: "Verfügbare Variablen: STR, PER, END, CHA, INT, AGI, LUK, level, karma. Verfügbare Funktion: specialBonus(x).",
+    intro: "Verfügbare Variablen: Alle Stats aus dem UI-Template + level + karma. Verfügbare Funktion: specialBonus(x) (Fallout: 1-4→0, 5-7→1, 8-9→2, 10→3).",
     example: `"maxHp": "(STR+END)*5"
 "maxApr": "1 + specialBonus(AGI)"
-"luckBonusDice": "specialBonus(LUK)"`,
+"bonusFormula": "Math.floor((x-10)/2)"`,
     fields: [
+      { name: "bonusFormula", desc: "Optional: Formel für den Stat-Bonus/Modifikator. Variable 'x' = Stat-Wert. D&D: Math.floor((x-10)/2). Fallback: specialBonus(x)." },
+      { name: "resourceMax", desc: "Optional: Record<string, string> mit Formeln für Resource-Maxima, z.B. { \"hp\": \"(STR+END)*5\", \"mana\": \"INT*3\" }." },
       { name: "Auswertung", desc: "Formeln sind normale JavaScript-Ausdrücke, z.B. auch Math.max(0, STR-5) möglich." },
       { name: "Fehlerverhalten", desc: "Ungültige Formeln liefern 0 und geben eine Warnung in der Browser-Konsole aus (Entwicklertools)." },
     ],
@@ -207,7 +241,7 @@ export function HelpTab() {
           <li>Alle Exporte laden dir eine reine JSON-Datei herunter, unabhängig vom Import-Verhalten.</li>
           <li>
             <span className="text-pip-green">Validierung:</span> Import und manuelle JSON-Bearbeitung prüfen
-            Pflichtfelder (z.B. gültige SPECIAL-Kürzel, bekannte Item-Typen). Ungültige Einträge werden mit
+            Pflichtfelder (z.B. bekannter Item-Typ). Ungültige Einträge werden mit
             genauer Fehlermeldung abgelehnt, gültige Einträge trotzdem übernommen.
           </li>
           <li>

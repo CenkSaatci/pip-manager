@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import { RuleSet, emptyRuleSet, getUiTemplate } from "../../types/rules";
+import { RuleSet, emptyRuleSet, getUiTemplate, fallbackUiTemplate } from "../../types/rules";
 import { EntityListEditor } from "./EntityListEditor";
 import { JsonImportExport } from "./JsonImportExport";
 import { HelpTab } from "./HelpTab";
@@ -241,6 +241,7 @@ export function RulesManager() {
 }
 
 function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<RuleSet>) => void }) {
+  const uiLabel = getUiTemplate(rules).statsLabel;
   const allMechanics: RuleSet["disabledMechanics"] = [
     "karma",
     "equipmentCondition",
@@ -299,10 +300,10 @@ function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partia
       <div className="pip-panel rounded-sm p-4">
         <h3 className="pip-label mb-2">Charaktererstellung (Abschnitt 2, 6, 7)</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <NumField label="SPECIAL-Start" value={cc.specialStart} onChange={(v) => setCc({ specialStart: v })} />
-          <NumField label="Freie SPECIAL-Punkte" value={cc.freeSpecialPoints} onChange={(v) => setCc({ freeSpecialPoints: v })} />
-          <NumField label="SPECIAL Min" value={cc.specialMin} onChange={(v) => setCc({ specialMin: v })} />
-          <NumField label="SPECIAL Max" value={cc.specialMax} onChange={(v) => setCc({ specialMax: v })} />
+          <NumField label={uiLabel + "-Start"} value={cc.specialStart} onChange={(v) => setCc({ specialStart: v })} />
+          <NumField label={"Freie " + uiLabel + "-Punkte"} value={cc.freeSpecialPoints} onChange={(v) => setCc({ freeSpecialPoints: v })} />
+          <NumField label={uiLabel + " Min"} value={cc.specialMin} onChange={(v) => setCc({ specialMin: v })} />
+          <NumField label={uiLabel + " Max"} value={cc.specialMax} onChange={(v) => setCc({ specialMax: v })} />
           <NumField
             label="Extremwert-Schwelle (SL-OK)"
             value={cc.extremeValueThreshold}
