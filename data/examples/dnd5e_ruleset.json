@@ -1,0 +1,135 @@
+{
+  "id": "dnd5e-example",
+  "name": "Dungeons & Dragons 5e (Example)",
+  "version": "0.1",
+  "diceSystem": "W20 + Modifikator gegen SG (roll-high)",
+  "specialRange": [3, 20],
+  "skillRange": [-1, 10],
+  "karmaRange": [-10, 10],
+  "disabledMechanics": ["karma", "equipmentCondition", "vats", "cyborg", "synths", "criticalMultipliers", "sustainedFire"],
+  "characterCreation": {
+    "specialStart": 8,
+    "freeSpecialPoints": 27,
+    "specialMin": 3,
+    "specialMax": 20,
+    "extremeValueThreshold": 3,
+    "freeSkillPoints": 4,
+    "tagSkillCount": 2,
+    "tagSkillBonus": 2,
+    "skillCapAtCreation": 5
+  },
+  "levelProgression": [
+    { "level": 2, "skillPoints": 2 },
+    { "level": 3, "skillPoints": 2 },
+    { "level": 4, "skillPoints": 2, "specialPoints": 1 },
+    { "level": 5, "skillPoints": 2 },
+    { "level": 6, "skillPoints": 2 },
+    { "level": 7, "skillPoints": 2 },
+    { "level": 8, "skillPoints": 2, "specialPoints": 1 },
+    { "level": 9, "skillPoints": 2 },
+    { "level": 10, "skillPoints": 2 },
+    { "level": 11, "skillPoints": 2 },
+    { "level": 12, "skillPoints": 2, "specialPoints": 1 },
+    { "level": 13, "skillPoints": 2 },
+    { "level": 14, "skillPoints": 2 },
+    { "level": 15, "skillPoints": 2 },
+    { "level": 16, "skillPoints": 2, "specialPoints": 1 },
+    { "level": 17, "skillPoints": 2 },
+    { "level": 18, "skillPoints": 2 },
+    { "level": 19, "skillPoints": 2 },
+    { "level": 20, "skillPoints": 2, "specialPoints": 1 }
+  ],
+  "hitLocations": [],
+  "formulas": {
+    "maxHp": "CON * 6 + 10",
+    "maxApr": "1",
+    "carryWeight": "STR * 15",
+    "healingRate": "1",
+    "luckBonusDice": "0",
+    "skillPointsPerLevel": "2"
+  },
+  "difficultyLevels": [
+    { "name": "Sehr leicht", "penalty": 5, "successesRequired": 1 },
+    { "name": "Leicht", "penalty": 0, "successesRequired": 1 },
+    { "name": "Normal", "penalty": -2, "successesRequired": 1 },
+    { "name": "Schwer", "penalty": -5, "successesRequired": 1 },
+    { "name": "Sehr schwer", "penalty": -10, "successesRequired": 1 }
+  ],
+  "skills": [
+    { "id": "acrobatics", "name": "Akrobatik", "governingStat": "DEX", "baseFormula": "Math.floor((DEX-10)/2)" },
+    { "id": "athletics", "name": "Athletik", "governingStat": "STR", "baseFormula": "Math.floor((STR-10)/2)" },
+    { "id": "deception", "name": "Täuschen", "governingStat": "CHA", "baseFormula": "Math.floor((CHA-10)/2)" },
+    { "id": "history", "name": "Geschichte", "governingStat": "INT", "baseFormula": "Math.floor((INT-10)/2)" },
+    { "id": "insight", "name": "Einsicht", "governingStat": "WIS", "baseFormula": "Math.floor((WIS-10)/2)" },
+    { "id": "intimidation", "name": "Einschüchtern", "governingStat": "CHA", "baseFormula": "Math.floor((CHA-10)/2)" },
+    { "id": "investigation", "name": "Nachforschen", "governingStat": "INT", "baseFormula": "Math.floor((INT-10)/2)" },
+    { "id": "medicine", "name": "Medizin", "governingStat": "WIS", "baseFormula": "Math.floor((WIS-10)/2)" },
+    { "id": "nature", "name": "Naturkunde", "governingStat": "INT", "baseFormula": "Math.floor((INT-10)/2)" },
+    { "id": "perception", "name": "Wahrnehmung", "governingStat": "WIS", "baseFormula": "Math.floor((WIS-10)/2)" },
+    { "id": "performance", "name": "Auftreten", "governingStat": "CHA", "baseFormula": "Math.floor((CHA-10)/2)" },
+    { "id": "persuasion", "name": "Überzeugen", "governingStat": "CHA", "baseFormula": "Math.floor((CHA-10)/2)" },
+    { "id": "religion", "name": "Religion", "governingStat": "INT", "baseFormula": "Math.floor((INT-10)/2)" },
+    { "id": "sleight_of_hand", "name": "Fingerfertigkeit", "governingStat": "DEX", "baseFormula": "Math.floor((DEX-10)/2)" },
+    { "id": "stealth", "name": "Heimlichkeit", "governingStat": "DEX", "baseFormula": "Math.floor((DEX-10)/2)" },
+    { "id": "survival", "name": "Überleben", "governingStat": "WIS", "baseFormula": "Math.floor((WIS-10)/2)" },
+    { "id": "arcana", "name": "Arkanes Wissen", "governingStat": "INT", "baseFormula": "Math.floor((INT-10)/2)" },
+    { "id": "animal_handling", "name": "Umgang mit Tieren", "governingStat": "WIS", "baseFormula": "Math.floor((WIS-10)/2)" }
+  ],
+  "races": [
+    { "id": "human", "name": "Mensch", "description": "Alle Werte +1", "statModifiers": { "STR": 1, "DEX": 1, "CON": 1, "INT": 1, "WIS": 1, "CHA": 1 } },
+    { "id": "elf", "name": "Elf", "description": "Geschicklichkeit +2, Intelligenz +1", "statModifiers": { "DEX": 2, "INT": 1 } },
+    { "id": "dwarf", "name": "Zwerg", "description": "Konstitution +2, Stärke +1", "statModifiers": { "CON": 2, "STR": 1 } },
+    { "id": "halfling", "name": "Halbling", "description": "Geschicklichkeit +2, Charisma +1", "statModifiers": { "DEX": 2, "CHA": 1 } },
+    { "id": "dragonborn", "name": "Drachengeborener", "description": "Stärke +2, Charisma +1", "statModifiers": { "STR": 2, "CHA": 1 } }
+  ],
+  "traits": [
+    { "id": "dunkelsicht", "name": "Dunkelsicht", "description": "Sieht im Dunkeln bis 18m.", "benefits": [], "drawbacks": [] },
+    { "id": "zwerghaft", "name": "Zwergenhart", "description": "Resistenz gegen Gift.", "benefits": [{ "target": "CON", "amount": 1 }], "drawbacks": [] }
+  ],
+  "perks": [
+    { "id": "alert", "name": "Aufmerksam", "description": "Immer wachsam. +5 auf Initiative.", "maxRanks": 1, "requirements": {} },
+    { "id": "tough", "name": "Zäh", "description": "Maximale HP +10.", "maxRanks": 1, "requirements": {}, "effects": [{ "target": "maxHp", "amount": 10 }] },
+    { "id": "lucky", "name": "Glückstag", "description": "3 zusätzliche Glückspunkte pro Tag.", "maxRanks": 1, "requirements": {} }
+  ],
+  "backgrounds": [
+    { "id": "acolyte", "name": "Akolyth", "description": "Tempeldiener, glaubensfest." },
+    { "id": "criminal", "name": "Verbrecher", "description": "Dieb, Spitzel, Schattengestalt." },
+    { "id": "soldier", "name": "Soldat", "description": "Armee, Miliz, Söldnertrupp.", "fixedSkillBonuses": { "athletics": 1, "intimidation": 1 } },
+    { "id": "sage", "name": "Gelehrter", "description": "Bibliothek, Labor, Studierstube.", "fixedSkillBonuses": { "arcana": 1, "history": 1 } }
+  ],
+  "items": [
+    { "id": "longsword", "name": "Langschwert", "type": "weapon", "weight": 2, "value": 15, "damage": 6, "skillId": "athletics" },
+    { "id": "shortbow", "name": "Kurzbogen", "type": "weapon", "weight": 1, "value": 25, "damage": 4, "skillId": "athletics" },
+    { "id": "leather_armor", "name": "Lederrüstung", "type": "armor", "weight": 5, "value": 10, "damageResistance": 2 },
+    { "id": "chain_mail", "name": "Kettenhemd", "type": "armor", "weight": 10, "value": 75, "damageResistance": 4 },
+    { "id": "healing_potion", "name": "Heiltrank", "type": "consumable", "weight": 0.1, "value": 50, "effects": [{ "target": "hp", "amount": 20 }] }
+  ],
+  "enemies": [
+    { "id": "goblin", "name": "Goblin", "hp": 15, "damageResistance": 0, "skillValue": 4, "weaponId": "shortbow" },
+    { "id": "skeleton", "name": "Skelett", "hp": 20, "damageResistance": 2, "skillValue": 4 },
+    { "id": "orc", "name": "Ork", "hp": 30, "damageResistance": 2, "skillValue": 5, "weaponId": "longsword" }
+  ],
+  "ui": {
+    "statsLabel": "Attribute",
+    "stats": [
+      { "key": "STR", "label": "Stärke", "shortLabel": "ST", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
+      { "key": "DEX", "label": "Geschicklichkeit", "shortLabel": "GE", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
+      { "key": "CON", "label": "Konstitution", "shortLabel": "KO", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
+      { "key": "INT", "label": "Intelligenz", "shortLabel": "IN", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
+      { "key": "WIS", "label": "Weisheit", "shortLabel": "WE", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
+      { "key": "CHA", "label": "Charisma", "shortLabel": "CH", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 }
+    ],
+    "resources": [
+      { "key": "hp", "label": "Trefferpunkte", "formula": "maxHp", "color": "red" }
+    ],
+    "panels": {
+      "skills": { "enabled": true, "label": "Fertigkeiten" },
+      "perks": { "enabled": true, "label": "Talente" },
+      "traits": { "enabled": true, "label": "Eigenschaften" },
+      "inventory": { "enabled": true, "label": "Inventar" },
+      "dice": { "enabled": true, "label": "Würfelterminal" },
+      "hitLocations": { "enabled": false, "label": "Trefferzonen" },
+      "needs": { "enabled": false, "label": "Bedürfnisse" }
+    }
+  }
+}

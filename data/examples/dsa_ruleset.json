@@ -1,0 +1,119 @@
+{
+  "id": "dsa-example",
+  "name": "Das Schwarze Auge 5 (Example)",
+  "version": "0.1",
+  "diceSystem": "W20 + W20 + W6, 3W20-Proben gegen drei Eigenschaften",
+  "specialRange": [1, 21],
+  "skillRange": [0, 20],
+  "karmaRange": [-10, 10],
+  "disabledMechanics": ["karma", "equipmentCondition", "vats", "cyborg", "synths", "criticalMultipliers", "sustainedFire"],
+  "characterCreation": {
+    "specialStart": 8,
+    "freeSpecialPoints": 20,
+    "specialMin": 1,
+    "specialMax": 21,
+    "extremeValueThreshold": 2,
+    "freeSkillPoints": 15,
+    "tagSkillCount": 3,
+    "tagSkillBonus": 1,
+    "skillCapAtCreation": 10
+  },
+  "levelProgression": [
+    { "level": 2, "skillPoints": 5 },
+    { "level": 3, "skillPoints": 5 },
+    { "level": 4, "skillPoints": 5 },
+    { "level": 5, "skillPoints": 5 },
+    { "level": 6, "skillPoints": 5 },
+    { "level": 7, "skillPoints": 5 },
+    { "level": 8, "skillPoints": 5 },
+    { "level": 9, "skillPoints": 5 },
+    { "level": 10, "skillPoints": 5 }
+  ],
+  "hitLocations": [],
+  "formulas": {
+    "maxHp": "Math.floor((KO+KK)/2) + 20",
+    "maxApr": "1",
+    "carryWeight": "KK * 10",
+    "healingRate": "1 + Math.floor(KO/6)",
+    "luckBonusDice": "0",
+    "skillPointsPerLevel": "5"
+  },
+  "difficultyLevels": [
+    { "name": "Sehr leicht", "penalty": 5, "successesRequired": 1 },
+    { "name": "Leicht", "penalty": 3, "successesRequired": 1 },
+    { "name": "Normal", "penalty": 0, "successesRequired": 1 },
+    { "name": "Schwer", "penalty": -3, "successesRequired": 1 },
+    { "name": "Sehr schwer", "penalty": -5, "successesRequired": 1 }
+  ],
+  "skills": [
+    { "id": "fliegen", "name": "Fliegen", "governingStat": "MU", "baseFormula": "Math.floor(MU/6)", "alternateStats": ["KL", "IN"] },
+    { "id": "fesseln", "name": "Fesseln", "governingStat": "FF", "baseFormula": "Math.floor(FF/6)", "alternateStats": ["GE", "KO"] },
+    { "id": "sinnesschaerfe", "name": "Sinnesschärfe", "governingStat": "IN", "baseFormula": "Math.floor(IN/6)", "alternateStats": ["KL", "CH"] },
+    { "id": "schleichen", "name": "Schleichen", "governingStat": "GE", "baseFormula": "Math.floor(GE/6)", "alternateStats": ["MU", "CH"] },
+    { "id": "klettern", "name": "Klettern", "governingStat": "GE", "baseFormula": "Math.floor(GE/6)", "alternateStats": ["FF", "KO"] },
+    { "id": "schwimmen", "name": "Schwimmen", "governingStat": "GE", "baseFormula": "Math.floor(GE/6)", "alternateStats": ["FF", "KO"] },
+    { "id": "ueberleben", "name": "Überleben", "governingStat": "KL", "baseFormula": "Math.floor(KL/6)", "alternateStats": ["IN", "KO"] },
+    { "id": "heilkunde_wunden", "name": "Heilkunde Wunden", "governingStat": "KL", "baseFormula": "Math.floor(KL/6)", "alternateStats": ["IN", "FF"] },
+    { "id": "heilkunde_seele", "name": "Heilkunde Seele", "governingStat": "IN", "baseFormula": "Math.floor(IN/6)", "alternateStats": ["KL", "CH"] },
+    { "id": "willenskraft", "name": "Willenskraft", "governingStat": "MU", "baseFormula": "Math.floor(MU/6)", "alternateStats": ["KL", "IN"] },
+    { "id": "wahrnehmung", "name": "Wahrnehmung", "governingStat": "IN", "baseFormula": "Math.floor(IN/6)", "alternateStats": ["KL", "CH"] },
+    { "id": "einschuechtern", "name": "Einschüchtern", "governingStat": "MU", "baseFormula": "Math.floor(MU/6)", "alternateStats": ["KL", "CH"] },
+    { "id": "ueberreden", "name": "Überreden", "governingStat": "CH", "baseFormula": "Math.floor(CH/6)", "alternateStats": ["MU", "IN"] },
+    { "id": "tierkunde", "name": "Tierkunde", "governingStat": "KL", "baseFormula": "Math.floor(KL/6)", "alternateStats": ["MU", "IN"] },
+    { "id": "sagen_legenden", "name": "Sagen & Legenden", "governingStat": "KL", "baseFormula": "Math.floor(KL/6)", "alternateStats": ["IN", "CH"] },
+    { "id": "rechnen", "name": "Rechnen", "governingStat": "KL", "baseFormula": "Math.floor(KL/6)", "alternateStats": ["IN", "FF"] },
+    { "id": "handeln", "name": "Handeln", "governingStat": "CH", "baseFormula": "Math.floor(CH/6)", "alternateStats": ["MU", "KL"] }
+  ],
+  "races": [
+    { "id": "human", "name": "Mensch", "description": "Vielseitig, anpassungsfähig.", "statModifiers": {} },
+    { "id": "elf", "name": "Elf", "description": "Gewandtheit +1, Konstitution -1", "statModifiers": { "GE": 1, "KO": -1 } },
+    { "id": "zwerg", "name": "Zwerg", "description": "Konstitution +1, Klugheit -1", "statModifiers": { "KO": 1, "KL": -1 } }
+  ],
+  "traits": [
+    { "id": "glueckspilz", "name": "Glückspilz", "description": "Einmal pro Session einen Wurf wiederholen.", "benefits": [], "drawbacks": [] },
+    { "id": "neugierig", "name": "Neugierig", "description": "Kann schwer an Geheimnissen vorbeigehen.", "benefits": [], "drawbacks": [] }
+  ],
+  "perks": [
+    { "id": "ksk", "name": "Kampfskriptorium", "description": "+1 auf alle Nahkampf-Talente.", "maxRanks": 1, "requirements": {}, "effects": [{ "target": "klettern", "amount": 1 }] }
+  ],
+  "backgrounds": [
+    { "id": "jager", "name": "Jäger", "description": "Wildnis, Fährten, Pelze." },
+    { "id": "handwerker", "name": "Handwerker", "description": "Schmied, Schneider, Gerber." },
+    { "id": "gelehrter", "name": "Gelehrter", "description": "Stube, Bibliothek, Alchemielabor." }
+  ],
+  "items": [
+    { "id": "schwert", "name": "Schwert", "type": "weapon", "weight": 2, "value": 100, "damage": 8, "skillId": "klettern" },
+    { "id": "dolch", "name": "Dolch", "type": "weapon", "weight": 0.5, "value": 25, "damage": 4, "skillId": "klettern" },
+    { "id": "lederruestung", "name": "Lederrüstung", "type": "armor", "weight": 4, "value": 50, "damageResistance": 1 },
+    { "id": "kette", "name": "Kettenhemd", "type": "armor", "weight": 8, "value": 200, "damageResistance": 3 }
+  ],
+  "enemies": [
+    { "id": "wolf", "name": "Wolf", "hp": 25, "damageResistance": 0, "skillValue": 4 },
+    { "id": "orik", "name": "Orik", "hp": 40, "damageResistance": 2, "skillValue": 5, "weaponId": "schwert" }
+  ],
+  "ui": {
+    "statsLabel": "Eigenschaften",
+    "stats": [
+      { "key": "MU", "label": "Mut", "shortLabel": "MU", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "KL", "label": "Klugheit", "shortLabel": "KL", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "IN", "label": "Intuition", "shortLabel": "IN", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "CH", "label": "Charisma", "shortLabel": "CH", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "FF", "label": "Fingerfertigkeit", "shortLabel": "FF", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "GE", "label": "Gewandtheit", "shortLabel": "GE", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "KO", "label": "Konstitution", "shortLabel": "KO", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
+      { "key": "KK", "label": "Körperkraft", "shortLabel": "KK", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 }
+    ],
+    "resources": [
+      { "key": "hp", "label": "Lebensenergie (LE)", "formula": "maxHp", "color": "red" }
+    ],
+    "panels": {
+      "skills": { "enabled": true, "label": "Talente" },
+      "perks": { "enabled": true, "label": "Vorteile" },
+      "traits": { "enabled": true, "label": "Eigenschaften" },
+      "inventory": { "enabled": true, "label": "Ausrüstung" },
+      "dice": { "enabled": true, "label": "Würfelterminal" },
+      "hitLocations": { "enabled": false, "label": "Trefferzonen" },
+      "needs": { "enabled": false, "label": "Bedürfnisse" }
+    }
+  }
+}
