@@ -9,6 +9,7 @@ import {
 } from "../../lib/derived";
 import { specialBonus } from "../../lib/formula";
 import { getTags, getResource, getCaps } from "../../lib/compat";
+import { getUiTemplate } from "../../types/rules";
 
 export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet }) {
   const race = rules.races.find((r) => r.id === char.raceId);
@@ -40,7 +41,7 @@ export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet })
         <Stat label="HP" value={`${getResource(char, "hp")} / ${getMaxHp(char, rules)}`} />
         <Stat label="APR" value={`${getResource(char, "apr")} / ${getMaxApr(char, rules)}`} />
         <Stat label="Traglast" value={`${getCarryWeight(char, rules)} kg`} />
-        <Stat label="Caps" value={getCaps(char)} />
+        <Stat label={getUiTemplate(rules).currencyLabel ?? "Caps"} value={getCaps(char)} />
       </div>
 
       <div className="mb-4">

@@ -18,8 +18,8 @@ export function BackgroundPanel({
     onChange({
       ...char,
       backgroundAllocations: {
-        ...char.backgroundAllocations,
-        [poolName]: { ...(char.backgroundAllocations[poolName] ?? {}), [skillId]: clamped },
+        ...(char.backgroundAllocations ?? {}),
+        [poolName]: { ...((char.backgroundAllocations ?? {})[poolName] ?? {}), [skillId]: clamped },
       },
     });
   };
@@ -61,7 +61,7 @@ export function BackgroundPanel({
       )}
 
       {background?.pointBuyPools?.map((pool) => {
-        const allocations = char.backgroundAllocations[pool.poolName] ?? {};
+        const allocations = (char.backgroundAllocations ?? {})[pool.poolName] ?? {};
         const spent = Object.values(allocations).reduce((a, b) => a + b, 0);
         return (
           <div key={pool.poolName} className="mb-3 rounded-sm border border-pip-line p-2">

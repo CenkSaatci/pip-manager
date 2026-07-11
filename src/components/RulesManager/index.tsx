@@ -173,7 +173,7 @@ export function RulesManager() {
           items={rules.items}
           idKey="id"
           renderTitle={(i) => i.name}
-          renderSubtitle={(i) => `${i.type} · ${i.weight}kg · ${i.value} Caps`}
+          renderSubtitle={(i) => `${i.type} · ${i.weight}kg · Wert ${i.value}`}
           newItem={() => ({ id: uid(), name: "Neues Item", type: "misc" as const, weight: 0, value: 0 })}
           onChange={(items) => update({ items })}
           validateItem={validateItem as (i: typeof rules.items[number]) => string[]}

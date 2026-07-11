@@ -15,7 +15,7 @@ export interface CharacterPerk {
 /** Protokoll eines abgeschlossenen Levelaufstiegs, damit Zuteilungen nicht doppelt vergeben werden */
 export interface LevelUpRecord {
   level: number;
-  specialAllocations: Partial<Record<SpecialKey, number>>;
+  specialAllocations: Record<string, number>;
   skillAllocations: Record<string, number>;
   tagSkillsAdded: string[];
   perksChosen: string[];
@@ -38,7 +38,7 @@ export interface Character {
   backgroundId: string;
   level: number;
   xp: number;
-  caps: number;
+  caps?: number;
 
   /** Generische Stats (Attribut-Key → Wert). Für Fallout: STR/PER/END/CHA/INT/AGI/LUK */
   stats: Record<string, number>;
@@ -50,7 +50,7 @@ export interface Character {
   /** frei investierte Skillpunkte (Erstellung + Levelaufstiege), on top von Basis/Hintergrund/Tag-Skill */
   skills: Record<string, number>;
   /** Punkte-Kauf-Zuteilungen je Hintergrund-Pool: poolName -> skillId -> investierte Punkte */
-  backgroundAllocations: Record<string, Record<string, number>>;
+  backgroundAllocations?: Record<string, Record<string, number>>;
   traitIds: string[];
   perks: CharacterPerk[];
   levelHistory: LevelUpRecord[];

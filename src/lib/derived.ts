@@ -85,7 +85,7 @@ export function getSkillBaseValue(skill: Skill, char: Character, rules: RuleSet)
 
 export function getBackgroundBonus(skillId: string, char: Character): number {
   let sum = 0;
-  for (const pool of Object.values(char.backgroundAllocations)) {
+  for (const pool of Object.values(char.backgroundAllocations ?? {})) {
     sum += pool[skillId] ?? 0;
   }
   return sum;

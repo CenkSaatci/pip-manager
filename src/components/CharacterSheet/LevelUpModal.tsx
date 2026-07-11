@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Character, LevelUpRecord } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS, SpecialKey } from "../../types/rules";
+import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS } from "../../types/rules";
 import { getMaxHp, getMaxApr, getLevelReward, checkPerkRequirements } from "../../lib/derived";
 
 export function LevelUpModal({
@@ -18,7 +18,7 @@ export function LevelUpModal({
   const reward = getLevelReward(nextLevel, rules);
   const specialStats = char.stats ?? (char.special as Record<string, number> | undefined) ?? {};
 
-  const [specialAlloc, setSpecialAlloc] = useState<Partial<Record<SpecialKey, number>>>({});
+  const [specialAlloc, setSpecialAlloc] = useState<Record<string, number>>({});
   const [skillAlloc, setSkillAlloc] = useState<Record<string, number>>({});
   const [newTagSkills, setNewTagSkills] = useState<string[]>([]);
   const [chosenPerks, setChosenPerks] = useState<string[]>([]);
@@ -31,7 +31,7 @@ export function LevelUpModal({
   const previewChar: Character = useMemo(() => {
     const special = { ...(char.stats ?? (char.special as Record<string, number> | undefined) ?? {}) };
     for (const [k, v] of Object.entries(specialAlloc)) {
-      special[k as SpecialKey] = special[k as SpecialKey] + (v ?? 0);
+      special[k] = (special[k] ?? 0) + (v ?? 0);
     }
     const skills = { ...char.skills };
     for (const [k, v] of Object.entries(skillAlloc)) {
@@ -42,7 +42,7 @@ export function LevelUpModal({
 
   const gainedHp = getMaxHp(previewChar, rules) - getMaxHp(char, rules);
 
-  const adjustSpecial = (key: SpecialKey, delta: number) => {
+  const adjustSpecial = (key: string, delta: number) => {
     const current = specialAlloc[key] ?? 0;
     const nextVal = current + delta;
     if (nextVal < 0) return;
@@ -81,7 +81,7 @@ export function LevelUpModal({
   const confirm = () => {
     const nextSpecial = { ...(char.stats ?? (char.special as Record<string, number> | undefined) ?? {}) };
     for (const [k, v] of Object.entries(specialAlloc)) {
-      nextSpecial[k as SpecialKey] = nextSpecial[k as SpecialKey] + (v ?? 0);
+      nextSpecial[k] = (nextSpecial[k] ?? 0) + (v ?? 0);
     }
     const nextSkills = { ...char.skills };
     for (const [k, v] of Object.entries(skillAlloc)) {

@@ -20,7 +20,7 @@ export const SPECIAL_LABELS: Record<SpecialKey, string> = {
 export interface Skill {
   id: string;
   name: string;
-  governingStat: SpecialKey;
+  governingStat: string;
   /**
    * Formel für den Startwert des Skills vor Verteilung von Punkten.
    * Die Funktion specialBonus(x) steht im Scope zur Verfügung
@@ -29,11 +29,11 @@ export interface Skill {
   baseFormula: string;
   description?: string;
   /** informativ, z.B. wenn laut Regelwerk mehrere Attribute passen können */
-  alternateStats?: SpecialKey[];
+  alternateStats?: string[];
 }
 
 export interface StatModifier {
-  stat: SpecialKey;
+  stat: string;
   amount: number;
 }
 
@@ -41,7 +41,7 @@ export interface Race {
   id: string;
   name: string;
   description?: string;
-  statModifiers: Partial<Record<SpecialKey, number>>;
+  statModifiers: Record<string, number>;
   /** frei formulierte Rassen-Fähigkeiten, rein informativ / für Notizen */
   specialAbilities?: string[];
   startingTraitIds?: string[];
@@ -64,7 +64,7 @@ export interface Trait {
 
 export interface PerkRequirement {
   level?: number;
-  stats?: Partial<Record<SpecialKey, number>>;
+  stats?: Record<string, number>;
   skills?: Record<string, number>;
   perkIds?: string[];
   requiresGmApproval?: boolean;
@@ -162,6 +162,14 @@ export interface RuleFormulas {
    * Fallback: alte Felder (maxHp, maxApr) werden als "hp"/"apr" gelesen.
    */
   resourceMax?: Record<string, string>;
+  /**
+   * Bonus-/Modifikator-Formel für einen Stat-Wert.
+   * Variable "x" = Stat-Wert, z.B.:
+   *   "specialBonus(x)" für Fallout (1-4→0, 5-7→1, 8-9→2, 10→3)
+   *   "Math.floor((x-10)/2)" für D&D 5e
+   * Fehlt das Feld, wird specialBonus(x) verwendet.
+   */
+  bonusFormula?: string;
 }
 
 export interface StatConfig {
@@ -193,6 +201,7 @@ export interface UiPanelDef {
  */
 export interface UiTemplate {
   statsLabel: string;  // Überschrift über den Stats, z.B. "Attribute"
+  currencyLabel?: string; // Währungsbezeichnung, z.B. "Caps", "GM", "Dublonen" (default: "Caps")
   stats: StatConfig[];
   resources: UiResourceDef[];
   panels: {
@@ -288,6 +297,7 @@ export interface RuleSet {
 export function fallbackUiTemplate(): UiTemplate {
   return {
     statsLabel: "S.P.E.C.I.A.L.",
+    currencyLabel: "Caps",
     stats: SPECIAL_KEYS.map((key) => ({
       key,
       label: SPECIAL_LABELS[key],

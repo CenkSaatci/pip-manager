@@ -1,5 +1,3 @@
-import { SPECIAL_KEYS } from "../types/rules";
-
 const ITEM_TYPES = ["weapon", "armor", "consumable", "ammo", "misc"];
 
 function requireString(obj: any, field: string, errors: string[]) {
@@ -20,10 +18,6 @@ export function validateRace(item: any): string[] {
   requireString(item, "name", errors);
   if (item.statModifiers && typeof item.statModifiers !== "object") {
     errors.push('"statModifiers" muss ein Objekt sein, z.B. { "STR": 1 }');
-  } else if (item.statModifiers) {
-    for (const key of Object.keys(item.statModifiers)) {
-      if (!SPECIAL_KEYS.includes(key as any)) errors.push(`Unbekanntes SPECIAL-Kürzel in statModifiers: "${key}"`);
-    }
   }
   return errors;
 }
@@ -33,8 +27,8 @@ export function validateSkill(item: any): string[] {
   requireString(item, "id", errors);
   requireString(item, "name", errors);
   requireString(item, "baseFormula", errors);
-  if (!SPECIAL_KEYS.includes(item?.governingStat)) {
-    errors.push(`"governingStat" muss eines von ${SPECIAL_KEYS.join(", ")} sein`);
+  if (typeof item?.governingStat !== "string" || item.governingStat.trim() === "") {
+    errors.push('"governingStat" muss ein nicht-leerer String sein');
   }
   return errors;
 }

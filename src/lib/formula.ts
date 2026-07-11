@@ -14,6 +14,18 @@ export function specialBonus(value: number): number {
   return 0;
 }
 
+/**
+ * Wertet eine Bonus-Formel für einen Stat-Wert aus.
+ * Nutzt die bonusFormula aus dem RuleSet, falls vorhanden.
+ * Variable "x" im Scope = statValue. Fallback: specialBonus(statValue).
+ */
+export function getBonusValue(statValue: number, rules?: { formulas?: { bonusFormula?: string } }): number {
+  if (rules?.formulas?.bonusFormula) {
+    return evalFormula(rules.formulas.bonusFormula, { x: statValue });
+  }
+  return specialBonus(statValue);
+}
+
 export function evalFormula(formula: string, scope: FormulaScope): number {
   if (!formula || !formula.trim()) return 0;
   const keys = [...Object.keys(scope), "specialBonus"];

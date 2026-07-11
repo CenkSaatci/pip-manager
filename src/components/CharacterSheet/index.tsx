@@ -115,7 +115,7 @@ export function CharacterSheet() {
         })}
         <div className="pip-panel flex items-center justify-between rounded-sm p-3">
           <div>
-            <span className="pip-label">Caps</span>
+            <span className="pip-label">{getUiTemplate(rules).currencyLabel ?? "Caps"}</span>
             <div className="font-display text-2xl text-glow">{getCaps(char)}</div>
           </div>
           <div>

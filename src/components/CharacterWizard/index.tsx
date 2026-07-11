@@ -289,7 +289,7 @@ export function CharacterWizard({
                 {rules.backgrounds
                   .find((b) => b.id === draft.backgroundId)
                   ?.pointBuyPools?.map((pool) => {
-                    const allocations = draft.backgroundAllocations[pool.poolName] ?? {};
+                    const allocations = (draft.backgroundAllocations ?? {})[pool.poolName] ?? {};
                     const spent = Object.values(allocations).reduce((a, b) => a + b, 0);
                     return (
                       <div key={pool.poolName} className="mb-3 rounded-sm border border-pip-line p-2">
@@ -315,7 +315,7 @@ export function CharacterWizard({
                                       setDraft((p) => ({
                                         ...p,
                                         backgroundAllocations: {
-                                          ...p.backgroundAllocations,
+                                          ...(p.backgroundAllocations ?? {}),
                                           [pool.poolName]: {
                                             ...allocations,
                                             [skillId]: next,

@@ -1,7 +1,7 @@
 import { Character } from "../../types/character";
 import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
 import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate, isExtremeSpecialValue } from "../../lib/derived";
-import { specialBonus } from "../../lib/formula";
+import { getBonusValue } from "../../lib/formula";
 import { getStats } from "../../lib/compat";
 
 export function SpecialPanel({
@@ -70,7 +70,7 @@ export function SpecialPanel({
                 {raceMod !== 0 ? ` (${raceMod > 0 ? "+" : ""}${raceMod} Mod.)` : ""}
               </span>
               {isSpecialKey(st.key) && (
-                <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effectiveVal)}</span>
+                <span className="text-xs text-pip-greendim">Bonus +{getBonusValue(effectiveVal, rules)}</span>
               )}
               {extreme && <span className="text-xs text-pip-amber">SL-Genehmigung nötig</span>}
             </div>

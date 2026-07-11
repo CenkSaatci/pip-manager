@@ -118,7 +118,7 @@ export function CharacterList() {
                 {race?.name ?? "Unbekannte Rasse"} · {c.playerName || "kein Spieler eingetragen"}
               </p>
               <div className="mt-2 flex items-center justify-between text-xs">
-                <span>HP {c.currentHp} · Caps {c.caps}</span>
+                <span>LVL {c.level} · {(c.resources?.hp ?? c.currentHp ?? 0)} HP</span>
                 <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
                   <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">
                     Export

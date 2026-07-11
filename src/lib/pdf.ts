@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import { Character } from "../types/character";
-import { RuleSet } from "../types/rules";
+import { RuleSet, getUiTemplate } from "../types/rules";
 import { getEffectiveSpecial, getMaxHp, getMaxApr, getCarryWeight, getSkillEffectiveValue } from "./derived";
 import { specialBonus } from "./formula";
 
@@ -67,7 +67,7 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
     `HP: ${char.currentHp} / ${getMaxHp(char, rules)}`,
     `APR: ${char.currentApr} / ${getMaxApr(char, rules)}`,
     `Traglast: ${getCarryWeight(char, rules)} kg`,
-    `Caps: ${char.caps}`,
+    `${getUiTemplate(rules).currencyLabel ?? "Caps"}: ${char.caps ?? 0}`,
   ];
   doc.text(core.join("   ·   "), MARGIN, y);
   line(12);
