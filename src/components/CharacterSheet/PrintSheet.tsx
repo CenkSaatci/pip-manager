@@ -8,6 +8,7 @@ import {
   getSkillEffectiveValue,
 } from "../../lib/derived";
 import { specialBonus } from "../../lib/formula";
+import { getTags, getResource, getCaps } from "../../lib/compat";
 
 export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet }) {
   const race = rules.races.find((r) => r.id === char.raceId);
@@ -36,10 +37,10 @@ export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet })
       </div>
 
       <div className="mb-4 grid grid-cols-4 gap-2 text-center text-sm">
-        <Stat label="HP" value={`${char.currentHp} / ${getMaxHp(char, rules)}`} />
-        <Stat label="APR" value={`${char.currentApr} / ${getMaxApr(char, rules)}`} />
+        <Stat label="HP" value={`${getResource(char, "hp")} / ${getMaxHp(char, rules)}`} />
+        <Stat label="APR" value={`${getResource(char, "apr")} / ${getMaxApr(char, rules)}`} />
         <Stat label="Traglast" value={`${getCarryWeight(char, rules)} kg`} />
-        <Stat label="Caps" value={char.caps} />
+        <Stat label="Caps" value={getCaps(char)} />
       </div>
 
       <div className="mb-4">
@@ -48,7 +49,7 @@ export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet })
           {rules.skills.map((skill) => (
             <div key={skill.id} className="flex justify-between border-b border-dotted border-black/30">
               <span>
-                {skill.name} {char.tagSkillIds.includes(skill.id) ? "★" : ""}
+                {skill.name} {(char.tagSkillIds ?? []).includes(skill.id) ? "★" : ""}
               </span>
               <span className="font-bold">{getSkillEffectiveValue(skill, char, rules)}</span>
             </div>

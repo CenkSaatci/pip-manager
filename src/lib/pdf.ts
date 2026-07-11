@@ -52,7 +52,6 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
     doc.setFont("helvetica", "bold");
     doc.text(key, x, y);
     doc.setFont("helvetica", "normal");
-    // @ts-expect-error dynamischer Key
     doc.text(`${effective[key]} (+${specialBonus(effective[key])})`, x, y + 5);
   });
   line(14);
@@ -87,7 +86,7 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
     const x = MARGIN + col * skillColWidth;
     const rowY = y + row * 5;
     if (rowY > 280) return; // simplistic overflow guard
-    const tag = char.tagSkillIds.includes(skill.id) ? " *" : "";
+    const tag = (char.tagSkillIds ?? []).includes(skill.id) ? " *" : "";
     doc.text(`${skill.name}${tag}: ${getSkillEffectiveValue(skill, char, rules)}`, x, rowY);
   });
   line(Math.ceil(rules.skills.length / 3) * 5 + 8);

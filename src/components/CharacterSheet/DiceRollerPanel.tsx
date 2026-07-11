@@ -24,7 +24,7 @@ export function DiceRollerPanel({ char, rules, onCharChange }: { char: Character
   const weaponsForSkill = rules.items.filter((i) => i.type === "weapon" && (!i.skillId || i.skillId === selectedSkill));
   const zone = rules.hitLocations.find((h) => h.id === targetZone);
   const zonePenalty = zone?.penalty ?? 0;
-  const effectiveSpecial = getEffectiveSpecial(char, rules);
+  const effectiveSpecial = getEffectiveSpecial(char, rules) ?? {};
   const ammoCount = weapon?.isAutomatic ? (weaponEntry?.currentAmmo ?? 0) : 0;
   const canBurst = weapon?.isAutomatic && ammoCount >= (weapon.burstAmmoCost ?? 0);
 
@@ -183,7 +183,7 @@ export function DiceRollerPanel({ char, rules, onCharChange }: { char: Character
         </button>
         {initiative && (
           <span className="text-glow font-display text-xl">
-            = {initiative.total} (PER {effectiveSpecial.PER} + Wurf {initiative.roll})
+            = {initiative.total} (PER {effectiveSpecial.PER ?? 0} + Wurf {initiative.roll})
           </span>
         )}
       </div>

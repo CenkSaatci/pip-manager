@@ -342,10 +342,10 @@ function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partia
           />
         </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {(Object.keys(rules.formulas) as (keyof RuleSet["formulas"])[]).map((key) => (
+          {(Object.keys(rules.formulas) as (keyof RuleSet["formulas"])[]).filter((k) => k !== "resourceMax").map((key) => (
             <Field key={key} label={key}>
               <input
-                value={rules.formulas[key] ?? ""}
+                value={(rules.formulas[key] as string) ?? ""}
                 onChange={(e) => onChange({ formulas: { ...rules.formulas, [key]: e.target.value } })}
                 className="pip-input w-full rounded-sm px-2 py-1 font-mono text-sm"
               />

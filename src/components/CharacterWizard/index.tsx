@@ -9,6 +9,7 @@ import {
   isExtremeSpecialValue,
 } from "../../lib/derived";
 import { specialBonus } from "../../lib/formula";
+import { getTags, setTags, getStats } from "../../lib/compat";
 
 type Step = "name" | "race" | "special" | "background" | "skills" | "traits" | "review";
 
@@ -31,7 +32,7 @@ export function CharacterWizard({
 
   const cc = rules.characterCreation;
   const specialBudget = cc.specialStart * 7 + cc.freeSpecialPoints;
-  const spentSpecial = SPECIAL_KEYS.reduce((s, k) => s + draft.special[k], 0);
+  const spentSpecial = SPECIAL_KEYS.reduce((s, k) => s + getStats(draft)[k], 0);
   const spentSkills = Object.values(draft.skills).reduce((a, b) => a + b, 0);
 
   const steps: { id: Step; label: string }[] = [
@@ -170,17 +171,17 @@ export function CharacterWizard({
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {SPECIAL_KEYS.map((key) => {
-                const effective = getEffectiveSpecial({ ...draft, special: draft.special }, rules);
-                const raceMod = effective[key] - draft.special[key];
-                const extreme = isExtremeSpecialValue(draft.special[key], rules);
+                const effective = getEffectiveSpecial(draft, rules);
+                const raceMod = effective[key] - getStats(draft)[key];
+                const extreme = isExtremeSpecialValue(getStats(draft)[key], rules);
                 return (
                   <div key={key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-3">
                     <label className="text-xs text-pip-greendim">{SPECIAL_LABELS[key]}</label>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          draft.special[key] > cc.specialMin &&
-                          update({ special: { ...draft.special, [key]: draft.special[key] - 1 } })
+                          getStats(draft)[key] > cc.specialMin &&
+                          update({ stats: { ...getStats(draft), [key]: getStats(draft)[key] - 1 } })
                         }
                         className="pip-btn-ghost px-1 text-lg"
                       >
@@ -190,9 +191,9 @@ export function CharacterWizard({
                         type="number"
                         min={cc.specialMin}
                         max={cc.specialMax}
-                        value={draft.special[key]}
+                        value={getStats(draft)[key]}
                         onChange={(e) =>
-                          update({ special: { ...draft.special, [key]: Number(e.target.value) } })
+                          update({ stats: { ...getStats(draft), [key]: Number(e.target.value) } })
                         }
                         className={`pip-input w-14 rounded-sm px-1 py-1 text-center font-display text-xl ${
                           extreme ? "border-pip-amber" : ""
@@ -200,8 +201,8 @@ export function CharacterWizard({
                       />
                       <button
                         onClick={() =>
-                          draft.special[key] < cc.specialMax &&
-                          update({ special: { ...draft.special, [key]: draft.special[key] + 1 } })
+                          getStats(draft)[key] < cc.specialMax &&
+                          update({ stats: { ...getStats(draft), [key]: getStats(draft)[key] + 1 } })
                         }
                         className="pip-btn-ghost px-1 text-lg"
                       >
@@ -345,24 +346,22 @@ export function CharacterWizard({
             {draft.backgroundId && (
               <div className="mt-2 border-t border-pip-line pt-4">
                 <h4 className="pip-label mb-2">
-                  Tag-Skills wählen ({draft.tagSkillIds.length} / {cc.tagSkillCount}, +{cc.tagSkillBonus})
+                  Tag-Skills wählen ({getTags(draft).length} / {cc.tagSkillCount}, +{cc.tagSkillBonus})
                 </h4>
                 <div className="flex flex-wrap gap-1">
                   {rules.skills.map((skill) => {
-                    const active = draft.tagSkillIds.includes(skill.id);
-                    const disabled = !active && draft.tagSkillIds.length >= cc.tagSkillCount;
+                    const active = getTags(draft).includes(skill.id);
+                    const disabled = !active && getTags(draft).length >= cc.tagSkillCount;
                     return (
                       <button
                         key={skill.id}
                         disabled={disabled}
                         onClick={() => {
-                          const has = draft.tagSkillIds.includes(skill.id);
-                          setDraft((p) => ({
-                            ...p,
-                            tagSkillIds: has
-                              ? p.tagSkillIds.filter((id) => id !== skill.id)
-                              : [...p.tagSkillIds, skill.id],
-                          }));
+                          const has = getTags(draft).includes(skill.id);
+                          setDraft((p) => setTags(p, has
+                            ? getTags(p).filter((id) => id !== skill.id)
+                            : [...getTags(p), skill.id]
+                          ));
                         }}
                         className={`rounded-sm border px-2 py-0.5 text-xs transition-colors ${
                           active
@@ -521,7 +520,7 @@ export function CharacterWizard({
               </div>
               <div>
                 <span className="pip-label">SPECIAL</span>
-                <p>{SPECIAL_KEYS.map((k) => `${k} ${draft.special[k]}`).join(" · ")}</p>
+                <p>{SPECIAL_KEYS.map((k) => `${k} ${getStats(draft)[k]}`).join(" · ")}</p>
               </div>
               <div>
                 <span className="pip-label">Traits</span>
@@ -529,7 +528,7 @@ export function CharacterWizard({
               </div>
               <div className="col-span-2">
                 <span className="pip-label">Tag-Skills</span>
-                <p>{draft.tagSkillIds.map((id) => rules.skills.find((s) => s.id === id)?.name ?? id).join(", ") || "—"}</p>
+                <p>{getTags(draft).map((id) => rules.skills.find((s) => s.id === id)?.name ?? id).join(", ") || "—"}</p>
               </div>
               <div className="col-span-2">
                 <span className="pip-label">Investierte Skillpunkte</span>

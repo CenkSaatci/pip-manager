@@ -155,15 +155,72 @@ export interface RuleFormulas {
   luckBonusDice: string; // zusätzliche Würfel im Würfelpool durch Glück
   meleeDamageBonus?: string;
   skillPointsPerLevel?: string; // für Levelaufstiege nach der Erstellung
+  /**
+   * Generische Resource-Maximum-Formeln, z.B.:
+   *   "hp": "(STR+END)*5"
+   *   "mana": "INT*3+level"
+   * Fallback: alte Felder (maxHp, maxApr) werden als "hp"/"apr" gelesen.
+   */
+  resourceMax?: Record<string, string>;
+}
+
+export interface StatConfig {
+  key: string;               // z.B. "STR", "DEX", "MU"
+  label: string;             // z.B. "Stärke", "Geschicklichkeit", "Mut"
+  shortLabel?: string;       // z.B. "ST" für enge Layouts
+  defaultValue?: number;     // Startwert bei Charaktererstellung (default: 5)
+  min?: number;              // Minimum (default: 1)
+  max?: number;              // Maximum (default: 10)
+  extremeThreshold?: number; // Werte <= threshold brauchen SL-Genehmigung
+}
+
+/** Beschreibt eine Ressource, die im Charakterbogen als Balken angezeigt wird. */
+export interface UiResourceDef {
+  key: string;            // z.B. "hp", "mana", "karma"
+  label: string;          // z.B. "Trefferpunkte", "Mana"
+  formula?: string;       // Formel-Schlüssel aus rules.formulas, z.B. "maxHp"
+  color: string;          // CSS-Farbe: "red" | "amber" | "blue" | "green"
+}
+
+export interface UiPanelDef {
+  enabled: boolean;
+  label: string;
+}
+
+/**
+ * UI-Template: Definiert, wie die App die Oberfläche für dieses Regelwerk
+ * aufbaut. Ohne dieses Feld werden Fallout-Standardwerte verwendet.
+ */
+export interface UiTemplate {
+  statsLabel: string;  // Überschrift über den Stats, z.B. "Attribute"
+  stats: StatConfig[];
+  resources: UiResourceDef[];
+  panels: {
+    skills: UiPanelDef;
+    perks: UiPanelDef;
+    traits: UiPanelDef;
+    inventory: UiPanelDef;
+    dice: UiPanelDef;
+    hitLocations: UiPanelDef;
+    needs: UiPanelDef;
+    [key: string]: UiPanelDef;
+  };
 }
 
 /** Parameter für die Charaktererstellung laut Regelwerk (Abschnitt 2, 6, 7) */
 export interface CharacterCreationConfig {
+  /** @deprecated use statConfig */
   specialStart: number;
+  /** @deprecated use statConfig */
   freeSpecialPoints: number;
+  /** @deprecated use statConfig */
   specialMin: number;
+  /** @deprecated use statConfig */
   specialMax: number;
-  extremeValueThreshold: number; // <= dieser Wert braucht Meistergenehmigung
+  /** @deprecated use statConfig */
+  extremeValueThreshold: number;
+  /** Generische Stat-Konfiguration (ersetzt specialStart/freeSpecialPoints/etc.) */
+  statConfig?: StatConfig[];
   freeSkillPoints: number;
   tagSkillCount: number;
   tagSkillBonus: number;
@@ -223,6 +280,41 @@ export interface RuleSet {
   backgrounds: Background[];
   items: Item[];
   enemies: Enemy[];
+  /** UI-Template für die Darstellung. Fehlt dieses Feld, werden Fallout-Standardwerte angenommen. */
+  ui?: UiTemplate;
+}
+
+/** Fallout-Standard-UI-Template, verwendet wenn rules.ui nicht gesetzt ist. */
+export function fallbackUiTemplate(): UiTemplate {
+  return {
+    statsLabel: "S.P.E.C.I.A.L.",
+    stats: SPECIAL_KEYS.map((key) => ({
+      key,
+      label: SPECIAL_LABELS[key],
+      defaultValue: 5,
+      min: 1,
+      max: 10,
+      extremeThreshold: 2,
+    })),
+    resources: [
+      { key: "hp", label: "Trefferpunkte", formula: "maxHp", color: "red" },
+      { key: "apr", label: "APR", formula: "maxApr", color: "amber" },
+      { key: "karma", label: "Karma", color: "blue" },
+    ],
+    panels: {
+      skills: { enabled: true, label: "Fertigkeiten" },
+      perks: { enabled: true, label: "Perks" },
+      traits: { enabled: true, label: "Traits" },
+      inventory: { enabled: true, label: "Inventar" },
+      dice: { enabled: true, label: "Würfelterminal" },
+      hitLocations: { enabled: true, label: "Trefferzonen" },
+      needs: { enabled: true, label: "Bedürfnisse" },
+    },
+  };
+}
+
+export function getUiTemplate(rules: RuleSet): UiTemplate {
+  return rules.ui ?? fallbackUiTemplate();
 }
 
 export function emptyRuleSet(name = "Neues Regelwerk"): RuleSet {

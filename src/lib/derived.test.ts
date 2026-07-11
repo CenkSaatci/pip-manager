@@ -94,21 +94,15 @@ function makeChar(overrides?: Partial<Character>): Character {
     backgroundId: "",
     level: 1,
     xp: 0,
-    karma: 0,
     caps: 0,
-    special: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 5, AGI: 5, LUK: 5 },
+    stats: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 5, AGI: 5, LUK: 5 },
+    resources: { hp: 30, apr: 2, karma: 0 },
+    tags: [],
     skills: {},
-    tagSkillIds: [],
     backgroundAllocations: {},
     traitIds: [],
     perks: [],
     inventory: [],
-    currentHp: 30,
-    currentApr: 2,
-    hunger: 0,
-    thirst: 0,
-    injuredLimbs: [],
-    crippledLimbs: [],
     sessionLog: [],
     levelHistory: [],
     createdAt: "2025-01-01T00:00:00.000Z",
@@ -237,7 +231,7 @@ describe("getSkillEffectiveValue", () => {
   });
 
   it("includes tag skill bonus", () => {
-    const char = makeChar({ skills: { handfeuerwaffen: 3 }, tagSkillIds: ["handfeuerwaffen"] });
+    const char = makeChar({ skills: { handfeuerwaffen: 3 }, tags: ["handfeuerwaffen"] });
     const rules = makeRules();
     const skill = rules.skills.find((s) => s.id === "handfeuerwaffen")!;
     expect(getSkillEffectiveValue(skill, char, rules)).toBe(5); // base 1 + tag 1 + invested 3
@@ -254,7 +248,7 @@ describe("getSkillEffectiveValue", () => {
 describe("getDicePoolSize", () => {
   it("is at least 1", () => {
     const rules = makeRules();
-    const char = makeChar({ special: { ...makeChar().special, LUK: 1 } });
+    const char = makeChar({ stats: { ...makeChar().stats, LUK: 1 } });
     const skill = rules.skills[0];
     expect(getDicePoolSize(skill, char, rules)).toBeGreaterThanOrEqual(1);
   });
@@ -264,7 +258,7 @@ describe("checkPerkRequirements", () => {
   it("is met when character meets all requirements", () => {
     const rules = makeRules();
     const perk = rules.perks[0]; // feldsanitaeter: level 3, INT 6
-    const char = makeChar({ level: 3, special: { ...makeChar().special, INT: 6 } });
+    const char = makeChar({ level: 3, stats: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 6, AGI: 5, LUK: 5 } });
     const result = checkPerkRequirements(perk, char);
     expect(result.met).toBe(true);
     expect(result.reasons).toHaveLength(0);
@@ -273,7 +267,7 @@ describe("checkPerkRequirements", () => {
   it("fails when level is too low", () => {
     const rules = makeRules();
     const perk = rules.perks[0];
-    const char = makeChar({ special: { ...makeChar().special, INT: 6 } });
+    const char = makeChar({ stats: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 6, AGI: 5, LUK: 5 } });
     const result = checkPerkRequirements(perk, char);
     expect(result.met).toBe(false);
     expect(result.reasons.some((r) => r.includes("Level"))).toBe(true);
@@ -331,27 +325,27 @@ describe("applyConsumable", () => {
     const rules = makeRules({
       items: [{ id: "stimpak", name: "Stimpak", type: "consumable", weight: 0.1, value: 50, effects: [{ target: "hp", amount: 20 }] }],
     });
-    const char = makeChar({ currentHp: 30 });
+    const char = makeChar({ resources: { hp: 30, apr: 2, karma: 0 } });
     const result = applyConsumable(char, rules, rules.items[0]);
-    expect(result.currentHp).toBe(50); // 30 + 20
+    expect(result.resources?.hp ?? result.currentHp).toBe(50); // 30 + 20
   });
 
   it("caps HP at maxHp", () => {
     const rules = makeRules({
       items: [{ id: "super_stimpak", name: "Super Stimpak", type: "consumable", weight: 0.1, value: 100, effects: [{ target: "hp", amount: 100 }] }],
     });
-    const char = makeChar({ currentHp: 45 });
+    const char = makeChar({ resources: { hp: 45, apr: 2, karma: 0 } });
     const result = applyConsumable(char, rules, rules.items[0]);
-    expect(result.currentHp).toBe(50); // maxHp = (5+5)*5 = 50
+    expect(result.resources?.hp ?? result.currentHp).toBe(50); // maxHp = (5+5)*5 = 50
   });
 
   it("does not reduce HP below 0", () => {
     const rules = makeRules({
       items: [{ id: "poison", name: "Gift", type: "consumable", weight: 0.1, value: 0, effects: [{ target: "hp", amount: -100 }] }],
     });
-    const char = makeChar({ currentHp: 10 });
+    const char = makeChar({ resources: { hp: 10, apr: 2, karma: 0 } });
     const result = applyConsumable(char, rules, rules.items[0]);
-    expect(result.currentHp).toBe(0);
+    expect(result.resources?.hp ?? result.currentHp).toBe(0);
   });
 
   it("reduces hunger and thirst (positive amount = nourishment)", () => {

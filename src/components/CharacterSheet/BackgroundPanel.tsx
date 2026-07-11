@@ -1,5 +1,6 @@
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
+import { getTags, setTags } from "../../lib/compat";
 
 export function BackgroundPanel({
   char,
@@ -24,11 +25,12 @@ export function BackgroundPanel({
   };
 
   const toggleTagSkill = (skillId: string) => {
-    const has = char.tagSkillIds.includes(skillId);
+    const tags = getTags(char);
+    const has = tags.includes(skillId);
     if (has) {
-      onChange({ ...char, tagSkillIds: char.tagSkillIds.filter((id) => id !== skillId) });
-    } else if (char.tagSkillIds.length < rules.characterCreation.tagSkillCount) {
-      onChange({ ...char, tagSkillIds: [...char.tagSkillIds, skillId] });
+      onChange(setTags(char, tags.filter((id) => id !== skillId)));
+    } else if (tags.length < rules.characterCreation.tagSkillCount) {
+      onChange(setTags(char, [...tags, skillId]));
     }
   };
 
@@ -95,13 +97,14 @@ export function BackgroundPanel({
 
       <div className="mt-2">
         <span className="text-xs text-pip-greendim">
-          Tag-Skills wählen ({char.tagSkillIds.length} / {rules.characterCreation.tagSkillCount}, je +
+          Tag-Skills wählen ({getTags(char).length} / {rules.characterCreation.tagSkillCount}, je +
           {rules.characterCreation.tagSkillBonus}):
         </span>
         <div className="mt-1 flex flex-wrap gap-1">
           {rules.skills.map((skill) => {
-            const active = char.tagSkillIds.includes(skill.id);
-            const disabled = !active && char.tagSkillIds.length >= rules.characterCreation.tagSkillCount;
+            const tags = getTags(char);
+            const active = tags.includes(skill.id);
+            const disabled = !active && tags.length >= rules.characterCreation.tagSkillCount;
             return (
               <button
                 key={skill.id}

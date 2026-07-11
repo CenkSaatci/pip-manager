@@ -11,6 +11,7 @@ import { NeedsPanel } from "./NeedsPanel";
 import { SessionLogPanel } from "./SessionLogPanel";
 import { PrintSheet } from "./PrintSheet";
 import { LevelUpModal } from "./LevelUpModal";
+import { getResource, setResource, getCaps } from "../../lib/compat";
 import { getMaxHp, getMaxApr } from "../../lib/derived";
 import { buildCharacterPdf } from "../../lib/pdf";
 import { Character } from "../../types/character";
@@ -82,28 +83,28 @@ export function CharacterSheet() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <ResourceBar
           label="Trefferpunkte"
-          value={char.currentHp}
+          value={getResource(char, "hp")}
           max={maxHp}
           color="bg-pip-red"
-          onChange={(v) => update({ ...char, currentHp: v })}
+          onChange={(v) => update(setResource(char, "hp", v))}
         />
         <ResourceBar
           label="Aktionen pro Runde (APR)"
-          value={char.currentApr}
+          value={getResource(char, "apr")}
           max={maxApr}
           color="bg-pip-amber"
-          onChange={(v) => update({ ...char, currentApr: v })}
+          onChange={(v) => update(setResource(char, "apr", v))}
         />
         <div className="pip-panel flex items-center justify-between rounded-sm p-3">
           {karmaEnabled && (
             <div>
               <span className="pip-label">Karma</span>
-              <div className="font-display text-2xl text-glow">{char.karma}</div>
+              <div className="font-display text-2xl text-glow">{getResource(char, "karma")}</div>
             </div>
           )}
           <div>
             <span className="pip-label">Caps</span>
-            <div className="font-display text-2xl text-glow">{char.caps}</div>
+            <div className="font-display text-2xl text-glow">{getCaps(char)}</div>
           </div>
           <div>
             <span className="pip-label">XP</span>

@@ -4,8 +4,8 @@ import { RuleSet } from "../../types/rules";
 type ZoneState = "gesund" | "verwundet" | "verkrueppelt";
 
 function getZoneState(zoneId: string, char: Character): ZoneState {
-  if (char.crippledLimbs.includes(zoneId)) return "verkrueppelt";
-  if (char.injuredLimbs.includes(zoneId)) return "verwundet";
+  if ((char.crippledLimbs ?? []).includes(zoneId)) return "verkrueppelt";
+  if ((char.injuredLimbs ?? []).includes(zoneId)) return "verwundet";
   return "gesund";
 }
 
@@ -26,8 +26,8 @@ export function HitLocationPanel({
 }) {
   const cycle = (zoneId: string) => {
     const state = getZoneState(zoneId, char);
-    const injured = char.injuredLimbs.filter((z) => z !== zoneId);
-    const crippled = char.crippledLimbs.filter((z) => z !== zoneId);
+    const injured = (char.injuredLimbs ?? []).filter((z) => z !== zoneId);
+    const crippled = (char.crippledLimbs ?? []).filter((z) => z !== zoneId);
     if (state === "gesund") {
       onChange({ ...char, injuredLimbs: [...injured, zoneId], crippledLimbs: crippled });
     } else if (state === "verwundet") {

@@ -1,16 +1,17 @@
 import { Character } from "../types/character";
 import { RuleSet, Skill, SPECIAL_KEYS } from "../types/rules";
 import { evalFormula } from "./formula";
+import { getStats, getResource, getTags, setResource, getCaps } from "./compat";
 
 function baseScope(char: Character, rules: RuleSet) {
+  const stats = getStats(char);
   return {
-    ...getEffectiveSpecial(char, rules),
+    ...stats,
     level: char.level,
-    karma: char.karma,
+    karma: getResource(char, "karma"),
   };
 }
 
-/** Summe aller Trait-Effekte (Vorteile + Nachteile) aktiver Traits für ein bestimmtes Ziel (SPECIAL-Kürzel, Skill-ID oder Formel-Schlüssel wie "maxHp"). */
 export function getTraitEffectSum(target: string, char: Character, rules: RuleSet): number {
   let sum = 0;
   for (const traitId of char.traitIds) {
@@ -23,7 +24,6 @@ export function getTraitEffectSum(target: string, char: Character, rules: RuleSe
   return sum;
 }
 
-/** Summe aller Perk-Effekte für ein bestimmtes Ziel, gewichtet mit dem jeweiligen Rang. */
 export function getPerkEffectSum(target: string, char: Character, rules: RuleSet): number {
   let sum = 0;
   for (const entry of char.perks) {
@@ -36,20 +36,20 @@ export function getPerkEffectSum(target: string, char: Character, rules: RuleSet
   return sum;
 }
 
-/** SPECIAL-Werte inklusive Rassen-Modifikatoren UND aktiver Trait-Effekte. */
-export function getEffectiveSpecial(char: Character, rules: RuleSet): Character["special"] {
+export function getEffectiveSpecial(char: Character, rules: RuleSet): Record<string, number> {
+  const stats = getStats(char);
   const race = rules.races.find((r) => r.id === char.raceId);
-  const special = { ...char.special };
+  const result = { ...stats } as Record<string, number>;
   for (const key of SPECIAL_KEYS) {
     const raceMod = race?.statModifiers[key] ?? 0;
     const traitMod = getTraitEffectSum(key, char, rules);
     const perkMod = getPerkEffectSum(key, char, rules);
-    special[key] = special[key] + raceMod + traitMod + perkMod;
+    result[key] = (result[key] ?? 0) + raceMod + traitMod + perkMod;
   }
-  return special;
+  return result;
 }
 
-/** @deprecated Alias für getEffectiveSpecial, aus Kompatibilitätsgründen behalten. */
+/** @deprecated Alias für getEffectiveSpecial */
 export const applyRaceModifiers = getEffectiveSpecial;
 
 export function getMaxHp(char: Character, rules: RuleSet): number {
@@ -83,7 +83,6 @@ export function getSkillBaseValue(skill: Skill, char: Character, rules: RuleSet)
   return evalFormula(skill.baseFormula, baseScope(char, rules));
 }
 
-/** Summe aller Hintergrund-Punkte-Kauf-Zuteilungen für einen bestimmten Skill, über alle Pools hinweg */
 export function getBackgroundBonus(skillId: string, char: Character): number {
   let sum = 0;
   for (const pool of Object.values(char.backgroundAllocations)) {
@@ -98,14 +97,9 @@ export function getFixedBackgroundBonus(skillId: string, char: Character, rules:
 }
 
 export function isTagSkill(skillId: string, char: Character): boolean {
-  return char.tagSkillIds.includes(skillId);
+  return getTags(char).includes(skillId);
 }
 
-/**
- * Effektiver Skillwert = SPECIAL-Bonus-Basis + feste Hintergrundboni
- * + Hintergrund-Punkte-Kauf + Tag-Skill-Bonus + frei investierte Punkte
- * + aktive Trait-Effekte auf diesen Skill, gedeckelt auf skillRange.
- */
 export function getSkillEffectiveValue(skill: Skill, char: Character, rules: RuleSet): number {
   const base = getSkillBaseValue(skill, char, rules);
   const fixedBg = getFixedBackgroundBonus(skill.id, char, rules);
@@ -118,7 +112,6 @@ export function getSkillEffectiveValue(skill: Skill, char: Character, rules: Rul
   return Math.min(max, Math.max(min, base + fixedBg + pointBuyBg + tagBonus + invested + traitMod + perkMod));
 }
 
-/** Größe des Würfelpools für einen Skillwurf: Skillwert + Luck-Bonus-Würfel (Abschnitt 1) */
 export function getDicePoolSize(skill: Skill, char: Character, rules: RuleSet): number {
   return Math.max(1, getSkillEffectiveValue(skill, char, rules) + getLuckBonusDice(char, rules));
 }
@@ -137,12 +130,12 @@ export function checkPerkRequirements(
 ): { met: boolean; reasons: string[] } {
   const reasons: string[] = [];
   const req = perk.requirements;
+  const stats = getStats(char);
   if (req.level && char.level < req.level) reasons.push(`Level ${req.level} benötigt`);
   if (req.requiresGmApproval) reasons.push("Meistergenehmigung nötig");
   if (req.stats) {
     for (const [stat, min] of Object.entries(req.stats)) {
-      // @ts-expect-error dynamischer Key
-      if ((char.special[stat] ?? 0) < (min ?? 0)) reasons.push(`${stat} ≥ ${min} benötigt`);
+      if ((stats[stat] ?? 0) < (min ?? 0)) reasons.push(`${stat} ≥ ${min} benötigt`);
     }
   }
   if (req.skills) {
@@ -158,16 +151,6 @@ export function checkPerkRequirements(
   return { met: reasons.length === 0, reasons };
 }
 
-/**
- * Wendet die Effekte eines Konsumgutes (item.type === "consumable") auf
- * den Charakter an (z.B. Stimpak heilt HP). Gibt ein neues Character-Objekt
- * mit den angewendeten Änderungen zurück.
- *
- * Unterstützte effect.target-Werte:
- *   "hp"      → currentHp erhöhen (gedeckelt auf getMaxHp)
- *   "hunger"  → hunger = Math.max(0, hunger + amount)
- *   "thirst"  → thirst = Math.max(0, thirst + amount)
- */
 export function applyConsumable(char: Character, rules: RuleSet, item: RuleSet["items"][number]): Character {
   if (item.type !== "consumable" || !item.effects) return char;
   let result = { ...char };
@@ -175,29 +158,24 @@ export function applyConsumable(char: Character, rules: RuleSet, item: RuleSet["
   for (const effect of item.effects) {
     switch (effect.target) {
       case "hp":
-        result = { ...result, currentHp: Math.min(maxHp, Math.max(0, result.currentHp + effect.amount)) };
+        const current = getResource(result, "hp");
+        result = setResource(result, "hp", Math.min(maxHp, Math.max(0, current + effect.amount)));
         break;
       case "hunger":
-        result = { ...result, hunger: Math.max(0, result.hunger - effect.amount) };
+        result = { ...result, hunger: Math.max(0, (result.hunger ?? 0) - effect.amount) };
         break;
       case "thirst":
-        result = { ...result, thirst: Math.max(0, result.thirst - effect.amount) };
+        result = { ...result, thirst: Math.max(0, (result.thirst ?? 0) - effect.amount) };
         break;
     }
   }
   return result;
 }
 
-/** Extremwerte (SPECIAL <= extremeValueThreshold) brauchen laut Regelwerk Meistergenehmigung */
 export function isExtremeSpecialValue(value: number, rules: RuleSet): boolean {
   return value <= rules.characterCreation.extremeValueThreshold;
 }
 
-/**
- * Was ein Charakter beim Erreichen von `level` zur Verfügung hat. Nutzt
- * einen expliziten Eintrag aus rules.levelProgression, falls vorhanden,
- * sonst einen simplen Fallback über formulas.skillPointsPerLevel.
- */
 export function getLevelReward(level: number, rules: RuleSet) {
   const explicit = rules.levelProgression.find((r) => r.level === level);
   const fallbackSkillPoints = rules.formulas.skillPointsPerLevel

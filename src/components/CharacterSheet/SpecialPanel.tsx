@@ -14,7 +14,8 @@ export function SpecialPanel({
 }) {
   const effective = getEffectiveSpecial(char, rules);
   const [min, max] = rules.specialRange;
-  const invested = SPECIAL_KEYS.reduce((sum, k) => sum + char.special[k], 0);
+  const stats = char.stats ?? (char.special as Record<string, number> | undefined) ?? {};
+  const invested = SPECIAL_KEYS.reduce((sum, k) => sum + (stats[k] ?? 0), 0);
   const budget = rules.characterCreation.specialStart * 7 + rules.characterCreation.freeSpecialPoints;
 
   return (
@@ -27,8 +28,8 @@ export function SpecialPanel({
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {SPECIAL_KEYS.map((key) => {
-          const raceMod = effective[key] - char.special[key];
-          const extreme = isExtremeSpecialValue(char.special[key], rules);
+          const raceMod = effective[key] - (stats[key] ?? 0);
+          const extreme = isExtremeSpecialValue(stats[key] ?? 0, rules);
           return (
             <div key={key} className="flex flex-col items-center gap-1">
               <label className="text-xs text-pip-greendim">{SPECIAL_LABELS[key]}</label>
@@ -36,11 +37,11 @@ export function SpecialPanel({
                 type="number"
                 min={min}
                 max={max}
-                value={char.special[key]}
+                value={stats[key] ?? 0}
                 onChange={(e) =>
                   onChange({
                     ...char,
-                    special: { ...char.special, [key]: Number(e.target.value) },
+                    stats: { ...(char.stats ?? {}), [key]: Number(e.target.value) },
                   })
                 }
                 className={`pip-input w-16 rounded-sm px-2 py-1 text-center font-display text-2xl ${

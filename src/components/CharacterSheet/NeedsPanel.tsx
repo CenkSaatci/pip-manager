@@ -2,11 +2,12 @@ import { Character } from "../../types/character";
 
 export function NeedsPanel({ char, onChange }: { char: Character; onChange: (c: Character) => void }) {
   const adjust = (field: "hunger" | "thirst", delta: number) => {
-    onChange({ ...char, [field]: Math.max(0, char[field] + delta) });
+    const current = (char as any)[field] ?? 0;
+    onChange({ ...char, [field]: Math.max(0, current + delta) });
   };
 
   const newDay = () => {
-    onChange({ ...char, hunger: char.hunger + 1, thirst: char.thirst + 1 });
+    onChange({ ...char, hunger: (char.hunger ?? 0) + 1, thirst: (char.thirst ?? 0) + 1 });
   };
 
   return (
@@ -18,8 +19,8 @@ export function NeedsPanel({ char, onChange }: { char: Character; onChange: (c: 
         </button>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <NeedRow label="Hunger" value={char.hunger} onAdjust={(d) => adjust("hunger", d)} />
-        <NeedRow label="Durst" value={char.thirst} onAdjust={(d) => adjust("thirst", d)} />
+        <NeedRow label="Hunger" value={char.hunger ?? 0} onAdjust={(d) => adjust("hunger", d)} />
+        <NeedRow label="Durst" value={char.thirst ?? 0} onAdjust={(d) => adjust("thirst", d)} />
       </div>
       <p className="mt-2 text-xs text-pip-greendim">
         Reine Zählwerte ohne automatische Auswirkung — die Schwellen/Konsequenzen legt ihr am Tisch fest.

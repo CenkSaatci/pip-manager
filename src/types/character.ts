@@ -38,13 +38,17 @@ export interface Character {
   backgroundId: string;
   level: number;
   xp: number;
-  karma: number;
   caps: number;
-  special: Record<SpecialKey, number>;
-  /** frei investierte Skillpunkte (Erstellung + Levelaufstiege), on top von SPECIAL-Basis/Hintergrund/Tag-Skill */
+
+  /** Generische Stats (Attribut-Key → Wert). Für Fallout: STR/PER/END/CHA/INT/AGI/LUK */
+  stats: Record<string, number>;
+  /** Generische Ressourcen (Resource-Key → Wert), z.B. "hp", "mana", "karma" */
+  resources: Record<string, number>;
+  /** Generische Tags/Markierungen (Fallback für tagSkillIds, proficiencies, …) */
+  tags: string[];
+
+  /** frei investierte Skillpunkte (Erstellung + Levelaufstiege), on top von Basis/Hintergrund/Tag-Skill */
   skills: Record<string, number>;
-  /** gewählte Tag-Skills (laut Regelwerk max. characterCreation.tagSkillCount) */
-  tagSkillIds: string[];
   /** Punkte-Kauf-Zuteilungen je Hintergrund-Pool: poolName -> skillId -> investierte Punkte */
   backgroundAllocations: Record<string, Record<string, number>>;
   traitIds: string[];
@@ -52,17 +56,31 @@ export interface Character {
   levelHistory: LevelUpRecord[];
   sessionLog: SessionLogEntry[];
   inventory: InventoryEntry[];
-  currentHp: number;
-  currentApr: number;
-  hunger: number;
-  thirst: number;
-  injuredLimbs: string[];
-  crippledLimbs: string[];
   appearance?: string;
   backstory?: string;
   notes?: string;
   createdAt: string;
   updatedAt: string;
+
+  // ── Alte Felder (deprecated, für Migration) ──────────────────────
+  /** @deprecated use stats */
+  special?: Record<SpecialKey, number>;
+  /** @deprecated use resources.hp */
+  currentHp?: number;
+  /** @deprecated use resources.apr */
+  currentApr?: number;
+  /** @deprecated use resources.karma */
+  karma?: number;
+  /** @deprecated use tags */
+  tagSkillIds?: string[];
+  /** @deprecated */
+  hunger?: number;
+  /** @deprecated */
+  thirst?: number;
+  /** @deprecated */
+  injuredLimbs?: string[];
+  /** @deprecated */
+  crippledLimbs?: string[];
 }
 
 export function blankCharacter(ruleSetId: string): Character {
@@ -76,23 +94,17 @@ export function blankCharacter(ruleSetId: string): Character {
     backgroundId: "",
     level: 1,
     xp: 0,
-    karma: 0,
     caps: 0,
-    special: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 5, AGI: 5, LUK: 5 },
+    stats: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 5, AGI: 5, LUK: 5 },
+    resources: { hp: 0, apr: 0, karma: 0 },
+    tags: [],
     skills: {},
-    tagSkillIds: [],
     backgroundAllocations: {},
     traitIds: [],
     perks: [],
     levelHistory: [],
     sessionLog: [],
     inventory: [],
-    currentHp: 0,
-    currentApr: 0,
-    hunger: 0,
-    thirst: 0,
-    injuredLimbs: [],
-    crippledLimbs: [],
     appearance: "",
     backstory: "",
     notes: "",
