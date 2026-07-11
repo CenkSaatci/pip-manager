@@ -6,12 +6,19 @@ import * as api from "../lib/api";
 import { migrateCharacter } from "../lib/migration";
 
 export function CharacterList() {
-  const { characters, activeRuleSet, selectCharacter, upsertCharacter, removeCharacter } = useAppStore();
+  const { characters, ruleSets, activeRuleSet, selectCharacter, upsertCharacter, removeCharacter } = useAppStore();
   const [wizardOpen, setWizardOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
 
-  const handleCreate = async () => {
-    setWizardOpen(true);
+  const filtered = showAll
+    ? characters
+    : characters.filter((c) => c.ruleSetId === activeRuleSet.id);
+
+  const getRuleSetName = (ruleSetId: string): string => {
+    return ruleSets.find((r) => r.id === ruleSetId)?.name ?? "Unbekanntes System";
   };
+
+  const handleCreate = () => setWizardOpen(true);
 
   const handleFinishWizard = async (char: Character) => {
     setWizardOpen(false);
@@ -90,21 +97,35 @@ export function CharacterList() {
         </button>
       </div>
 
-      {characters.length === 0 && (
+      {characters.length > 0 && (
+        <div className="mb-3 flex items-center gap-2 text-xs">
+          <span className="text-pip-greendim">
+            {showAll ? `${characters.length} Charaktere in allen Systemen` : `${filtered.length} Charaktere in "${activeRuleSet.name}"`}
+          </span>
+          <button onClick={() => setShowAll(!showAll)} className="pip-btn-ghost px-2 py-0.5">
+            {showAll ? "Nur aktives System" : "Alle Systeme anzeigen"}
+          </button>
+        </div>
+      )}
+
+      {filtered.length === 0 && (
         <p className="text-pip-greendim">
-          Keine Aktendatensätze gefunden. Leg mit "+ Neuer Wanderer" los oder importiere einen bestehenden
-          Charakter.
+          {showAll
+            ? "Keine Aktendatensätze gefunden. Leg mit '+ Neuer Wanderer' los oder importiere einen bestehenden Charakter."
+            : `Keine Charaktere im System "${activeRuleSet.name}". Wechsle das Regelwerk oder schalte auf "Alle Systeme anzeigen".`}
         </p>
       )}
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {characters.map((c) => {
+        {filtered.map((c) => {
           const race = activeRuleSet.races.find((r) => r.id === c.raceId);
+          const systemName = getRuleSetName(c.ruleSetId);
+          const isOtherSystem = c.ruleSetId !== activeRuleSet.id;
           return (
             <button
               key={c.id}
               onClick={() => selectCharacter(c.id)}
-              className="pip-panel group flex flex-col gap-1 rounded-sm p-4 text-left transition-transform hover:-translate-y-0.5"
+              className={`pip-panel group flex flex-col gap-1 rounded-sm p-4 text-left transition-transform hover:-translate-y-0.5 ${isOtherSystem ? "opacity-70" : ""}`}
             >
               <div className="flex items-start justify-between">
                 <h3 className="font-display text-2xl text-glow">{c.name}</h3>
@@ -115,15 +136,14 @@ export function CharacterList() {
               <p className="text-sm text-pip-greendim">
                 {race?.name ?? "Unbekannte Rasse"} · {c.playerName || "kein Spieler eingetragen"}
               </p>
+              {isOtherSystem && (
+                <p className="text-xs text-pip-amber">{systemName}</p>
+              )}
               <div className="mt-2 flex items-center justify-between text-xs">
-                <span>LVL {c.level} · {(c.resources?.hp ?? c.currentHp ?? 0)} HP</span>
+                <span>{(c.resources?.hp ?? c.currentHp ?? 0)} HP</span>
                 <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">
-                    Export
-                  </span>
-                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-red hover:text-glow">
-                    Löschen
-                  </span>
+                  <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">Export</span>
+                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-red hover:text-glow">Löschen</span>
                 </div>
               </div>
             </button>
