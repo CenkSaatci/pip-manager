@@ -5,13 +5,13 @@ export default {
     extend: {
       colors: {
         pip: {
-          bg: "#0b1410",
-          panel: "#0f1f16",
-          line: "#1c3a26",
-          green: "#5fff8f",
-          greendim: "#2fae5e",
-          amber: "#ffb238",
-          red: "#ff5a4e",
+          bg: "var(--pip-bg, #0b1410)",
+          panel: "var(--pip-panel, #0f1f16)",
+          line: "var(--pip-line, #1c3a26)",
+          green: "var(--pip-green, #5fff8f)",
+          greendim: "var(--pip-greendim, #2fae5e)",
+          amber: "var(--pip-amber, #ffb238)",
+          red: "var(--pip-red, #ff5a4e)",
         },
       },
       fontFamily: {

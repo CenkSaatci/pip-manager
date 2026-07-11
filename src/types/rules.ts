@@ -202,10 +202,18 @@ export interface UiPanelDef {
  * UI-Template: Definiert, wie die App die Oberfläche für dieses Regelwerk
  * aufbaut. Ohne dieses Feld werden Fallout-Standardwerte verwendet.
  */
+export const THEMES = [
+  { id: "pip-boy", label: "Pip-Boy (Fallout)" },
+  { id: "fantasy", label: "Fantasy (D&D)" },
+  { id: "cyberpunk", label: "Cyberpunk" },
+  { id: "classic", label: "Klassisch (Hell)" },
+] as const;
+
 export interface UiTemplate {
   statsLabel: string;  // Überschrift über den Stats, z.B. "Attribute"
   currencyLabel?: string; // Währungsbezeichnung, z.B. "Caps", "GM", "Dublonen" (default: "Caps")
   diceType?: DiceType; // Würfelmechanik (default: "d10-pool")
+  theme?: string; // CSS-Theme-Klasse, z.B. "pip-boy", "fantasy", "cyberpunk" (default: "pip-boy")
   stats: StatConfig[];
   resources: UiResourceDef[];
   /** Welche Wizard-Schritte aktiv sind (fehlende = alle aktiv) */
