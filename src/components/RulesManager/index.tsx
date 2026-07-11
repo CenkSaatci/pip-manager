@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import { RuleSet, emptyRuleSet } from "../../types/rules";
+import { RuleSet, emptyRuleSet, getUiTemplate } from "../../types/rules";
 import { EntityListEditor } from "./EntityListEditor";
 import { JsonImportExport } from "./JsonImportExport";
 import { HelpTab } from "./HelpTab";
@@ -18,7 +18,7 @@ import {
 
 const uid = () => crypto.randomUUID();
 
-type Tab = "meta" | "races" | "skills" | "perks" | "traits" | "items" | "backgrounds" | "enemies" | "levels" | "hitlocations" | "help";
+type Tab = "meta" | "races" | "skills" | "perks" | "traits" | "items" | "backgrounds" | "enemies" | "levels" | "hitlocations" | "ui" | "help";
 
 export function RulesManager() {
   const { ruleSets, activeRuleSet, upsertRuleSet, activateRuleSet, removeRuleSet } = useAppStore();
@@ -52,6 +52,7 @@ export function RulesManager() {
     { id: "enemies", label: "Testgegner" },
     { id: "levels", label: "Levelaufstieg" },
     { id: "hitlocations", label: "Trefferzonen" },
+    { id: "ui", label: "UI-Template" },
     { id: "help", label: "❓ Hilfe" },
   ];
 
@@ -232,6 +233,8 @@ export function RulesManager() {
         />
       )}
 
+      {tab === "ui" && <UiTab rules={rules} onChange={update} />}
+
       {tab === "help" && <HelpTab />}
     </div>
   );
@@ -387,5 +390,110 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="pip-label">{label}</span>
       {children}
     </label>
+  );
+}
+
+const ALL_PANEL_KEYS = ["skills", "perks", "traits", "inventory", "dice", "hitLocations", "needs"] as const;
+const PANEL_LABELS: Record<string, string> = {
+  skills: "Fertigkeiten",
+  perks: "Perks",
+  traits: "Traits",
+  inventory: "Inventar",
+  dice: "Würfelterminal",
+  hitLocations: "Trefferzonen",
+  needs: "Bedürfnisse",
+};
+
+function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<RuleSet>) => void }) {
+  const template = getUiTemplate(rules);
+
+  const setUi = (patch: any) => {
+    const next = { ...template, ...patch };
+    onChange({ ui: next });
+  };
+
+  const togglePanel = (key: string) => {
+    setUi({
+      panels: {
+        ...template.panels,
+        [key]: { ...template.panels[key], enabled: !template.panels[key].enabled },
+      },
+    });
+  };
+
+  const setPanelLabel = (key: string, label: string) => {
+    setUi({
+      panels: {
+        ...template.panels,
+        [key]: { ...template.panels[key], label },
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="pip-panel rounded-sm p-4">
+        <Field label="Stats-Label (z.B. S.P.E.C.I.A.L., Attribute, Eigenschaften)">
+          <input
+            value={template.statsLabel}
+            onChange={(e) => setUi({ statsLabel: e.target.value })}
+            className="pip-input w-full rounded-sm px-2 py-1"
+          />
+        </Field>
+      </div>
+
+      <EntityListEditor
+        label="Stats / Attribute"
+        items={template.stats}
+        idKey="key"
+        renderTitle={(s) => `${s.key} — ${s.label}`}
+        renderSubtitle={(s) => `Default ${s.defaultValue ?? 5} · Min ${s.min ?? 1} · Max ${s.max ?? 10} · Extrem ${s.extremeThreshold ?? 2}`}
+        newItem={() => ({ key: uid().slice(0, 6), label: "Neuer Stat", defaultValue: 5, min: 1, max: 10, extremeThreshold: 2 })}
+        onChange={(stats) => setUi({ stats })}
+      />
+
+      <EntityListEditor
+        label="Resources / Balken"
+        items={template.resources}
+        idKey="key"
+        renderTitle={(r) => `${r.key} — ${r.label}`}
+        renderSubtitle={(r: any) => `Formel: ${r.formula ?? "—"} · Farbe: ${r.color}`}
+        newItem={() => ({ key: uid().slice(0, 6), label: "Neue Resource", color: "amber" })}
+        onChange={(resources) => setUi({ resources })}
+      />
+
+      <div className="pip-panel rounded-sm p-4">
+        <h3 className="pip-label mb-3">Panels (ein/aus)</h3>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {ALL_PANEL_KEYS.map((key) => {
+            const panel = template.panels[key];
+            if (!panel) return null;
+            return (
+              <div key={key} className="flex flex-col gap-2 rounded-sm border border-pip-line p-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">{PANEL_LABELS[key] ?? key}</span>
+                  <button
+                    onClick={() => togglePanel(key)}
+                    className={`rounded-sm border px-2 py-0.5 text-xs ${
+                      panel.enabled
+                        ? "border-pip-green text-pip-green"
+                        : "border-pip-red/50 text-pip-red"
+                    }`}
+                  >
+                    {panel.enabled ? "AN" : "AUS"}
+                  </button>
+                </div>
+                <input
+                  value={panel.label}
+                  onChange={(e) => setPanelLabel(key, e.target.value)}
+                  className="pip-input w-full rounded-sm px-1 py-0.5 text-xs"
+                  placeholder="Label"
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
