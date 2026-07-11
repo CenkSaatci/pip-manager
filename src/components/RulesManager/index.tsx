@@ -4,6 +4,7 @@ import { RuleSet, emptyRuleSet, getUiTemplate, fallbackUiTemplate } from "../../
 import { EntityListEditor } from "./EntityListEditor";
 import { JsonImportExport } from "./JsonImportExport";
 import { HelpTab } from "./HelpTab";
+import { SystemWizard } from "../SystemWizard";
 import { useT } from "../../i18n/context";
 import * as api from "../../lib/api";
 import {
@@ -25,6 +26,7 @@ export function RulesManager() {
   const { t } = useT();
   const { ruleSets, activeRuleSet, upsertRuleSet, activateRuleSet, removeRuleSet } = useAppStore();
   const [tab, setTab] = useState<Tab>("meta");
+  const [wizardOpen, setWizardOpen] = useState(false);
 
   const rules = activeRuleSet;
   const update = (patch: Partial<RuleSet>) => upsertRuleSet({ ...rules, ...patch });
@@ -76,6 +78,9 @@ export function RulesManager() {
           </select>
           <button onClick={handleNewRuleSet} className="pip-btn-ghost px-2 py-1 text-xs">
             {t('rules.new')}
+          </button>
+          <button onClick={() => setWizardOpen(true)} className="pip-btn-ghost px-2 py-1 text-xs">
+            + System-Assistent
           </button>
           {ruleSets.length > 1 && (
             <button
@@ -238,6 +243,8 @@ export function RulesManager() {
       {tab === "ui" && <UiTab rules={rules} onChange={update} />}
 
       {tab === "help" && <HelpTab />}
+
+      {wizardOpen && <SystemWizard onClose={() => setWizardOpen(false)} />}
     </div>
   );
 }
