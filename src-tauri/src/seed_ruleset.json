@@ -302,5 +302,31 @@
     { "id": "ncr_soldat", "name": "NCR-Soldat", "hp": 50, "damageResistance": 4, "skillValue": 5, "weaponId": "service_rifle", "notes": "DR 3 mit kugelsicherer Weste, DR 4 mit Soldatenrüstung (hier 4 gewählt)" },
     { "id": "veteran_ranger", "name": "Veteran / Ranger", "hp": 60, "damageResistance": 5, "skillValue": 6, "weaponId": "hunting_rifle", "notes": "Service Rifle / Hunting Rifle / Revolver" },
     { "id": "power_armor_gegner", "name": "Power-Armor-Gegner", "hp": 70, "damageResistance": 7, "skillValue": 6, "notes": "DR 6-7 laut Regelwerk, hier 7 gewählt. Schwere Waffe oder Energiewaffe" }
-  ]
+  ],
+  "ui": {
+    "statsLabel": "S.P.E.C.I.A.L.",
+    "stats": [
+      { "key": "STR", "label": "Stärke", "shortLabel": "ST", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "PER", "label": "Wahrnehmung", "shortLabel": "PE", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "END", "label": "Ausdauer", "shortLabel": "EN", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "CHA", "label": "Charisma", "shortLabel": "CH", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "INT", "label": "Intelligenz", "shortLabel": "IN", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "AGI", "label": "Geschicklichkeit", "shortLabel": "AG", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 },
+      { "key": "LUK", "label": "Glück", "shortLabel": "LU", "defaultValue": 5, "min": 1, "max": 10, "extremeThreshold": 2 }
+    ],
+    "resources": [
+      { "key": "hp", "label": "Trefferpunkte", "formula": "maxHp", "color": "red" },
+      { "key": "apr", "label": "APR", "formula": "maxApr", "color": "amber" },
+      { "key": "karma", "label": "Karma", "color": "blue" }
+    ],
+    "panels": {
+      "skills": { "enabled": true, "label": "Fertigkeiten" },
+      "perks": { "enabled": true, "label": "Perks" },
+      "traits": { "enabled": true, "label": "Traits" },
+      "inventory": { "enabled": true, "label": "Inventar" },
+      "dice": { "enabled": true, "label": "Würfelterminal" },
+      "hitLocations": { "enabled": true, "label": "Trefferzonen" },
+      "needs": { "enabled": true, "label": "Bedürfnisse" }
+    }
+  }
 }

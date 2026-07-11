@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { Character } from "../types/character";
 import { RuleSet, emptyRuleSet } from "../types/rules";
 import * as api from "../lib/api";
+import { migrateCharacter } from "../lib/migration";
 
 interface AppState {
   ruleSets: RuleSet[];
@@ -42,7 +43,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({
         ruleSets,
         activeRuleSet: active ?? get().activeRuleSet,
-        characters,
+        characters: characters.map(migrateCharacter),
         loading: false,
       });
     } catch (err) {
