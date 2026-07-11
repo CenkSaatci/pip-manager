@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactNode } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { THEMES, getUiTemplate } from "../types/rules";
+import { useT } from "../i18n/context";
 
 const STORAGE_KEY = "pip-manager-custom-themes";
 
@@ -11,9 +12,7 @@ interface CustomTheme {
 }
 
 function loadCustomThemes(): CustomTheme[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-  } catch { return []; }
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"); } catch { return []; }
 }
 
 function saveCustomThemes(themes: CustomTheme[]) {
@@ -22,7 +21,6 @@ function saveCustomThemes(themes: CustomTheme[]) {
 
 const BUILTIN_IDS = new Set<string>(THEMES.map((t) => t.id));
 
-/** Mappt benutzerfreundliche Theme-Keys auf interne CSS-Variablen */
 const THEME_KEY_MAP: Record<string, string> = {
   bg: "--pip-bg",
   panel: "--pip-panel",
@@ -37,6 +35,7 @@ const REQUIRED_THEME_KEYS = Object.keys(THEME_KEY_MAP);
 
 export function Layout({ children }: { children: ReactNode }) {
   const { view, setView, activeRuleSet, upsertRuleSet } = useAppStore();
+  const { t, locale, setLocale } = useT();
   const ui = getUiTemplate(activeRuleSet);
   const currentTheme = ui.theme ?? "pip-boy";
   const [customThemes, setCustomThemes] = useState<CustomTheme[]>(loadCustomThemes);
@@ -90,15 +89,13 @@ export function Layout({ children }: { children: ReactNode }) {
   };
 
   const customStyle = customTheme
-    ? Object.fromEntries(
-        Object.entries(customTheme.colors).map(([k, v]) => [THEME_KEY_MAP[k] ?? `--${k}`, v])
-      )
+    ? Object.fromEntries(Object.entries(customTheme.colors).map(([k, v]) => [THEME_KEY_MAP[k] ?? `--${k}`, v]))
     : undefined;
 
   const tabs: { id: typeof view; label: string }[] = [
-    { id: "characters", label: "WANDERER" },
-    { id: "sheet", label: "AKTE" },
-    { id: "rules", label: "REGELWERK" },
+    { id: "characters", label: t("nav.characters") },
+    { id: "sheet", label: t("nav.sheet") },
+    { id: "rules", label: t("nav.rules") },
   ];
 
   return (
@@ -109,10 +106,8 @@ export function Layout({ children }: { children: ReactNode }) {
       <div className="relative z-10 mx-auto flex h-screen max-w-6xl flex-col p-4 md:p-6">
         <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-pip-line pb-3">
           <div>
-            <h1 className="font-display text-4xl tracking-widest text-glow">PIP-MANAGER</h1>
-            <p className="text-xs text-pip-greendim">
-              Regelwerk: <span className="text-pip-amber">{activeRuleSet.name}</span> · v{activeRuleSet.version}
-            </p>
+            <h1 className="font-display text-4xl tracking-widest text-glow">{t("app.title")}</h1>
+            <p className="text-xs text-pip-greendim">{t("app.subtitle", { name: activeRuleSet.name, version: activeRuleSet.version })}</p>
           </div>
           <nav className="flex gap-1">
             {tabs.map((t) => (
@@ -128,28 +123,30 @@ export function Layout({ children }: { children: ReactNode }) {
                 {t.label}
               </button>
             ))}
+            <select value={locale} onChange={(e) => setLocale(e.target.value)} className="pip-input rounded-sm px-2 py-1 text-xs" title="Language">
+              <option value="de">DE</option>
+              <option value="en">EN</option>
+            </select>
             <select
               value={currentTheme}
               onChange={(e) => setTheme(e.target.value)}
-              className="pip-input ml-2 rounded-sm px-2 py-1 text-xs"
-              title="Theme wechseln"
+              className="pip-input rounded-sm px-2 py-1 text-xs"
+              title={t("app.theme.importTitle")}
             >
-              <optgroup label="Integrierte Themes">
-                {THEMES.map((t) => (
-                  <option key={t.id} value={t.id}>{t.label}</option>
+              <optgroup label={t("app.theme.builtin")}>
+                {THEMES.map((th) => (
+                  <option key={th.id} value={th.id}>{t(`theme.${th.id}`)}</option>
                 ))}
               </optgroup>
               {customThemes.length > 0 && (
-                <optgroup label="Eigene Themes">
-                  {customThemes.map((t) => (
-                    <option key={t.id} value={t.id}>{t.label}</option>
+                <optgroup label={t("app.theme.custom")}>
+                  {customThemes.map((th) => (
+                    <option key={th.id} value={th.id}>{th.label}</option>
                   ))}
                 </optgroup>
               )}
             </select>
-            <button onClick={handleImportTheme} className="pip-btn-ghost px-2 py-1 text-xs" title="Theme importieren">
-              + Theme
-            </button>
+            <button onClick={handleImportTheme} className="pip-btn-ghost px-2 py-1 text-xs">{t("app.theme.import")}</button>
           </nav>
         </header>
         <main className="flex-1 overflow-y-auto pr-1">{children}</main>
