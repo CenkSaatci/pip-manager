@@ -1,6 +1,6 @@
 import { Character } from "../../types/character";
 import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
-import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate, isExtremeSpecialValue } from "../../lib/derived";
+import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate } from "../../lib/derived";
 import { getBonusValue } from "../../lib/formula";
 import { getStats } from "../../lib/compat";
 

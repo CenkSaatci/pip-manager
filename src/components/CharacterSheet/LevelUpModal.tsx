@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Character, LevelUpRecord } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS } from "../../types/rules";
+import { RuleSet, getUiTemplate } from "../../types/rules";
 import { getMaxHp, getMaxApr, getLevelReward, checkPerkRequirements } from "../../lib/derived";
 
 export function LevelUpModal({
@@ -47,7 +47,9 @@ export function LevelUpModal({
     const nextVal = current + delta;
     if (nextVal < 0) return;
     if (delta > 0 && specialSpent >= (reward.specialPoints ?? 0)) return;
-    if (specialStats[key] + nextVal > rules.specialRange[1]) return;
+    const statDef = getUiTemplate(rules).stats.find((s) => s.key === key);
+    const max = statDef?.max ?? rules.specialRange?.[1] ?? 10;
+    if ((specialStats[key] ?? 0) + nextVal > max) return;
     setSpecialAlloc({ ...specialAlloc, [key]: nextVal });
   };
 
@@ -133,24 +135,24 @@ export function LevelUpModal({
         {reward.specialPoints > 0 && (
           <section className="mb-4">
             <div className="mb-1 flex items-center justify-between">
-              <h3 className="pip-label">SPECIAL erhöhen</h3>
+              <h3 className="pip-label">{getUiTemplate(rules).statsLabel} erhöhen</h3>
               <span className="text-xs text-pip-amber">
                 {specialSpent} / {reward.specialPoints} Punkte
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-7">
-              {SPECIAL_KEYS.map((key) => (
-                <div key={key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-2">
-                  <span className="text-xs text-pip-greendim">{SPECIAL_LABELS[key]}</span>
+              {getUiTemplate(rules).stats.map((stat) => (
+                <div key={stat.key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-2">
+                  <span className="text-xs text-pip-greendim">{stat.label}</span>
                   <span className="font-display text-xl text-glow">
-                    {specialStats[key]}
-                    {specialAlloc[key] ? ` +${specialAlloc[key]}` : ""}
+                    {specialStats[stat.key] ?? 0}
+                    {specialAlloc[stat.key] ? ` +${specialAlloc[stat.key]}` : ""}
                   </span>
                   <div className="flex gap-1">
-                    <button onClick={() => adjustSpecial(key, -1)} className="pip-btn-ghost px-2 text-xs">
+                    <button onClick={() => adjustSpecial(stat.key, -1)} className="pip-btn-ghost px-2 text-xs">
                       −
                     </button>
-                    <button onClick={() => adjustSpecial(key, 1)} className="pip-btn-ghost px-2 text-xs">
+                    <button onClick={() => adjustSpecial(stat.key, 1)} className="pip-btn-ghost px-2 text-xs">
                       +
                     </button>
                   </div>

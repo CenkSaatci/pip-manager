@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { blankCharacter, Character } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS, getUiTemplate } from "../../types/rules";
+import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
 import {
   getEffectiveSpecial,
   getSkillBaseValue,
   getMaxHp,
   getMaxApr,
-  isExtremeSpecialValue,
 } from "../../lib/derived";
 import { specialBonus } from "../../lib/formula";
 import { getTags, setTags, getStats } from "../../lib/compat";

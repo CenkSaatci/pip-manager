@@ -309,8 +309,8 @@ function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partia
             onChange={(v) => setCc({ extremeValueThreshold: v })}
           />
           <NumField label="Freie Skillpunkte" value={cc.freeSkillPoints} onChange={(v) => setCc({ freeSkillPoints: v })} />
-          <NumField label="Anzahl Tag-Skills" value={cc.tagSkillCount} onChange={(v) => setCc({ tagSkillCount: v })} />
-          <NumField label="Tag-Skill-Bonus" value={cc.tagSkillBonus} onChange={(v) => setCc({ tagSkillBonus: v })} />
+          <NumField label="Anzahl Boni-Skills" value={cc.tagSkillCount} onChange={(v) => setCc({ tagSkillCount: v })} />
+          <NumField label="Boni-Skill-Bonus" value={cc.tagSkillBonus} onChange={(v) => setCc({ tagSkillBonus: v })} />
           <NumField label="Skill-Startmaximum" value={cc.skillCapAtCreation} onChange={(v) => setCc({ skillCapAtCreation: v })} />
         </div>
       </div>
