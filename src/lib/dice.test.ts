@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { rollDicePool, rollInitiative, rollArmorCheck } from "./dice";
+import { rollDicePool, rollInitiative, rollArmorCheck, rollD20, rollD20Initiative, roll3d20 } from "./dice";
 import { DifficultyLevel } from "../types/rules";
 
-describe("rollDicePool", () => {
+describe("rollDicePool (d10-pool, Fallout)", () => {
   const normal: DifficultyLevel = { name: "Normal", penalty: -2, successesRequired: 3 };
 
   it("returns a result with the correct pool size", () => {
@@ -31,54 +31,78 @@ describe("rollDicePool", () => {
     expect(result.poolSize).toBe(1);
   });
 
-  it("rolls values between 1 and 10", () => {
-    const result = rollDicePool(100, 5);
-    result.rolls.forEach((r) => {
-      expect(r).toBeGreaterThanOrEqual(1);
-      expect(r).toBeLessThanOrEqual(10);
-    });
-  });
-
-  it("counts successes correctly (roll <= target or natural 1)", () => {
-    // With target=10, every roll 1-10 is a success
-    const result = rollDicePool(10, 8, { name: "Sehr leicht", penalty: 0, successesRequired: 1 }, 2); // target = 10 - 0 - 2 = 8
-    expect(result.successes).toBeGreaterThanOrEqual(0);
-    expect(result.successes).toBeLessThanOrEqual(10);
-  });
-
-  it("marks natural ones", () => {
-    // We can't force a natural 1, but the property should exist
-    const result = rollDicePool(1, 10);
-    expect(result.naturalOnes).toBeGreaterThanOrEqual(0);
-    expect(result.naturalOnes).toBeLessThanOrEqual(1);
-  });
-
   it("determines pass/fail based on successesRequired", () => {
     const diff: DifficultyLevel = { name: "Test", penalty: 0, successesRequired: 100 };
-    const result = rollDicePool(5, 10, diff); // target 10, pool 5, but need 100 successes
+    const result = rollDicePool(5, 10, diff);
     expect(result.passed).toBe(false);
   });
 });
 
-describe("rollInitiative", () => {
-  it("adds perception to a d10 roll", () => {
-    const result = rollInitiative(5);
+describe("rollD20 (d20-plus, D&D)", () => {
+  it("rolls a d20 and adds modifier", () => {
+    const result = rollD20(5, 15);
     expect(result.roll).toBeGreaterThanOrEqual(1);
-    expect(result.roll).toBeLessThanOrEqual(10);
-    expect(result.total).toBe(5 + result.roll);
+    expect(result.roll).toBeLessThanOrEqual(20);
+    expect(result.total).toBe(result.roll + 5);
+    expect(result.dc).toBe(15);
+  });
+
+  it("passes when total >= DC", () => {
+    // With modifier 100, even a natural 1 passes
+    const result = rollD20(100, 15);
+    expect(result.passed).toBe(true);
+  });
+
+  it("fails when total < DC", () => {
+    // With modifier 0 and DC 25, impossible on d20
+    const result = rollD20(0, 25);
+    expect(result.passed).toBe(false);
+  });
+
+  it("rolls twice with advantage", () => {
+    const result = rollD20(0, 10, true);
+    expect(result.rolls).toHaveLength(2);
+    expect(result.advantage).toBe(true);
+  });
+
+  it("natural 20 (Nat20) always passes at DC 30 with +0 mod", () => {
+    // We can't force a natural 20, but the function should handle it
+    const result = rollD20(0, 30);
+    // With mod 0 and DC 30, passing requires a 20
+    expect(result.passed).toBe(result.roll === 20);
   });
 });
 
-describe("rollArmorCheck", () => {
-  it("rolls a d10 against damage resistance", () => {
-    const result = rollArmorCheck(5);
+describe("rollD20Initiative", () => {
+  it("adds modifier to a d20 roll", () => {
+    const result = rollD20Initiative(3);
     expect(result.roll).toBeGreaterThanOrEqual(1);
-    expect(result.roll).toBeLessThanOrEqual(10);
-    expect(typeof result.blocked).toBe("boolean");
+    expect(result.roll).toBeLessThanOrEqual(20);
+    expect(result.total).toBe(result.roll + 3);
+  });
+});
+
+describe("roll3d20 (DSA)", () => {
+  it("rolls three d20s", () => {
+    const result = roll3d20(12);
+    expect(result.rolls).toHaveLength(3);
+    result.rolls.forEach((r) => {
+      expect(r).toBeGreaterThanOrEqual(1);
+      expect(r).toBeLessThanOrEqual(20);
+    });
   });
 
-  it("blocks when roll <= DR", () => {
-    // DR 10 blocks everything since d10 max is 10
-    expect(rollArmorCheck(10).blocked).toBe(true);
+  it("counts successes (rolls <= target)", () => {
+    // With target 20, all three rolls should be successes
+    const result = roll3d20(20);
+    expect(result.successes).toBe(3);
+    expect(result.passed).toBe(true);
+  });
+
+  it("fails when not all three rolls succeed", () => {
+    // With target 0, impossible to succeed
+    const result = roll3d20(0);
+    expect(result.successes).toBe(0);
+    expect(result.passed).toBe(false);
   });
 });

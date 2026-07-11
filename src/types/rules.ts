@@ -183,6 +183,9 @@ export interface StatConfig {
 }
 
 /** Beschreibt eine Ressource, die im Charakterbogen als Balken angezeigt wird. */
+/** Welche Würfelmechanik das Regelwerk verwendet. */
+export type DiceType = "d10-pool" | "d20-plus" | "3d20";
+
 export interface UiResourceDef {
   key: string;            // z.B. "hp", "mana", "karma"
   label: string;          // z.B. "Trefferpunkte", "Mana"
@@ -202,6 +205,7 @@ export interface UiPanelDef {
 export interface UiTemplate {
   statsLabel: string;  // Überschrift über den Stats, z.B. "Attribute"
   currencyLabel?: string; // Währungsbezeichnung, z.B. "Caps", "GM", "Dublonen" (default: "Caps")
+  diceType?: DiceType; // Würfelmechanik (default: "d10-pool")
   stats: StatConfig[];
   resources: UiResourceDef[];
   /** Welche Wizard-Schritte aktiv sind (fehlende = alle aktiv) */

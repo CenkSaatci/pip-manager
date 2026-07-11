@@ -94,6 +94,7 @@
   "ui": {
     "statsLabel": "Eigenschaften",
     "currencyLabel": "Dukaten",
+    "diceType": "3d20",
     "stats": [
       { "key": "MU", "label": "Mut", "shortLabel": "MU", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
       { "key": "KL", "label": "Klugheit", "shortLabel": "KL", "defaultValue": 8, "min": 1, "max": 21, "extremeThreshold": 2 },
