@@ -1,6 +1,7 @@
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
 import { getTags, setTags } from "../../lib/compat";
+import { useT } from "../../i18n/context";
 
 export function BackgroundPanel({
   char,
@@ -11,6 +12,7 @@ export function BackgroundPanel({
   rules: RuleSet;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const background = rules.backgrounds.find((b) => b.id === char.backgroundId);
 
   const setAllocation = (poolName: string, skillId: string, value: number, maxPerSkill: number) => {
@@ -36,17 +38,17 @@ export function BackgroundPanel({
 
   return (
     <div className="pip-panel rounded-sm p-4">
-      <h3 className="pip-label mb-3">Hintergrund &amp; Tag-Skills</h3>
+      <h3 className="pip-label mb-3">{t('background.title')}</h3>
 
       {background?.requiresGmApproval && (
         <p className="mb-2 rounded-sm border border-pip-amber bg-pip-amber/10 p-2 text-xs text-pip-amber">
-          Dieser Hintergrund benötigt Meistergenehmigung.
+          {t('background.gmWarning')}
         </p>
       )}
 
       {background?.fixedSkillBonuses && Object.keys(background.fixedSkillBonuses).length > 0 && (
         <div className="mb-3">
-          <span className="text-xs text-pip-greendim">Feste Grundausbildung:</span>
+          <span className="text-xs text-pip-greendim">{t('background.fixed')}:</span>
           <div className="flex flex-wrap gap-2 mt-1">
             {Object.entries(background.fixedSkillBonuses).map(([skillId, amount]) => {
               const skill = rules.skills.find((s) => s.id === skillId);
@@ -97,8 +99,7 @@ export function BackgroundPanel({
 
       <div className="mt-2">
         <span className="text-xs text-pip-greendim">
-          Tag-Skills wählen ({getTags(char).length} / {rules.characterCreation.tagSkillCount}, je +
-          {rules.characterCreation.tagSkillBonus}):
+          {t('background.tagSkills', { count: getTags(char).length, max: rules.characterCreation.tagSkillCount, bonus: rules.characterCreation.tagSkillBonus })}
         </span>
         <div className="mt-1 flex flex-wrap gap-1">
           {rules.skills.map((skill) => {

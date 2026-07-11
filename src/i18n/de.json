@@ -240,7 +240,7 @@
   "rules.export": "Komplettes Regelwerk exportieren",
   "rules.metaLabel": "Übersicht & Formeln",
   "rules.formulaVars": "Variablen: {vars} + level + karma; Funktion specialBonus(x)",
-  "rules.ccLabel": "Charaktererstellung",
+  "rules.ccLabel": "Charaktererstellung (Abschnitt 2, 6, 7)",
   "rules.ccStatStart": "{label}-Start",
   "rules.ccStatFree": "Freie {label}-Punkte",
   "rules.ccStatMin": "{label} Min",
@@ -250,7 +250,7 @@
   "rules.ccTagCount": "Anzahl Boni-Skills",
   "rules.ccTagBonus": "Boni-Skill-Bonus",
   "rules.ccCap": "Skill-Startmaximum",
-  "rules.disabledMechs": "Abgeschaltete Mechaniken",
+  "rules.disabledMechs": "Abgeschaltete Mechaniken (Abschnitt 24)",
 
   "uiTab.statsLabel": "Stats-Label",
   "uiTab.statsLabelPlaceholder": "z.B. S.P.E.C.I.A.L., Attribute, Eigenschaften",

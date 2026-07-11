@@ -9,6 +9,7 @@ import {
 } from "../../lib/derived";
 import { getBonusValue } from "../../lib/formula";
 import { getTags, setTags, getStats } from "../../lib/compat";
+import { useT } from "../../i18n/context";
 
 type Step = "name" | "race" | "special" | "background" | "skills" | "traits" | "review";
 
@@ -28,6 +29,7 @@ export function CharacterWizard({
     return c;
   });
 
+  const { t } = useT();
   const ui = getUiTemplate(rules);
   const cc = rules.characterCreation;
   const statDefaultSum = ui.stats.reduce((s, st) => s + (st.defaultValue ?? 5), 0);
@@ -37,13 +39,13 @@ export function CharacterWizard({
 
   const ws = ui.wizardSteps ?? {};
   const allSteps: { id: Step; label: string }[] = [
-    { id: "name", label: "Name" },
-    { id: "race", label: "Rasse" },
-    { id: "special", label: ui.statsLabel },
-    { id: "background", label: "Hintergrund" },
-    { id: "skills", label: "Fertigkeiten" },
-    { id: "traits", label: "Traits" },
-    { id: "review", label: "Überprüfen" },
+    { id: "name", label: t("wizard.step.name") },
+    { id: "race", label: t("wizard.step.race") },
+    { id: "special", label: t("wizard.step.stats", { label: ui.statsLabel }) },
+    { id: "background", label: t("wizard.step.background") },
+    { id: "skills", label: t("wizard.step.skills") },
+    { id: "traits", label: t("wizard.step.traits") },
+    { id: "review", label: t("wizard.step.review") },
   ];
   const steps = allSteps.filter((s) => {
     if (s.id === "name" || s.id === "special" || s.id === "skills" || s.id === "review") return true;
@@ -80,9 +82,9 @@ export function CharacterWizard({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-sm border border-pip-green bg-black p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="font-display text-2xl text-glow">Charakter erstellen</h2>
+          <h2 className="font-display text-2xl text-glow">{t("wizard.title")}</h2>
           <button onClick={onCancel} className="pip-btn-ghost px-2 py-1 text-sm text-pip-red">
-            Abbrechen
+            {t("wizard.cancel")}
           </button>
         </div>
 
@@ -106,24 +108,24 @@ export function CharacterWizard({
 
         {step === "name" && (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-pip-greendim">Gib deinem Wanderer einen Namen.</p>
+            <p className="text-sm text-pip-greendim">{t("wizard.namePrompt")}</p>
             <label className="flex flex-col gap-1">
-              <span className="pip-label">Name des Charakters</span>
+              <span className="pip-label">{t("wizard.charName")}</span>
               <input
                 autoFocus
                 value={draft.name}
                 onChange={(e) => update({ name: e.target.value })}
                 className="pip-input rounded-sm px-3 py-2 font-display text-xl"
-                placeholder="z.B. James Donovan"
+                placeholder={t("wizard.charNamePlaceholder")}
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="pip-label">Spieler-Name (optional)</span>
+              <span className="pip-label">{t("wizard.playerName")}</span>
               <input
                 value={draft.playerName ?? ""}
                 onChange={(e) => update({ playerName: e.target.value })}
                 className="pip-input rounded-sm px-3 py-2"
-                placeholder="Dein Name"
+                placeholder={t("wizard.playerNamePlaceholder")}
               />
             </label>
           </div>
@@ -131,9 +133,9 @@ export function CharacterWizard({
 
         {step === "race" && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-pip-greendim">Wähle eine Rasse. Die Boni/Mali werden im nächsten Schritt auf deine SPECIAL-Werte angerechnet.</p>
+            <p className="text-sm text-pip-greendim">{t("wizard.racePrompt", { statsLabel: ui.statsLabel })}</p>
             {rules.races.length === 0 && (
-              <p className="text-pip-amber text-sm">Keine Rassen im Regelwerk definiert. Überspringe diesen Schritt.</p>
+              <p className="text-pip-amber text-sm">{t("wizard.raceEmpty")}</p>
             )}
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {rules.races.map((r) => {
@@ -164,7 +166,7 @@ export function CharacterWizard({
               })}
             </div>
             <button onClick={() => update({ raceId: "" })} className="pip-btn-ghost self-start px-2 py-1 text-xs text-pip-greendim">
-              Keine Rasse
+              {t("wizard.noRace")}
             </button>
           </div>
         )}
@@ -172,9 +174,9 @@ export function CharacterWizard({
         {step === "special" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-pip-greendim">Verteile deine {ui.statsLabel}-Punkte.</p>
+              <p className="text-sm text-pip-greendim">{t("wizard.statsPrompt", { label: ui.statsLabel })}</p>
               <span className={`text-sm ${spentStats > statBudget ? "text-pip-red" : "text-pip-amber"}`}>
-                {spentStats} / {statBudget}
+                {t("wizard.statsSpent", { spent: spentStats, budget: statBudget })}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -234,7 +236,7 @@ export function CharacterWizard({
                       {raceMod !== 0 && ` (${raceMod > 0 ? "+" : ""}${raceMod})`}
                     </span>
                     <span className="text-xs text-pip-greendim">Mod +{getBonusValue(effectiveVal, rules)}</span>
-                    {val <= (st.extremeThreshold ?? 2) && <span className="text-xs text-pip-amber">SL-Genehmigung</span>}
+                    {val <= (st.extremeThreshold ?? 2) && <span className="text-xs text-pip-amber">{t("wizard.gmApproval")}</span>}
                   </div>
                 );
               })}
@@ -244,7 +246,7 @@ export function CharacterWizard({
 
         {step === "background" && (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-pip-greendim">Wähle einen Hintergrund. Du kannst später auch einen leeren Charakter ohne Hintergrund starten.</p>
+            <p className="text-sm text-pip-greendim">{t("wizard.backgroundPrompt")}</p>
 
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {rules.backgrounds.map((bg) => {
@@ -262,7 +264,7 @@ export function CharacterWizard({
                     <div className="font-display text-lg">
                       {bg.name}
                       {bg.requiresGmApproval && (
-                        <span className="ml-2 text-xs text-pip-amber">SL-Genehmigung</span>
+                        <span className="ml-2 text-xs text-pip-amber">{t("wizard.gmApproval")}</span>
                       )}
                     </div>
                     {bg.description && (
@@ -285,12 +287,12 @@ export function CharacterWizard({
               })}
             </div>
             <button onClick={() => update({ backgroundId: "" })} className="pip-btn-ghost self-start px-2 py-1 text-xs text-pip-greendim">
-              Kein Hintergrund
+              {t("wizard.noBackground")}
             </button>
 
             {draft.backgroundId && rules.backgrounds.find((b) => b.id === draft.backgroundId)?.pointBuyPools && (
               <div className="mt-2 border-t border-pip-line pt-4">
-                <h4 className="pip-label mb-2">Punkte-Kauf</h4>
+                <h4 className="pip-label mb-2">{t("wizard.pointBuy")}</h4>
                 {rules.backgrounds
                   .find((b) => b.id === draft.backgroundId)
                   ?.pointBuyPools?.map((pool) => {
@@ -300,10 +302,10 @@ export function CharacterWizard({
                       <div key={pool.poolName} className="mb-3 rounded-sm border border-pip-line p-2">
                         <div className="mb-1 flex items-center justify-between text-xs">
                           <span className="text-pip-greendim">
-                            {pool.poolName} — max. +{pool.maxPerSkill} pro Skill
+                            {t("wizard.pointBuySummary", { name: pool.poolName, max: pool.maxPerSkill })}
                           </span>
                           <span className={`text-pip-amber ${spent > pool.points ? "text-pip-red" : ""}`}>
-                            {spent} / {pool.points} Punkte
+                            {t("wizard.pointBuySpent", { spent, points: pool.points })}
                           </span>
                         </div>
                         <div className="grid grid-cols-2 gap-1 sm:grid-cols-3">
@@ -366,7 +368,7 @@ export function CharacterWizard({
             {draft.backgroundId && (
               <div className="mt-2 border-t border-pip-line pt-4">
                 <h4 className="pip-label mb-2">
-                  Tag-Skills wählen ({getTags(draft).length} / {cc.tagSkillCount}, +{cc.tagSkillBonus})
+                  {t("wizard.tagSkills", { count: getTags(draft).length, max: cc.tagSkillCount, bonus: cc.tagSkillBonus })}
                 </h4>
                 <div className="flex flex-wrap gap-1">
                   {rules.skills.map((skill) => {
@@ -402,13 +404,13 @@ export function CharacterWizard({
         {step === "skills" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-pip-greendim">Verteile freie Skillpunkte (Startmaximum {cc.skillCapAtCreation}).</p>
+              <p className="text-sm text-pip-greendim">{t("wizard.skillsPrompt", { cap: cc.skillCapAtCreation })}</p>
               <span className={`text-sm ${spentSkills > cc.freeSkillPoints ? "text-pip-red" : "text-pip-amber"}`}>
-                {spentSkills} / {cc.freeSkillPoints}
+                {t("wizard.skillsSpent", { spent: spentSkills, budget: cc.freeSkillPoints })}
               </span>
             </div>
             {rules.skills.length === 0 ? (
-              <p className="text-pip-amber text-sm">Keine Fertigkeiten im Regelwerk definiert.</p>
+              <p className="text-pip-amber text-sm">{t("wizard.skillsEmpty")}</p>
             ) : (
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {rules.skills.map((skill) => {
@@ -421,7 +423,7 @@ export function CharacterWizard({
                       <div>
                         <span>{skill.name}</span>
                         <span className="ml-2 text-xs text-pip-greendim">
-                          Basis {base} ({skill.governingStat})
+                          {t("wizard.skillBase", { base, stat: skill.governingStat })}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -474,9 +476,9 @@ export function CharacterWizard({
 
         {step === "traits" && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-pip-greendim">Wähle Traits (Vor- und Nachteile) für deinen Charakter.</p>
+            <p className="text-sm text-pip-greendim">{t("wizard.traitsPrompt")}</p>
             {rules.traits.length === 0 && (
-              <p className="text-pip-amber text-sm">Keine Traits im Regelwerk definiert.</p>
+              <p className="text-pip-amber text-sm">{t("wizard.traitsEmpty")}</p>
             )}
             <div className="flex flex-col gap-2">
               {rules.traits.map((trait) => {
@@ -503,12 +505,12 @@ export function CharacterWizard({
                     {trait.description && <p className="mt-1 text-xs text-pip-greendim">{trait.description}</p>}
                     {trait.benefits.length > 0 && (
                       <p className="mt-1 text-xs text-pip-green">
-                        Vorteile: {trait.benefits.map((e) => `${e.target} ${e.amount > 0 ? "+" : ""}${e.amount}`).join(", ")}
+                        {t("wizard.traitBenefits", { effects: trait.benefits.map((e) => `${e.target} ${e.amount > 0 ? "+" : ""}${e.amount}`).join(", ") })}
                       </p>
                     )}
                     {trait.drawbacks.length > 0 && (
                       <p className="mt-1 text-xs text-pip-red">
-                        Nachteile: {trait.drawbacks.map((e) => `${e.target} ${e.amount > 0 ? "+" : ""}${e.amount}`).join(", ")}
+                        {t("wizard.traitDrawbacks", { effects: trait.drawbacks.map((e) => `${e.target} ${e.amount > 0 ? "+" : ""}${e.amount}`).join(", ") })}
                       </p>
                     )}
                   </label>
@@ -520,39 +522,39 @@ export function CharacterWizard({
 
         {step === "review" && (
           <div className="flex flex-col gap-3">
-            <p className="text-sm text-pip-greendim">Überprüfe deinen Charakter bevor du ihn erstellst.</p>
+            <p className="text-sm text-pip-greendim">{t("wizard.reviewPrompt")}</p>
             <div className="grid grid-cols-2 gap-3 rounded-sm border border-pip-line p-3 text-sm">
               <div>
-                <span className="pip-label">Name</span>
+                <span className="pip-label">{t("wizard.reviewName")}</span>
                 <p className="font-display text-xl">{draft.name}</p>
               </div>
               <div>
-                <span className="pip-label">Spieler</span>
+                <span className="pip-label">{t("wizard.reviewPlayer")}</span>
                 <p>{draft.playerName || "—"}</p>
               </div>
               <div>
-                <span className="pip-label">Rasse</span>
+                <span className="pip-label">{t("wizard.reviewRace")}</span>
                 <p>{rules.races.find((r) => r.id === draft.raceId)?.name ?? "—"}</p>
               </div>
               <div>
-                <span className="pip-label">Hintergrund</span>
+                <span className="pip-label">{t("wizard.reviewBackground")}</span>
                 <p>{rules.backgrounds.find((b) => b.id === draft.backgroundId)?.name ?? "—"}</p>
               </div>
               <div>
-                <span className="pip-label">{ui.statsLabel}</span>
+                <span className="pip-label">{t("wizard.reviewStats", { label: ui.statsLabel })}</span>
                 <p>{ui.stats.map((s) => `${s.key} ${(getStats(draft)[s.key] ?? s.defaultValue ?? 5)}`).join(" · ")}</p>
               </div>
               <div>
-                <span className="pip-label">Traits</span>
+                <span className="pip-label">{t("wizard.reviewTraits")}</span>
                 <p>{draft.traitIds.map((id) => rules.traits.find((t) => t.id === id)?.name ?? id).join(", ") || "—"}</p>
               </div>
               <div className="col-span-2">
-                <span className="pip-label">Tag-Skills</span>
+                <span className="pip-label">{t("wizard.reviewTagSkills")}</span>
                 <p>{getTags(draft).map((id) => rules.skills.find((s) => s.id === id)?.name ?? id).join(", ") || "—"}</p>
               </div>
               <div className="col-span-2">
-                <span className="pip-label">Investierte Skillpunkte</span>
-                <p>{spentSkills} / {cc.freeSkillPoints}</p>
+                <span className="pip-label">{t("wizard.reviewSkillPoints")}</span>
+                <p>{t("wizard.reviewSkillsSpent", { spent: spentSkills, budget: cc.freeSkillPoints })}</p>
               </div>
             </div>
           </div>
@@ -567,7 +569,7 @@ export function CharacterWizard({
             disabled={idx === 0}
             className="pip-btn-ghost px-3 py-1 disabled:opacity-40"
           >
-            ← Zurück
+            {t("wizard.back")}
           </button>
 
           <button
@@ -598,7 +600,7 @@ export function CharacterWizard({
                 : "border border-pip-line text-pip-greendim cursor-not-allowed"
             }`}
           >
-            {step === "review" ? "Charakter erstellen" : "Weiter →"}
+            {step === "review" ? t("wizard.create") : t("wizard.next")}
           </button>
         </div>
       </div>

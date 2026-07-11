@@ -3,6 +3,7 @@ import { Character, LevelUpRecord } from "../../types/character";
 import { RuleSet, getUiTemplate } from "../../types/rules";
 import { getMaxHp, getMaxApr, getLevelReward, checkPerkRequirements } from "../../lib/derived";
 import { getStats, getTags, getResource } from "../../lib/compat";
+import { useT } from "../../i18n/context";
 
 export function LevelUpModal({
   char,
@@ -15,6 +16,7 @@ export function LevelUpModal({
   onClose: () => void;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const nextLevel = char.level + 1;
   const reward = getLevelReward(nextLevel, rules);
   const specialStats = getStats(char);
@@ -127,18 +129,18 @@ export function LevelUpModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
       <div className="pip-panel max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-sm bg-pip-bg p-5">
-        <h2 className="mb-1 font-display text-3xl text-glow">Aufstieg auf Level {nextLevel}</h2>
+        <h2 className="mb-1 font-display text-3xl text-glow">{t('levelUp.title', { level: nextLevel })}</h2>
         {reward.note && <p className="mb-3 text-xs text-pip-amber">{reward.note}</p>}
         <p className="mb-4 text-sm text-pip-greendim">
-          + {gainedHp} maximale HP (neu: {getMaxHp(previewChar, rules)})
+          {t('levelUp.hpGain', { hp: gainedHp, max: getMaxHp(previewChar, rules) })}
         </p>
 
         {reward.specialPoints > 0 && (
           <section className="mb-4">
             <div className="mb-1 flex items-center justify-between">
-              <h3 className="pip-label">{getUiTemplate(rules).statsLabel} erhöhen</h3>
+              <h3 className="pip-label">{t('levelUp.statsLabel', { label: getUiTemplate(rules).statsLabel })}</h3>
               <span className="text-xs text-pip-amber">
-                {specialSpent} / {reward.specialPoints} Punkte
+                {t('levelUp.statsSpent', { spent: specialSpent, points: reward.specialPoints })}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-7">
@@ -166,9 +168,9 @@ export function LevelUpModal({
         {reward.skillPoints > 0 && (
           <section className="mb-4">
             <div className="mb-1 flex items-center justify-between">
-              <h3 className="pip-label">Skillpunkte verteilen</h3>
+              <h3 className="pip-label">{t('levelUp.skillsLabel')}</h3>
               <span className="text-xs text-pip-amber">
-                {skillSpent} / {reward.skillPoints} Punkte
+                {t('levelUp.skillsSpent', { spent: skillSpent, points: reward.skillPoints })}
               </span>
             </div>
             <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
@@ -193,7 +195,7 @@ export function LevelUpModal({
         {reward.tagSkillSlots > 0 && (
           <section className="mb-4">
             <h3 className="pip-label mb-1">
-              Neue Tag-Skills wählen ({newTagSkills.length} / {reward.tagSkillSlots})
+              {t('levelUp.tagSkills', { count: newTagSkills.length, max: reward.tagSkillSlots })}
             </h3>
             <div className="flex flex-wrap gap-1">
               {rules.skills
@@ -219,7 +221,7 @@ export function LevelUpModal({
         {reward.perkSlots > 0 && (
           <section className="mb-4">
             <h3 className="pip-label mb-1">
-              Neue Perks wählen ({chosenPerks.length} / {reward.perkSlots})
+              {t('levelUp.perks', { count: chosenPerks.length, max: reward.perkSlots })}
             </h3>
             <div className="flex flex-col gap-1">
               {rules.perks.map((perk) => {
@@ -239,8 +241,8 @@ export function LevelUpModal({
                         {active ? "Entfernen" : "Wählen"}
                       </button>
                     </div>
-                    {!met && !active && <p className="mt-1 text-pip-red">Voraussetzungen fehlen: {reasons.join(", ")}</p>}
-                    {alreadyMaxed && <p className="mt-1 text-pip-red">Maximaler Rang bereits erreicht.</p>}
+                    {!met && !active && <p className="mt-1 text-pip-red">{t('levelUp.reqsMissing', { reasons: reasons.join(", ") })}</p>}
+                    {alreadyMaxed && <p className="mt-1 text-pip-red">{t('levelUp.maxed')}</p>}
                   </div>
                 );
               })}
@@ -250,18 +252,16 @@ export function LevelUpModal({
 
         {reward.specialPoints === 0 && reward.skillPoints === 0 && reward.tagSkillSlots === 0 && reward.perkSlots === 0 && (
           <p className="mb-4 text-sm text-pip-greendim">
-            Für dieses Level ist nichts zum Verteilen definiert. Trag im Regelwerk-Reiter unter "Levelaufstieg"
-            einen Eintrag für Level {nextLevel} ein, um SPECIAL-/Skillpunkte, Tag-Skill-Slots oder Perk-Slots zu
-            vergeben.
+            {t('levelUp.empty')}
           </p>
         )}
 
         <div className="flex justify-end gap-2 border-t border-pip-line pt-3">
           <button onClick={onClose} className="pip-btn-ghost">
-            Abbrechen
+            {t('levelUp.cancel')}
           </button>
           <button onClick={confirm} className="pip-btn">
-            Bestätigen
+            {t('levelUp.confirm')}
           </button>
         </div>
       </div>

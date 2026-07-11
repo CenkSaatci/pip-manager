@@ -240,7 +240,7 @@
   "rules.export": "Export Complete Rule Set",
   "rules.metaLabel": "Overview & Formulas",
   "rules.formulaVars": "Variables: {vars} + level + karma; Function: specialBonus(x)",
-  "rules.ccLabel": "Character Creation",
+  "rules.ccLabel": "Character Creation (Sections 2, 6, 7)",
   "rules.ccStatStart": "{label} Start",
   "rules.ccStatFree": "Free {label} Points",
   "rules.ccStatMin": "{label} Min",
@@ -250,7 +250,7 @@
   "rules.ccTagCount": "Number of Bonus Skills",
   "rules.ccTagBonus": "Bonus Skill Bonus",
   "rules.ccCap": "Skill Creation Cap",
-  "rules.disabledMechs": "Disabled Mechanics",
+  "rules.disabledMechs": "Disabled Mechanics (Section 24)",
 
   "uiTab.statsLabel": "Stats Label",
   "uiTab.statsLabelPlaceholder": "e.g. Attributes, Abilities, S.P.E.C.I.A.L.",

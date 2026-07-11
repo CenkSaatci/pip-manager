@@ -1,5 +1,6 @@
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
+import { useT } from "../../i18n/context";
 
 type ZoneState = "gesund" | "verwundet" | "verkrueppelt";
 
@@ -24,6 +25,7 @@ export function HitLocationPanel({
   rules: RuleSet;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const cycle = (zoneId: string) => {
     const state = getZoneState(zoneId, char);
     const injured = (char.injuredLimbs ?? []).filter((z) => z !== zoneId);
@@ -43,7 +45,7 @@ export function HitLocationPanel({
 
   return (
     <div className="pip-panel rounded-sm p-4">
-      <h3 className="pip-label mb-3">Trefferzonen (klicken zum Durchschalten: gesund → verwundet → verkrüppelt)</h3>
+      <h3 className="pip-label mb-3">{t('hitZones.title')}</h3>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {rules.hitLocations.map((zone) => {
           const state = getZoneState(zone.id, char);
@@ -54,8 +56,8 @@ export function HitLocationPanel({
               className={`rounded-sm border p-2 text-center text-xs transition-colors ${STATE_STYLES[state]}`}
             >
               <div className="font-display text-lg">{zone.name}</div>
-              <div className="capitalize">{state}</div>
-              <div className="text-[10px] opacity-70">Zielmalus {zone.penalty}</div>
+              <div className="capitalize">{state === "gesund" ? t('hitZones.healthy') : state === "verwundet" ? t('hitZones.injured') : t('hitZones.crippled')}</div>
+              <div className="text-[10px] opacity-70">{t('hitZones.penalty')} {zone.penalty}</div>
             </button>
           );
         })}

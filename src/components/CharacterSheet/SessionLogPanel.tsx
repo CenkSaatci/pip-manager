@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Character } from "../../types/character";
+import { useT } from "../../i18n/context";
 
 export function SessionLogPanel({ char, onChange }: { char: Character; onChange: (c: Character) => void }) {
+  const { t } = useT();
   const [draft, setDraft] = useState("");
 
   const addEntry = () => {
@@ -20,7 +22,7 @@ export function SessionLogPanel({ char, onChange }: { char: Character; onChange:
 
   return (
     <div className="pip-panel rounded-sm p-4">
-      <h3 className="pip-label mb-2">Session-Log</h3>
+      <h3 className="pip-label mb-2">{t('sessionLog.title')}</h3>
       <div className="mb-3 flex gap-2">
         <input
           value={draft}

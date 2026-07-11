@@ -1,5 +1,6 @@
 import { Character } from "../../types/character";
 import { RuleSet, getUiTemplate } from "../../types/rules";
+import { useT } from "../../i18n/context";
 import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate } from "../../lib/derived";
 import { getBonusValue } from "../../lib/formula";
 import { getStats } from "../../lib/compat";
@@ -13,6 +14,7 @@ export function SpecialPanel({
   rules: RuleSet;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const effective = getEffectiveSpecial(char, rules);
   const ui = getUiTemplate(rules);
   const stats = getStats(char);
@@ -67,7 +69,7 @@ export function SpecialPanel({
                 {effectiveVal}
                 {raceMod !== 0 ? ` (${raceMod > 0 ? "+" : ""}${raceMod} Mod.)` : ""}
               </span>
-              <span className="text-xs text-pip-greendim">Mod +{getBonusValue(effectiveVal, rules)}</span>
+              <span className="text-xs text-pip-greendim">{t('wizard.modifier', { value: getBonusValue(effectiveVal, rules) })}</span>
               {extreme && <span className="text-xs text-pip-amber">SL-Genehmigung nötig</span>}
             </div>
           );

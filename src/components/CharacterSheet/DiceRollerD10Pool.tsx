@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
+import { useT } from "../../i18n/context";
 import { getDicePoolSize, getSkillEffectiveValue, getEffectiveSpecial } from "../../lib/derived";
 import { rollDicePool, rollInitiative, rollArmorCheck, PoolRollResult } from "../../lib/dice";
 
@@ -9,6 +10,7 @@ export function DiceRollerD10Pool({
 }: {
   char: Character; rules: RuleSet; onCharChange?: (c: Character) => void;
 }) {
+  const { t } = useT();
   const [selectedSkill, setSelectedSkill] = useState(rules.skills[0]?.id ?? "");
   const [difficultyName, setDifficultyName] = useState(rules.difficultyLevels[2]?.name ?? "");
   const [coverPenalty, setCoverPenalty] = useState(0);
@@ -65,57 +67,63 @@ export function DiceRollerD10Pool({
           {rules.skills.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
         </select>
         <select value={selectedWeapon} onChange={(e) => { setSelectedWeapon(e.target.value); setBurstFire(false); }} className="pip-input rounded-sm px-2 py-1">
-          <option value="">Ohne Waffe (reiner Skillcheck)</option>
-          {weaponsForSkill.map((w) => (<option key={w.id} value={w.id}>{w.name} (Schaden {w.damage})</option>))}
+          <option value="">{t("dice.noWeapon")}</option>
+          {weaponsForSkill.map((w) => (<option key={w.id} value={w.id}>{t("dice.weaponOption", { name: w.name, dmg: w.damage ?? 0 })}</option>))}
         </select>
         {weapon?.isAutomatic && (
           <label className={`flex items-center gap-1 rounded-sm border px-2 py-1 text-xs ${canBurst ? "border-pip-line" : "border-pip-red/50 opacity-60"}`}>
             <input type="checkbox" checked={burstFire} disabled={!canBurst} onChange={(e) => setBurstFire(e.target.checked)} />
-            Dauerfeuer (+{weapon.burstDamageBonus ?? 0} Schaden, −{weapon.burstAmmoCost ?? 0} Munition)
-            <span className="ml-1 text-pip-amber">[{ammoCount} Schuss]</span>
+            {t("dice.burstLabel", { bonus: weapon.burstDamageBonus ?? 0, cost: weapon.burstAmmoCost ?? 0 })}
+            <span className="ml-1 text-pip-amber">{t("dice.burstAmmo", { count: ammoCount })}</span>
           </label>
         )}
         <select value={difficultyName} onChange={(e) => setDifficultyName(e.target.value)} className="pip-input rounded-sm px-2 py-1">
-          {rules.difficultyLevels.map((d) => (<option key={d.name} value={d.name}>{d.name} (Malus {d.penalty}, {d.successesRequired} Erfolge)</option>))}
+          {rules.difficultyLevels.map((d) => (<option key={d.name} value={d.name}>{t("dice.difficultyOption", { name: d.name, penalty: d.penalty, required: d.successesRequired })}</option>))}
         </select>
         <select value={coverPenalty} onChange={(e) => setCoverPenalty(Number(e.target.value))} className="pip-input rounded-sm px-2 py-1">
-          <option value={0}>Keine Deckung</option><option value={-1}>Leichte Deckung (-1)</option><option value={-2}>Gute Deckung (-2)</option>
+          <option value={0}>{t("dice.coverNone")}</option><option value={-1}>{t("dice.coverLight")}</option><option value={-2}>{t("dice.coverGood")}</option>
         </select>
         <select value={targetZone} onChange={(e) => setTargetZone(e.target.value)} className="pip-input rounded-sm px-2 py-1">
-          <option value="">Kein gezielter Treffer</option>
-          {rules.hitLocations.map((h) => (<option key={h.id} value={h.id}>{h.name} ({h.penalty})</option>))}
+          <option value="">{t("dice.zoneNone")}</option>
+          {rules.hitLocations.map((h) => (<option key={h.id} value={h.id}>{t("dice.zoneOption", { name: h.name, penalty: h.penalty })}</option>))}
         </select>
-        <button onClick={doRoll} className="pip-btn">Würfeln</button>
+        <button onClick={doRoll} className="pip-btn">{t("dice.roll")}</button>
       </div>
 
       {skill && (
         <p className="mb-2 text-xs text-pip-greendim">
-          Würfelpool: {getDicePoolSize(skill, char, rules)} W10 (Skill {getSkillEffectiveValue(skill, char, rules)} + Luck-Bonus)
+          {t("dice.poolInfo", { pool: getDicePoolSize(skill, char, rules), skill: getSkillEffectiveValue(skill, char, rules) })}
         </p>
       )}
 
       {lastResult && (
         <div className="mb-4 rounded-sm border border-pip-line p-2 text-sm">
-          <p>Zielwert: <span className="text-pip-amber">{lastResult.target}</span> · Würfe ({lastResult.poolSize}): {lastResult.rolls.join(", ")} · Erfolge: {lastResult.successes}{lastResult.naturalOnes > 0 ? ` (${lastResult.naturalOnes}× nat. 1)` : ""}</p>
-          <p className={lastResult.passed ? "text-pip-green text-glow" : "text-pip-red"}>{lastResult.passed ? "ERFOLG" : "FEHLSCHLAG"}{zone ? ` · Zielzone: ${zone.name}` : ""}</p>
+          <p>
+            {t("dice.target", { target: lastResult.target })} · {t("dice.rolls", { pool: lastResult.poolSize, rolls: lastResult.rolls.join(", ") })} · {t("dice.successes", { count: lastResult.successes })}
+            {lastResult.naturalOnes > 0 ? ` ${t("dice.naturalOnes", { count: lastResult.naturalOnes })}` : ""}
+          </p>
+          <p className={lastResult.passed ? "text-pip-green text-glow" : "text-pip-red"}>{lastResult.passed ? t("dice.passed") : t("dice.failed")}{zone ? ` · ${t("dice.targetZone", { name: zone.name })}` : ""}</p>
           {lastDamage !== null && (
-            <p className="mt-1 text-pip-amber">Schaden = {weapon?.damage} (Waffe) + {lastResult.successes} (Erfolge){burstFire && weapon?.isAutomatic ? ` + ${weapon.burstDamageBonus ?? 0} (Dauerfeuer)` : ""} = <strong>{lastDamage}</strong></p>
+            <p className="mt-1 text-pip-amber">
+              {t("dice.damage", { weapon: weapon?.damage ?? 0, succ: lastResult.successes, total: lastDamage })}
+              {burstFire && weapon?.isAutomatic ? " " + t("dice.damageBurst", { bonus: weapon.burstDamageBonus ?? 0 }) : ""}
+            </p>
           )}
         </div>
       )}
 
       <div className="mb-3 flex flex-wrap items-center gap-2 border-t border-pip-line pt-3">
-        <span className="pip-label">Rüstungswurf</span>
-        <span className="text-xs text-pip-greendim">DR:</span>
+        <span className="pip-label">{t("dice.armorLabel")}</span>
+        <span className="text-xs text-pip-greendim">{t("dice.armorDr")}</span>
         <input type="number" min={0} value={armorDr} onChange={(e) => setArmorDr(Number(e.target.value))} className="pip-input w-16 rounded-sm px-2 py-1 text-center" />
-        <button onClick={doArmorCheck} className="pip-btn-ghost">1W10 gegen DR würfeln</button>
-        {armorResult && (<span className={armorResult.blocked ? "text-pip-green text-glow" : "text-pip-red"}>Wurf {armorResult.roll} — {armorResult.blocked ? "Schaden geblockt" : "voller Schaden"}</span>)}
+        <button onClick={doArmorCheck} className="pip-btn-ghost">{t("dice.armorRoll")}</button>
+        {armorResult && (<span className={armorResult.blocked ? "text-pip-green text-glow" : "text-pip-red"}>{t("dice.armorResult", { roll: armorResult.roll, result: armorResult.blocked ? t("dice.armorBlocked") : t("dice.armorFull") })}</span>)}
       </div>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-pip-line pt-3">
-        <span className="pip-label">Initiative</span>
-        <button onClick={doInitiative} className="pip-btn-ghost">Sequence würfeln (PER + 1W10)</button>
-        {initiative && (<span className="text-glow font-display text-xl">= {initiative.total} (PER {effectiveSpecial.PER ?? 0} + Wurf {initiative.roll})</span>)}
+        <span className="pip-label">{t("dice.initLabel")}</span>
+        <button onClick={doInitiative} className="pip-btn-ghost">{t("dice.initFallout")}</button>
+        {initiative && (<span className="text-glow font-display text-xl">{t("dice.initResult", { total: initiative.total, per: effectiveSpecial.PER ?? 0, roll: initiative.roll })}</span>)}
       </div>
     </div>
   );

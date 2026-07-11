@@ -4,6 +4,7 @@ import { RuleSet, emptyRuleSet, getUiTemplate, fallbackUiTemplate } from "../../
 import { EntityListEditor } from "./EntityListEditor";
 import { JsonImportExport } from "./JsonImportExport";
 import { HelpTab } from "./HelpTab";
+import { useT } from "../../i18n/context";
 import * as api from "../../lib/api";
 import {
   validateRace,
@@ -21,6 +22,7 @@ const uid = () => crypto.randomUUID();
 type Tab = "meta" | "races" | "skills" | "perks" | "traits" | "items" | "backgrounds" | "enemies" | "levels" | "hitlocations" | "ui" | "help";
 
 export function RulesManager() {
+  const { t } = useT();
   const { ruleSets, activeRuleSet, upsertRuleSet, activateRuleSet, removeRuleSet } = useAppStore();
   const [tab, setTab] = useState<Tab>("meta");
 
@@ -42,7 +44,7 @@ export function RulesManager() {
   };
 
   const tabs: { id: Tab; label: string }[] = [
-    { id: "meta", label: "Übersicht & Formeln" },
+    { id: "meta", label: t('rules.metaLabel') },
     { id: "races", label: "Rassen" },
     { id: "skills", label: "Fertigkeiten" },
     { id: "perks", label: "Perks" },
@@ -60,7 +62,7 @@ export function RulesManager() {
     <div className="flex flex-col gap-4">
       <div className="pip-panel flex flex-wrap items-center justify-between gap-3 rounded-sm p-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="pip-label">Aktives Regelwerk:</span>
+          <span className="pip-label">{t('rules.active')}</span>
           <select
             value={rules.id}
             onChange={(e) => activateRuleSet(e.target.value)}
@@ -73,42 +75,42 @@ export function RulesManager() {
             ))}
           </select>
           <button onClick={handleNewRuleSet} className="pip-btn-ghost px-2 py-1 text-xs">
-            + Neues Regelwerk
+            {t('rules.new')}
           </button>
           {ruleSets.length > 1 && (
             <button
-              onClick={() => confirm("Regelwerk wirklich löschen?") && removeRuleSet(rules.id)}
+              onClick={() => confirm(t('rules.deleteConfirm')) && removeRuleSet(rules.id)}
               className="text-xs text-pip-red hover:text-glow"
             >
-              Löschen
+              {t('rules.delete')}
             </button>
           )}
         </div>
         <div className="flex gap-2">
           <button onClick={handleImportFullRuleSet} className="pip-btn-ghost">
-            Komplettes Regelwerk importieren
+            {t('rules.import')}
           </button>
           <button
             onClick={() => api.exportJsonFile(rules, `${rules.name.replace(/\s+/g, "_")}.json`)}
             className="pip-btn"
           >
-            Komplettes Regelwerk exportieren
+            {t('rules.export')}
           </button>
         </div>
       </div>
 
       <nav className="flex flex-wrap gap-1">
-        {tabs.map((t) => (
+        {tabs.map((tb) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={tb.id}
+            onClick={() => setTab(tb.id)}
             className={`border px-3 py-1 text-sm transition-colors ${
-              tab === t.id
+              tab === tb.id
                 ? "border-pip-green bg-pip-green/10 text-pip-green"
                 : "border-pip-line text-pip-greendim hover:text-pip-green"
             }`}
           >
-            {t.label}
+            {tb.label}
           </button>
         ))}
       </nav>
@@ -241,6 +243,7 @@ export function RulesManager() {
 }
 
 function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<RuleSet>) => void }) {
+  const { t } = useT();
   const uiLabel = getUiTemplate(rules).statsLabel;
   const allMechanics: RuleSet["disabledMechanics"] = [
     "karma",
@@ -298,26 +301,26 @@ function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partia
       </div>
 
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-2">Charaktererstellung (Abschnitt 2, 6, 7)</h3>
+        <h3 className="pip-label mb-2">{t('rules.ccLabel')}</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <NumField label={uiLabel + "-Start"} value={cc.specialStart} onChange={(v) => setCc({ specialStart: v })} />
-          <NumField label={"Freie " + uiLabel + "-Punkte"} value={cc.freeSpecialPoints} onChange={(v) => setCc({ freeSpecialPoints: v })} />
-          <NumField label={uiLabel + " Min"} value={cc.specialMin} onChange={(v) => setCc({ specialMin: v })} />
-          <NumField label={uiLabel + " Max"} value={cc.specialMax} onChange={(v) => setCc({ specialMax: v })} />
+          <NumField label={t('rules.ccStatStart', { label: uiLabel })} value={cc.specialStart} onChange={(v) => setCc({ specialStart: v })} />
+          <NumField label={t('rules.ccStatFree', { label: uiLabel })} value={cc.freeSpecialPoints} onChange={(v) => setCc({ freeSpecialPoints: v })} />
+          <NumField label={t('rules.ccStatMin', { label: uiLabel })} value={cc.specialMin} onChange={(v) => setCc({ specialMin: v })} />
+          <NumField label={t('rules.ccStatMax', { label: uiLabel })} value={cc.specialMax} onChange={(v) => setCc({ specialMax: v })} />
           <NumField
-            label="Extremwert-Schwelle (SL-OK)"
+            label={t('rules.ccExtreme')}
             value={cc.extremeValueThreshold}
             onChange={(v) => setCc({ extremeValueThreshold: v })}
           />
-          <NumField label="Freie Skillpunkte" value={cc.freeSkillPoints} onChange={(v) => setCc({ freeSkillPoints: v })} />
-          <NumField label="Anzahl Boni-Skills" value={cc.tagSkillCount} onChange={(v) => setCc({ tagSkillCount: v })} />
-          <NumField label="Boni-Skill-Bonus" value={cc.tagSkillBonus} onChange={(v) => setCc({ tagSkillBonus: v })} />
-          <NumField label="Skill-Startmaximum" value={cc.skillCapAtCreation} onChange={(v) => setCc({ skillCapAtCreation: v })} />
+          <NumField label={t('rules.ccSkillFree')} value={cc.freeSkillPoints} onChange={(v) => setCc({ freeSkillPoints: v })} />
+          <NumField label={t('rules.ccTagCount')} value={cc.tagSkillCount} onChange={(v) => setCc({ tagSkillCount: v })} />
+          <NumField label={t('rules.ccTagBonus')} value={cc.tagSkillBonus} onChange={(v) => setCc({ tagSkillBonus: v })} />
+          <NumField label={t('rules.ccCap')} value={cc.skillCapAtCreation} onChange={(v) => setCc({ skillCapAtCreation: v })} />
         </div>
       </div>
 
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-2">Abgeschaltete Mechaniken (Abschnitt 24)</h3>
+        <h3 className="pip-label mb-2">{t('rules.disabledMechs')}</h3>
         <div className="flex flex-wrap gap-2">
           {allMechanics.map((m) => {
             const active = rules.disabledMechanics.includes(m);
@@ -338,7 +341,7 @@ function MetaTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partia
 
       <div className="pip-panel rounded-sm p-4">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="pip-label">Formeln (Variablen: STR, PER, END, CHA, INT, AGI, LUK, level, karma; Funktion specialBonus(x))</h3>
+          <h3 className="pip-label">{t('rules.formulaVars', { vars: "STR, PER, END, CHA, INT, AGI, LUK" })}</h3>
           <JsonImportExport
             label="Formeln"
             data={rules.formulas}
@@ -406,6 +409,7 @@ const PANEL_LABELS: Record<string, string> = {
 };
 
 function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<RuleSet>) => void }) {
+  const { t } = useT();
   const template = getUiTemplate(rules);
 
   const setUi = (patch: any) => {
@@ -434,11 +438,12 @@ function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<
   return (
     <div className="flex flex-col gap-4">
       <div className="pip-panel rounded-sm p-4">
-        <Field label="Stats-Label (z.B. S.P.E.C.I.A.L., Attribute, Eigenschaften)">
+        <Field label={t('uiTab.statsLabel')}>
           <input
             value={template.statsLabel}
             onChange={(e) => setUi({ statsLabel: e.target.value })}
             className="pip-input w-full rounded-sm px-2 py-1"
+            placeholder={t('uiTab.statsLabelPlaceholder')}
           />
         </Field>
       </div>
@@ -464,7 +469,7 @@ function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<
       />
 
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-3">Panels (ein/aus)</h3>
+        <h3 className="pip-label mb-3">{t('uiTab.panels')}</h3>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {ALL_PANEL_KEYS.map((key) => {
             const panel = template.panels[key];
@@ -481,7 +486,7 @@ function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<
                         : "border-pip-red/50 text-pip-red"
                     }`}
                   >
-                    {panel.enabled ? "AN" : "AUS"}
+                    {panel.enabled ? t('uiTab.panelOn') : t('uiTab.panelOff')}
                   </button>
                 </div>
                 <input

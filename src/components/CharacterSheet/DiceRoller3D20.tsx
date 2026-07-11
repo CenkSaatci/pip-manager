@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
+import { useT } from "../../i18n/context";
 import { getSkillEffectiveValue } from "../../lib/derived";
 import { roll3d20, ThreeD20RollResult } from "../../lib/dice";
 
@@ -9,6 +10,7 @@ export function DiceRoller3D20({
 }: {
   char: Character; rules: RuleSet; onCharChange?: (c: Character) => void;
 }) {
+  const { t } = useT();
   const [selectedSkill, setSelectedSkill] = useState(rules.skills[0]?.id ?? "");
   const [modifier, setModifier] = useState(0);
   const [lastResult, setLastResult] = useState<ThreeD20RollResult | null>(null);
@@ -33,26 +35,26 @@ export function DiceRoller3D20({
           <span className="text-pip-greendim">Mod:</span>
           <input type="number" value={modifier} onChange={(e) => setModifier(Number(e.target.value))} className="pip-input w-14 rounded-sm px-1 py-0.5 text-center" />
         </div>
-        <button onClick={doRoll} className="pip-btn">3W20 würfeln</button>
+        <button onClick={doRoll} className="pip-btn">{t("dice.roll3d20")}</button>
       </div>
 
       {skill && (
         <p className="mb-2 text-xs text-pip-greendim">
-          Talent: {skill.name} ({getSkillEffectiveValue(skill, char, rules)}) · Modifikator: {modifier > 0 ? "+" : ""}{modifier}
+          {t("dice.talentInfo", { name: skill.name, val: getSkillEffectiveValue(skill, char, rules), mod: `${modifier > 0 ? "+" : ""}${modifier}` })}
         </p>
       )}
 
       {lastResult && (
         <div className="mb-4 rounded-sm border border-pip-line p-2 text-sm">
           <p>
-            3W20: <span className="text-pip-amber">{lastResult.rolls.join(" · ")}</span>
+            {t("dice.rolls3", { rolls: lastResult.rolls.join(" · ") })}
             {lastResult.successes < 3 && lastResult.rolls.some((r) => r <= lastResult.target) ? (
-              <span className="ml-2 text-pip-amber">({lastResult.successes}/3 erfolgreich)</span>
+              <span className="ml-2 text-pip-amber">{t("dice.successPartial", { count: lastResult.successes })}</span>
             ) : ""}
           </p>
-          <p>Zielwert: {lastResult.target} · {lastResult.successes} von 3 Würfeln erfolgreich</p>
+          <p>{t("dice.target3", { target: lastResult.target, succ: lastResult.successes })}</p>
           <p className={lastResult.passed ? "text-pip-green text-glow" : "text-pip-red"}>
-            {lastResult.passed ? "Talentprobe BESTANDEN" : "Talentprobe FEHLGESCHLAGEN"}
+            {lastResult.passed ? t("dice.passed3") : t("dice.failed3")}
           </p>
         </div>
       )}

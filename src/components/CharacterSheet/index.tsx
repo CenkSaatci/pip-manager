@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
+import { useT } from "../../i18n/context";
 import { SpecialPanel } from "./SpecialPanel";
 import { SkillsPanel } from "./SkillsPanel";
 import { BackgroundPanel } from "./BackgroundPanel";
@@ -19,12 +20,13 @@ import { RuleSet, getUiTemplate } from "../../types/rules";
 import * as api from "../../lib/api";
 
 export function CharacterSheet() {
+  const { t } = useT();
   const { characters, selectedCharacterId, activeRuleSet, upsertCharacter, selectCharacter } = useAppStore();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const char = characters.find((c) => c.id === selectedCharacterId);
 
   if (!char) {
-    return <p className="text-pip-greendim">Kein Wanderer ausgewählt.</p>;
+    return <p className="text-pip-greendim">{t('sheet.noCharacter')}</p>;
   }
 
   const rules = activeRuleSet;
@@ -46,7 +48,7 @@ export function CharacterSheet() {
       if (!saved) return; // Nutzer hat den Speichern-Dialog abgebrochen
     } catch (err) {
       console.error("PDF-Export fehlgeschlagen:", err);
-      alert(`PDF-Export fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`);
+      alert(t('sheet.pdfExportError', { error: err instanceof Error ? err.message : String(err) }));
     }
   };
 
@@ -55,7 +57,7 @@ export function CharacterSheet() {
       <div className="pip-panel flex flex-wrap items-center justify-between gap-3 rounded-sm p-4">
         <div className="flex flex-wrap items-center gap-3">
           <button onClick={() => selectCharacter(null)} className="pip-btn-ghost px-2 py-1 text-sm">
-            ← Zurück
+            {t('sheet.back')}
           </button>
           <input
             value={char.name}
@@ -66,16 +68,16 @@ export function CharacterSheet() {
         </div>
         <div className="flex gap-2">
           <button onClick={() => setShowLevelUp(true)} className="pip-btn">
-            Level Up
+            {t('sheet.levelUp')}
           </button>
           <button onClick={() => window.print()} className="pip-btn-ghost">
-            Drucken
+            {t('sheet.print')}
           </button>
           <button onClick={handleExportPdf} className="pip-btn-ghost">
-            Als PDF speichern
+            {t('sheet.savePdf')}
           </button>
           <button onClick={handleExport} className="pip-btn-ghost">
-            Als JSON exportieren
+            {t('sheet.exportJson')}
           </button>
         </div>
       </div>
@@ -115,11 +117,11 @@ export function CharacterSheet() {
         })}
         <div className="pip-panel flex items-center justify-between rounded-sm p-3">
           <div>
-            <span className="pip-label">{getUiTemplate(rules).currencyLabel ?? "Caps"}</span>
+            <span className="pip-label">{t('sheet.globalCaps', { currency: getUiTemplate(rules).currencyLabel ?? "Caps" })}</span>
             <div className="font-display text-2xl text-glow">{getCaps(char)}</div>
           </div>
           <div>
-            <span className="pip-label">XP</span>
+            <span className="pip-label">{t('sheet.globalXp')}</span>
             <div className="font-display text-2xl text-glow">{char.xp}</div>
           </div>
         </div>
@@ -139,13 +141,13 @@ export function CharacterSheet() {
       <DiceRollerPanel char={char} rules={rules} onCharChange={update} />
 
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-2">Notizen &amp; Hintergrund</h3>
+        <h3 className="pip-label mb-2">{t('sheet.notesLabel')}</h3>
         <textarea
           value={char.backstory ?? ""}
           onChange={(e) => update({ ...char, backstory: e.target.value })}
           rows={4}
           className="pip-input w-full rounded-sm p-2 text-sm"
-          placeholder="Hintergrundgeschichte, Aussehen, Ticks…"
+          placeholder={t('sheet.notesPlaceholder')}
         />
       </div>
 

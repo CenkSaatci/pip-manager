@@ -1,6 +1,8 @@
 import { Character } from "../../types/character";
+import { useT } from "../../i18n/context";
 
 export function NeedsPanel({ char, onChange }: { char: Character; onChange: (c: Character) => void }) {
+  const { t } = useT();
   const adjust = (field: "hunger" | "thirst", delta: number) => {
     const current = (char as any)[field] ?? 0;
     onChange({ ...char, [field]: Math.max(0, current + delta) });
@@ -13,17 +15,17 @@ export function NeedsPanel({ char, onChange }: { char: Character; onChange: (c: 
   return (
     <div className="pip-panel rounded-sm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="pip-label">Bedürfnisse</h3>
+        <h3 className="pip-label">{t('needs.title')}</h3>
         <button onClick={newDay} className="pip-btn-ghost px-2 py-1 text-xs">
-          Neuer Tag (+1 / +1)
+          {t('needs.newDay')}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <NeedRow label="Hunger" value={char.hunger ?? 0} onAdjust={(d) => adjust("hunger", d)} />
-        <NeedRow label="Durst" value={char.thirst ?? 0} onAdjust={(d) => adjust("thirst", d)} />
+        <NeedRow label={t('needs.hunger')} value={char.hunger ?? 0} onAdjust={(d) => adjust("hunger", d)} />
+        <NeedRow label={t('needs.thirst')} value={char.thirst ?? 0} onAdjust={(d) => adjust("thirst", d)} />
       </div>
       <p className="mt-2 text-xs text-pip-greendim">
-        Reine Zählwerte ohne automatische Auswirkung — die Schwellen/Konsequenzen legt ihr am Tisch fest.
+        {t('needs.hint')}
       </p>
     </div>
   );

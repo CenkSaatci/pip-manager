@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useAppStore } from "../store/useAppStore";
+import { useT } from "../i18n/context";
 import { blankCharacter, Character } from "../types/character";
 import { CharacterWizard } from "./CharacterWizard";
 import * as api from "../lib/api";
 import { migrateCharacter } from "../lib/migration";
 
 export function CharacterList() {
+  const { t } = useT();
   const { characters, ruleSets, activeRuleSet, selectCharacter, upsertCharacter, removeCharacter } = useAppStore();
   const [wizardOpen, setWizardOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
@@ -15,7 +17,7 @@ export function CharacterList() {
     : characters.filter((c) => c.ruleSetId === activeRuleSet.id);
 
   const getRuleSetName = (ruleSetId: string): string => {
-    return ruleSets.find((r) => r.id === ruleSetId)?.name ?? "Unbekanntes System";
+    return ruleSets.find((r) => r.id === ruleSetId)?.name ?? t('charList.unknownSystem');
   };
 
   const handleCreate = () => setWizardOpen(true);
@@ -47,7 +49,7 @@ export function CharacterList() {
     if (!raw) return;
     const list = Array.isArray(raw) ? raw : raw.characters ?? [];
     if (list.length === 0) {
-      alert("Keine Charaktere in dieser Datei gefunden.");
+      alert(t('charList.importAllError'));
       return;
     }
     for (const c of list) {
@@ -56,7 +58,7 @@ export function CharacterList() {
       migrated.updatedAt = new Date().toISOString();
       await upsertCharacter(migrated);
     }
-    alert(`${list.length} Charakter(e) importiert/aktualisiert.`);
+    alert(t('charList.importAllDone', { count: list.length }));
   };
 
   const handleExport = async (c: Character, e: React.MouseEvent) => {
@@ -66,7 +68,7 @@ export function CharacterList() {
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm("Diesen Wanderer wirklich löschen?")) {
+    if (confirm(t('charList.deleteConfirm'))) {
       await removeCharacter(id);
     }
   };
@@ -81,29 +83,29 @@ export function CharacterList() {
     <div>
       <div className="mb-4 flex flex-wrap gap-2">
         <button onClick={handleCreate} className="pip-btn">
-          + Neuer Wanderer (geführt)
+          {t('charList.createGuided')}
         </button>
         <button onClick={handleQuickCreate} className="pip-btn-ghost">
-          + Schnellerstellung
+          {t('charList.createQuick')}
         </button>
         <button onClick={handleImport} className="pip-btn-ghost">
-          Charakter importieren (JSON)
+          {t('charList.import')}
         </button>
         <button onClick={handleExportAll} className="pip-btn-ghost">
-          Alle exportieren (Backup)
+          {t('charList.exportAll')}
         </button>
         <button onClick={handleImportAll} className="pip-btn-ghost">
-          Alle importieren (Backup)
+          {t('charList.importAll')}
         </button>
       </div>
 
       {characters.length > 0 && (
         <div className="mb-3 flex items-center gap-2 text-xs">
           <span className="text-pip-greendim">
-            {showAll ? `${characters.length} Charaktere in allen Systemen` : `${filtered.length} Charaktere in "${activeRuleSet.name}"`}
+            {showAll ? t('charList.filterAll', { count: characters.length }) : t('charList.filter', { count: filtered.length, name: activeRuleSet.name })}
           </span>
           <button onClick={() => setShowAll(!showAll)} className="pip-btn-ghost px-2 py-0.5">
-            {showAll ? "Nur aktives System" : "Alle Systeme anzeigen"}
+            {showAll ? t('charList.toggleFilterOff') : t('charList.toggleFilter')}
           </button>
         </div>
       )}
@@ -111,8 +113,8 @@ export function CharacterList() {
       {filtered.length === 0 && (
         <p className="text-pip-greendim">
           {showAll
-            ? "Keine Aktendatensätze gefunden. Leg mit '+ Neuer Wanderer' los oder importiere einen bestehenden Charakter."
-            : `Keine Charaktere im System "${activeRuleSet.name}". Wechsle das Regelwerk oder schalte auf "Alle Systeme anzeigen".`}
+            ? t('charList.empty')
+            : t('charList.emptyFiltered', { name: activeRuleSet.name })}
         </p>
       )}
 
@@ -130,20 +132,20 @@ export function CharacterList() {
               <div className="flex items-start justify-between">
                 <h3 className="font-display text-2xl text-glow">{c.name}</h3>
                 <span className="rounded border border-pip-line px-1.5 text-xs text-pip-amber">
-                  LVL {c.level}
+                  {t('charList.lvl', { level: c.level })}
                 </span>
               </div>
               <p className="text-sm text-pip-greendim">
-                {race?.name ?? "Unbekannte Rasse"} · {c.playerName || "kein Spieler eingetragen"}
+                {race?.name ?? t('charList.unknownRace')} · {c.playerName || t('charList.noPlayer')}
               </p>
               {isOtherSystem && (
                 <p className="text-xs text-pip-amber">{systemName}</p>
               )}
               <div className="mt-2 flex items-center justify-between text-xs">
-                <span>{(c.resources?.hp ?? c.currentHp ?? 0)} HP</span>
+                <span>{t('charList.hp', { hp: c.resources?.hp ?? c.currentHp ?? 0 })}</span>
                 <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">Export</span>
-                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-red hover:text-glow">Löschen</span>
+                  <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">{t('charList.export')}</span>
+                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-red hover:text-glow">{t('charList.delete')}</span>
                 </div>
               </div>
             </button>

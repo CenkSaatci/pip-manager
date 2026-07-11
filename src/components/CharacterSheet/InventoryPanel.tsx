@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
 import { getCarryWeight, getCurrentCarriedWeight, applyConsumable } from "../../lib/derived";
+import { useT } from "../../i18n/context";
 
 export function InventoryPanel({
   char,
@@ -12,6 +13,7 @@ export function InventoryPanel({
   rules: RuleSet;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const [selectedItem, setSelectedItem] = useState(rules.items[0]?.id ?? "");
   const carried = getCurrentCarriedWeight(char, rules);
   const capacity = getCarryWeight(char, rules);
@@ -69,9 +71,9 @@ export function InventoryPanel({
   return (
     <div className="pip-panel rounded-sm p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="pip-label">Inventar</h3>
+        <h3 className="pip-label">{t('inventory.title')}</h3>
         <span className={`text-xs ${overloaded ? "text-pip-red" : "text-pip-amber"}`}>
-          {carried.toFixed(1)} / {capacity} kg {overloaded ? "· ÜBERLADEN" : ""}
+          {t('inventory.weight', { weight: carried.toFixed(1), capacity })} {overloaded ? `· ${t('inventory.overloaded')}` : ""}
         </span>
       </div>
 
@@ -81,15 +83,15 @@ export function InventoryPanel({
           onChange={(e) => setSelectedItem(e.target.value)}
           className="pip-input flex-1 rounded-sm px-2 py-1"
         >
-          {rules.items.length === 0 && <option value="">Keine Items im Regelwerk</option>}
+          {rules.items.length === 0 && <option value="">{t('inventory.empty')}</option>}
           {rules.items.map((item) => (
             <option key={item.id} value={item.id}>
-              {item.name} ({item.type}, {item.weight}kg)
+              {item.name} {t('inventory.suffix', { type: item.type, weight: item.weight })}
             </option>
           ))}
         </select>
         <button onClick={addItem} className="pip-btn-ghost px-3">
-          + Hinzufügen
+          {t('inventory.add')}
         </button>
       </div>
 
@@ -103,26 +105,26 @@ export function InventoryPanel({
                 <span className={entry.equipped ? "text-pip-amber" : ""}>{item.name}</span>
                 <span className="ml-2 text-xs text-pip-greendim">
                   {item.type}
-                  {item.damage !== undefined ? ` · Schaden ${item.damage}` : ""}
-                  {item.damageResistance ? ` · DR ${item.damageResistance}` : ""}
-                  {item.isHelmet ? " · Helm" : ""}
-                  {item.requiresTraining ? " · benötigt Ausbildung" : ""}
+                  {item.damage !== undefined ? ` · ${t('inventory.damage', { dmg: item.damage })}` : ""}
+                  {item.damageResistance ? ` · ${t('inventory.dr', { dr: item.damageResistance })}` : ""}
+                  {item.isHelmet ? ` · ${t('inventory.helmet')}` : ""}
+                  {item.requiresTraining ? ` · ${t('inventory.training')}` : ""}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {item.type === "consumable" && item.effects && item.effects.length > 0 && (
                   <button onClick={() => useItem(entry)} className="text-xs text-pip-amber hover:text-pip-green">
-                    Benutzen
+                    {t('inventory.use')}
                   </button>
                 )}
                 {(item.type === "weapon" || item.type === "armor") && (
                   <button onClick={() => toggleEquip(entry.itemId)} className="text-xs text-pip-greendim hover:text-pip-green">
-                    {entry.equipped ? "Ablegen" : "Ausrüsten"}
+                    {entry.equipped ? t('inventory.unequip') : t('inventory.equip')}
                   </button>
                 )}
                 {item.isAutomatic && (
                   <span className="flex items-center gap-1 text-xs text-pip-amber">
-                    Mun: {entry.currentAmmo ?? 0}
+                    {t('inventory.ammo', { count: entry.currentAmmo ?? 0 })}
                     <button
                       onClick={() => {
                         const max = (item.burstAmmoCost ?? 1) * 10;
@@ -135,7 +137,7 @@ export function InventoryPanel({
                       }}
                       className="ml-1 rounded-sm border border-pip-line px-1 hover:border-pip-green"
                     >
-                      + Nachladen
+                      {t('inventory.reload')}
                     </button>
                   </span>
                 )}
@@ -150,7 +152,7 @@ export function InventoryPanel({
             </div>
           );
         })}
-        {char.inventory.length === 0 && <p className="text-sm text-pip-greendim">Inventar ist leer.</p>}
+        {char.inventory.length === 0 && <p className="text-sm text-pip-greendim">{t('inventory.emptyList')}</p>}
       </div>
     </div>
   );

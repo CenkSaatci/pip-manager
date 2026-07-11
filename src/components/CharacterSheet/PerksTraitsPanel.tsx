@@ -1,6 +1,7 @@
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
 import { checkPerkRequirements } from "../../lib/derived";
+import { useT } from "../../i18n/context";
 
 export function PerksTraitsPanel({
   char,
@@ -11,6 +12,7 @@ export function PerksTraitsPanel({
   rules: RuleSet;
   onChange: (c: Character) => void;
 }) {
+  const { t } = useT();
   const toggleTrait = (traitId: string) => {
     const has = char.traitIds.includes(traitId);
     onChange({
@@ -38,8 +40,8 @@ export function PerksTraitsPanel({
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-3">Traits</h3>
-        {rules.traits.length === 0 && <p className="text-sm text-pip-greendim">Keine Traits definiert.</p>}
+        <h3 className="pip-label mb-3">{t('perksTraits.traits')}</h3>
+        {rules.traits.length === 0 && <p className="text-sm text-pip-greendim">{t('perksTraits.traitsEmpty')}</p>}
         <div className="flex flex-col gap-2">
           {rules.traits.map((trait) => {
             const active = char.traitIds.includes(trait.id);
@@ -62,8 +64,8 @@ export function PerksTraitsPanel({
       </div>
 
       <div className="pip-panel rounded-sm p-4">
-        <h3 className="pip-label mb-3">Perks</h3>
-        {rules.perks.length === 0 && <p className="text-sm text-pip-greendim">Keine Perks definiert.</p>}
+        <h3 className="pip-label mb-3">{t('perksTraits.perks')}</h3>
+        {rules.perks.length === 0 && <p className="text-sm text-pip-greendim">{t('perksTraits.perksEmpty')}</p>}
         <div className="flex flex-col gap-2">
           {rules.perks.map((perk) => {
             const owned = char.perks.find((p) => p.perkId === perk.id);
@@ -83,16 +85,16 @@ export function PerksTraitsPanel({
                     onClick={() => togglePerk(perk.id)}
                     className="pip-btn-ghost px-2 py-0.5 text-xs disabled:cursor-not-allowed"
                   >
-                    {owned ? "Entfernen" : "Wählen"}
+                    {owned ? t('perksTraits.remove') : t('perksTraits.select')}
                   </button>
                 </div>
                 {perk.description && <p className="mt-1 text-xs text-pip-greendim">{perk.description}</p>}
                 {!met && !owned && (
-                  <p className="mt-1 text-xs text-pip-red">Voraussetzungen fehlen: {reasons.join(", ")}</p>
+                  <p className="mt-1 text-xs text-pip-red">{t('perksTraits.reqsMissing')}: {reasons.join(", ")}</p>
                 )}
                 {owned && perk.maxRanks > 1 && (
                   <div className="mt-1 flex items-center gap-2 text-xs">
-                    <span>Rang:</span>
+                    <span>{t('perksTraits.rank')}:</span>
                     <input
                       type="number"
                       min={1}
