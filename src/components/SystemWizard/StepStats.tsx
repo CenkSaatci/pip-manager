@@ -1,5 +1,3 @@
-import { StatConfig } from "../../types/rules";
-
 export interface StatEntry {
   key: string;
   label: string;

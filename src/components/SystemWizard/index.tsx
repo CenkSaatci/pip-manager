@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useT } from "../../i18n/context";
 import { StepBasics, BasicsDraft } from "./StepBasics";
 import { StepStats, StatsDraft } from "./StepStats";
 import { StepMechanics, MechanicsDraft } from "./StepMechanics";
@@ -7,13 +8,13 @@ import { StepReview } from "./StepReview";
 
 type Step = "basics" | "stats" | "mechanics" | "panels" | "review";
 
-const STEPS: { id: Step; label: string }[] = [
-  { id: "basics", label: "Basis" },
-  { id: "stats", label: "Attribute" },
-  { id: "mechanics", label: "Mechaniken" },
-  { id: "panels", label: "Panels" },
-  { id: "review", label: "Export" },
-];
+  const STEPS: { id: Step; label: string }[] = [
+    { id: "basics", label: "Basis" },
+    { id: "stats", label: "Attribute" },
+    { id: "mechanics", label: "Mechaniken" },
+    { id: "panels", label: "Panels" },
+    { id: "review", label: "Export" },
+  ] as const;
 
 const DEFAULT_BASICS: BasicsDraft = {
   name: "",
@@ -66,6 +67,7 @@ const DEFAULT_PANELS: PanelsDraft = {
 };
 
 export function SystemWizard({ onClose }: { onClose: () => void }) {
+  const { t } = useT();
   const [step, setStep] = useState<Step>("basics");
   const [basics, setBasics] = useState<BasicsDraft>(DEFAULT_BASICS);
   const [stats, setStats] = useState<StatsDraft>(DEFAULT_STATS);

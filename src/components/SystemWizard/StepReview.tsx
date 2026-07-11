@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "../../store/useAppStore";
-import { RuleSet, THEMES, DiceType } from "../../types/rules";
+import { RuleSet, DiceType } from "../../types/rules";
 import * as api from "../../lib/api";
 import { BasicsDraft } from "./StepBasics";
 import { StatsDraft } from "./StepStats";
@@ -60,7 +60,7 @@ function buildRuleSet(b: BasicsDraft, s: StatsDraft, m: MechanicsDraft, p: Panel
     formulas: {
       maxHp: m.hpFormula || "(STR+END)*5",
       maxApr: "1",
-      carryWeight: "STR*15",
+      carryWeight: `${s.stats[0]?.key ?? "STR"}*15`,
       healingRate: "1",
       luckBonusDice: "0",
       skillPointsPerLevel: "5",

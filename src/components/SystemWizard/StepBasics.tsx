@@ -1,4 +1,4 @@
-import { RuleSet, THEMES } from "../../types/rules";
+import { THEMES } from "../../types/rules";
 import { useT } from "../../i18n/context";
 
 export interface BasicsDraft {
