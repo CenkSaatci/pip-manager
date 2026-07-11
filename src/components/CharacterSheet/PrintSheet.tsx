@@ -7,7 +7,7 @@ import {
   getCarryWeight,
   getSkillEffectiveValue,
 } from "../../lib/derived";
-import { specialBonus } from "../../lib/formula";
+import { getBonusValue } from "../../lib/formula";
 import { getTags, getResource, getCaps } from "../../lib/compat";
 import { getUiTemplate } from "../../types/rules";
 
@@ -28,19 +28,27 @@ export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet })
       </div>
 
       <div className="mb-4 grid grid-cols-7 gap-2 text-center text-sm">
-        {Object.entries(effective).map(([key, value]) => (
-          <div key={key} className="border border-black p-1">
-            <div className="font-bold">{key}</div>
-            <div className="text-xl">{value}</div>
-            <div className="text-xs">Bonus +{specialBonus(value)}</div>
-          </div>
-        ))}
+        {getUiTemplate(rules).stats.map((stat) => {
+          const val = effective[stat.key] ?? 0;
+          return (
+            <div key={stat.key} className="border border-black p-1">
+              <div className="font-bold">{stat.label}</div>
+              <div className="text-xl">{val}</div>
+              <div className="text-xs">Mod {getBonusValue(val, rules)}</div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mb-4 grid grid-cols-4 gap-2 text-center text-sm">
-        <Stat label="HP" value={`${getResource(char, "hp")} / ${getMaxHp(char, rules)}`} />
-        <Stat label="APR" value={`${getResource(char, "apr")} / ${getMaxApr(char, rules)}`} />
-        <Stat label="Traglast" value={`${getCarryWeight(char, rules)} kg`} />
+        {getUiTemplate(rules).resources.map((res) => {
+          const val = getResource(char, res.key);
+          const max = res.formula === "maxHp" ? getMaxHp(char, rules)
+            : res.formula === "maxApr" ? getMaxApr(char, rules)
+            : res.formula === "carryWeight" ? getCarryWeight(char, rules)
+            : undefined;
+          return <Stat key={res.key} label={res.label} value={max ? `${val} / ${max}` : val} />;
+        })}
         <Stat label={getUiTemplate(rules).currencyLabel ?? "Caps"} value={getCaps(char)} />
       </div>
 

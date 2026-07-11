@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import { Character } from "../types/character";
 import { RuleSet, getUiTemplate } from "../types/rules";
 import { getEffectiveSpecial, getMaxHp, getMaxApr, getCarryWeight, getSkillEffectiveValue } from "./derived";
-import { specialBonus } from "./formula";
+import { getBonusValue } from "./formula";
 import { getResource, getCaps, getTags } from "./compat";
 
 const MARGIN = 14;
@@ -39,37 +39,41 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
   doc.line(MARGIN, y, PAGE_WIDTH - MARGIN, y);
   line(8);
 
-  // SPECIAL
+  // Stats (aus UiTemplate)
+  const ui = getUiTemplate(rules);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  doc.text("S.P.E.C.I.A.L.", MARGIN, y);
+  doc.text(ui.statsLabel, MARGIN, y);
   line(6);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  const specialKeys = Object.keys(effective);
-  const colWidth = (PAGE_WIDTH - 2 * MARGIN) / specialKeys.length;
-  specialKeys.forEach((key, i) => {
+  const colWidth = (PAGE_WIDTH - 2 * MARGIN) / Math.max(ui.stats.length, 1);
+  ui.stats.forEach((stat, i) => {
     const x = MARGIN + i * colWidth;
+    const val = effective[stat.key] ?? 0;
     doc.setFont("helvetica", "bold");
-    doc.text(key, x, y);
+    doc.text(stat.label, x, y);
     doc.setFont("helvetica", "normal");
-    doc.text(`${effective[key]} (+${specialBonus(effective[key])})`, x, y + 5);
+    doc.text(`${val} (Mod ${getBonusValue(val, rules)})`, x, y + 5);
   });
   line(14);
 
-  // Kernwerte
+  // Resources (aus UiTemplate)
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text("Kernwerte", MARGIN, y);
   line(6);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  const core = [
-    `HP: ${getResource(char, "hp")} / ${getMaxHp(char, rules)}`,
-    `APR: ${getResource(char, "apr")} / ${getMaxApr(char, rules)}`,
-    `Traglast: ${getCarryWeight(char, rules)} kg`,
-    `${getUiTemplate(rules).currencyLabel ?? "Caps"}: ${getCaps(char)}`,
-  ];
+  const core: string[] = ui.resources.map((res) => {
+    const val = getResource(char, res.key);
+    const max = res.formula === "maxHp" ? getMaxHp(char, rules)
+      : res.formula === "maxApr" ? getMaxApr(char, rules)
+      : res.formula === "carryWeight" ? getCarryWeight(char, rules)
+      : undefined;
+    return `${res.label}: ${val}${max ? ` / ${max}` : ""}`;
+  });
+  core.push(`${ui.currencyLabel ?? "Caps"}: ${getCaps(char)}`);
   doc.text(core.join("   ·   "), MARGIN, y);
   line(12);
 

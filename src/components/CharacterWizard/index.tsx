@@ -35,7 +35,8 @@ export function CharacterWizard({
   const spentStats = ui.stats.reduce((s, st) => s + (getStats(draft)[st.key] ?? 0), 0);
   const spentSkills = Object.values(draft.skills).reduce((a, b) => a + b, 0);
 
-  const steps: { id: Step; label: string }[] = [
+  const ws = ui.wizardSteps ?? {};
+  const allSteps: { id: Step; label: string }[] = [
     { id: "name", label: "Name" },
     { id: "race", label: "Rasse" },
     { id: "special", label: ui.statsLabel },
@@ -44,6 +45,13 @@ export function CharacterWizard({
     { id: "traits", label: "Traits" },
     { id: "review", label: "Überprüfen" },
   ];
+  const steps = allSteps.filter((s) => {
+    if (s.id === "name" || s.id === "special" || s.id === "skills" || s.id === "review") return true;
+    if (s.id === "race" && ws.race === false) return false;
+    if (s.id === "background" && ws.background === false) return false;
+    if (s.id === "traits" && ws.traits === false) return false;
+    return true;
+  });
 
   const canAdvance = (): boolean => {
     switch (step) {

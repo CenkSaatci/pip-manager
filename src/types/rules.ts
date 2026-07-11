@@ -204,6 +204,12 @@ export interface UiTemplate {
   currencyLabel?: string; // Währungsbezeichnung, z.B. "Caps", "GM", "Dublonen" (default: "Caps")
   stats: StatConfig[];
   resources: UiResourceDef[];
+  /** Welche Wizard-Schritte aktiv sind (fehlende = alle aktiv) */
+  wizardSteps?: {
+    race?: boolean;
+    background?: boolean;
+    traits?: boolean;
+  };
   panels: {
     skills: UiPanelDef;
     perks: UiPanelDef;
@@ -349,9 +355,9 @@ export function emptyRuleSet(name = "Neues Regelwerk"): RuleSet {
       skillCapAtCreation: 6,
     },
     levelProgression: [
-      { level: 2, skillPoints: 5, perkSlots: 0, note: "Platzhalter — im Regelwerk nicht spezifiziert" },
+      { level: 2, skillPoints: 5, perkSlots: 0 },
       { level: 3, skillPoints: 5, perkSlots: 1 },
-      { level: 4, skillPoints: 5, specialPoints: 1, perkSlots: 0, note: "SPECIAL-Erhöhung alle 4 Level (Platzhalter)" },
+      { level: 4, skillPoints: 5, specialPoints: 1, perkSlots: 0 },
       { level: 5, skillPoints: 5, perkSlots: 1 },
       { level: 6, skillPoints: 5, perkSlots: 1 },
     ],
@@ -386,5 +392,6 @@ export function emptyRuleSet(name = "Neues Regelwerk"): RuleSet {
     backgrounds: [],
     items: [],
     enemies: [],
+    ui: fallbackUiTemplate(),
   };
 }
