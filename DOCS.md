@@ -194,8 +194,7 @@ Der Wizard ist über den "Neuer Wanderer (geführt)"-Button in CharacterList err
 Karma, Ausrüstungszustand, VATS, Cyborg, Synths, kritische Multiplikatoren, Dauerfeuer
 
 ### Testabdeckung
-- **Keine Tests** vorhanden (weder unit, integration noch e2e)
-- Keine Test-Frameworks in dependencies
+- Vitest-Tests für `derived.ts`, `formula.ts`, `dice.ts` (50 Tests, Stand `develop`)
 
 ### Build & Dev
 ```bash
@@ -204,4 +203,79 @@ npm run build         # tsc + vite build
 npm run tauri dev     # Mit Rust-Backend
 npm run tauri build   # Produktions-Installer
 npm run tauri android dev/build  # Android (erfordert Android Studio + NDK)
+npm test              # Vitest (alle Tests)
+npm run test:watch    # Vitest im Watch-Modus
 ```
+
+---
+
+## 7. Ausblick: Multi-System-Abstraktion
+
+**Aktuelle Lage:** Die App ist fest auf das Fallout-Homebrew-System zugeschnitten – Character-Modell (`special`, `currentHp`, `karma`, `hunger` etc.) und UI-Panels (`SPECIALPanel`, `HitLocationPanel`, `NeedsPanel`) sind hardgecodet.
+
+**Ziel:** PIP-Manager so abstrahieren, dass jedes beliebige Regelwerk via JSON abgebildet werden kann – D&D 5e, Das Schwarze Auge, Shadowrun, etc. – und die UI sich automatisch anpasst.
+
+### Was bereits abstrakt ist
+- **RuleSet als JSON** – Skills, Rassen, Items, Formeln, alles konfigurierbar
+- **Mehrere Rulesets parallel** – Store unterstützt `listRuleSets`, `activateRuleSet`
+- **Formelevaluator** – `evalFormula` wertet Formeln aus dem RuleSet live aus
+- **Import/Export** – JSON-basiert, systemunabhängig
+
+### Was geändert werden muss
+
+#### 1. Character-Modell generisch machen
+
+```typescript
+// Aktuell (Fallout-spezifisch):
+special: Record<SpecialKey, number>   // STR, PER, END, CHA, INT, AGI, LUK
+currentHp: number
+currentApr: number
+karma: number
+hunger: number
+thirst: number
+tagSkillIds: string[]
+backgroundAllocations: Record<string, Record<string, number>>
+
+// Ziel (systemunabhängig):
+stats: Record<string, number>          // "STR"=5, "INT"=10, "WIS"=14, …
+resources: Record<string, number>      // "hp"=30, "mana"=10, "karma"=0, …
+tags: string[]                         // "tagSkills" in Fallout, "proficiencies" in D&D
+allocations: Record<string, Record<string, number>>  // generischer Punkte-Kauf
+```
+
+#### 2. UI-Templates im RuleSet
+
+Jedes RuleSet definiert, wie die UI aussehen soll – **ohne Codeänderung**:
+
+```json
+{
+  "ui": {
+    "statsLabel": "Attribute",
+    "statKeys": ["STR","PER","END","CHA","INT","AGI","LUK"],
+    "statLabels": { "STR": "Stärke", "PER": "Wahrnehmung" },
+    "resources": [
+      { "key": "hp", "label": "TP", "formula": "maxHp", "color": "red" },
+      { "key": "mana", "label": "Mana", "formula": "maxMana", "color": "blue" }
+    ],
+    "panels": ["stats", "skills", "inventory", "dice", "perks"],
+    "optionalPanels": {
+      "hitLocations": { "enabled": false },
+      "needs": { "enabled": false },
+      "spells": { "enabled": true, "label": "Zauber" }
+    }
+  }
+}
+```
+
+Der `SPECIALPanel` wird zu einem generischen `StatsPanel`, das aus `ruleSet.ui.statKeys` und `ruleSet.ui.statLabels` die Anzeige baut. Fallout zeigt STR/PER/END/…, D&D zeigt STR/DEX/CON/INT/WIS/CHA, DSA zeigt MU/KL/IN/CH/FF/GE/KO/KK.
+
+Optionale Panels wie `hitLocations` (Fallout), `needs` (Fallout) oder `spells` (D&D) werden nur angezeigt, wenn das RuleSet sie aktiviert.
+
+#### 3. Fahrplan
+
+| Phase | Aufwand | Beschreibung |
+|---|---|---|
+| **1 – Datenmodell** | 2–3 Sessions | `special` → `stats`, `currentHp/karma/etc` → `resources`, RuleSet um `ui`-Template ergänzen, Migration bestehender Charaktere |
+| **2 – UI** | 2–3 Sessions | StatsPanel generisch machen, Resource-Bars aus RuleSet generieren, Wizard anpassen, optionale Panels steuern |
+| **3 – Beispielsysteme** | 1 Session | D&D 5e Example-Ruleset, DSA Example-Ruleset, Test-Charaktere in beiden Systemen |
+
