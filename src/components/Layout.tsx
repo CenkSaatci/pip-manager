@@ -126,6 +126,10 @@ export function Layout({ children }: { children: ReactNode }) {
             <select value={locale} onChange={(e) => setLocale(e.target.value)} className="pip-input rounded-sm px-2 py-1 text-xs" title="Language">
               <option value="de">DE</option>
               <option value="en">EN</option>
+              <option value="fr">FR</option>
+              <option value="it">IT</option>
+              <option value="es">ES</option>
+              <option value="tr">TR</option>
             </select>
             <select
               value={currentTheme}
