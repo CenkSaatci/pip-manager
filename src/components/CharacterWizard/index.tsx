@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { blankCharacter, Character } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS } from "../../types/rules";
+import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS, getUiTemplate } from "../../types/rules";
 import {
   getEffectiveSpecial,
   getSkillBaseValue,
@@ -25,20 +25,21 @@ export function CharacterWizard({
   const [step, setStep] = useState<Step>("name");
   const [draft, setDraft] = useState<Character>(() => {
     const c = blankCharacter(rules.id);
-    c.currentHp = 0;
-    c.currentApr = 0;
+    c.resources = { hp: 0, apr: 0, karma: 0 };
     return c;
   });
 
+  const ui = getUiTemplate(rules);
   const cc = rules.characterCreation;
-  const specialBudget = cc.specialStart * 7 + cc.freeSpecialPoints;
-  const spentSpecial = SPECIAL_KEYS.reduce((s, k) => s + getStats(draft)[k], 0);
+  const statDefaultSum = ui.stats.reduce((s, st) => s + (st.defaultValue ?? 5), 0);
+  const statBudget = statDefaultSum + cc.freeSpecialPoints;
+  const spentStats = ui.stats.reduce((s, st) => s + (getStats(draft)[st.key] ?? 0), 0);
   const spentSkills = Object.values(draft.skills).reduce((a, b) => a + b, 0);
 
   const steps: { id: Step; label: string }[] = [
     { id: "name", label: "Name" },
     { id: "race", label: "Rasse" },
-    { id: "special", label: "SPECIAL" },
+    { id: "special", label: ui.statsLabel },
     { id: "background", label: "Hintergrund" },
     { id: "skills", label: "Fertigkeiten" },
     { id: "traits", label: "Traits" },
@@ -52,7 +53,7 @@ export function CharacterWizard({
       case "race":
         return rules.races.length === 0 || draft.raceId !== "";
       case "special":
-        return spentSpecial <= specialBudget;
+        return spentStats <= statBudget;
       case "background":
         return true;
       case "skills":
@@ -164,24 +165,30 @@ export function CharacterWizard({
         {step === "special" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm text-pip-greendim">Verteile deine SPECIAL-Punkte.</p>
-              <span className={`text-sm ${spentSpecial > specialBudget ? "text-pip-red" : "text-pip-amber"}`}>
-                {spentSpecial} / {specialBudget}
+              <p className="text-sm text-pip-greendim">Verteile deine {ui.statsLabel}-Punkte.</p>
+              <span className={`text-sm ${spentStats > statBudget ? "text-pip-red" : "text-pip-amber"}`}>
+                {spentStats} / {statBudget}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {SPECIAL_KEYS.map((key) => {
+              {ui.stats.map((stat) => {
+                const statsMap = getStats(draft);
+                const val = statsMap[stat.key] ?? stat.defaultValue ?? 5;
                 const effective = getEffectiveSpecial(draft, rules);
-                const raceMod = effective[key] - getStats(draft)[key];
-                const extreme = isExtremeSpecialValue(getStats(draft)[key], rules);
+                const effectiveVal = effective[stat.key] ?? val;
+                const raceMod = effectiveVal - val;
+                const st = stat;
                 return (
-                  <div key={key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-3">
-                    <label className="text-xs text-pip-greendim">{SPECIAL_LABELS[key]}</label>
+                  <div key={st.key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-3">
+                    <label className="text-xs text-pip-greendim">{st.label}</label>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() =>
-                          getStats(draft)[key] > cc.specialMin &&
-                          update({ stats: { ...getStats(draft), [key]: getStats(draft)[key] - 1 } })
+                          val > (st.min ?? 1) &&
+                          setDraft((p) => ({
+                            ...p,
+                            stats: { ...getStats(p), [st.key]: val - 1 },
+                          }))
                         }
                         className="pip-btn-ghost px-1 text-lg"
                       >
@@ -189,20 +196,26 @@ export function CharacterWizard({
                       </button>
                       <input
                         type="number"
-                        min={cc.specialMin}
-                        max={cc.specialMax}
-                        value={getStats(draft)[key]}
+                        min={st.min ?? 1}
+                        max={st.max ?? 10}
+                        value={val}
                         onChange={(e) =>
-                          update({ stats: { ...getStats(draft), [key]: Number(e.target.value) } })
+                          setDraft((p) => ({
+                            ...p,
+                            stats: { ...getStats(p), [st.key]: Number(e.target.value) },
+                          }))
                         }
                         className={`pip-input w-14 rounded-sm px-1 py-1 text-center font-display text-xl ${
-                          extreme ? "border-pip-amber" : ""
+                          val <= (st.extremeThreshold ?? 2) ? "border-pip-amber" : ""
                         }`}
                       />
                       <button
                         onClick={() =>
-                          getStats(draft)[key] < cc.specialMax &&
-                          update({ stats: { ...getStats(draft), [key]: getStats(draft)[key] + 1 } })
+                          val < (st.max ?? 10) &&
+                          setDraft((p) => ({
+                            ...p,
+                            stats: { ...getStats(p), [st.key]: val + 1 },
+                          }))
                         }
                         className="pip-btn-ghost px-1 text-lg"
                       >
@@ -210,11 +223,13 @@ export function CharacterWizard({
                       </button>
                     </div>
                     <span className="text-xs text-pip-amber">
-                      {effective[key]}
+                      {effectiveVal}
                       {raceMod !== 0 && ` (${raceMod > 0 ? "+" : ""}${raceMod})`}
                     </span>
-                    <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effective[key])}</span>
-                    {extreme && <span className="text-xs text-pip-amber">SL-Genehmigung</span>}
+                    {SPECIAL_KEYS.includes(st.key as any) && (
+                      <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effectiveVal)}</span>
+                    )}
+                    {val <= (st.extremeThreshold ?? 2) && <span className="text-xs text-pip-amber">SL-Genehmigung</span>}
                   </div>
                 );
               })}
@@ -519,8 +534,8 @@ export function CharacterWizard({
                 <p>{rules.backgrounds.find((b) => b.id === draft.backgroundId)?.name ?? "—"}</p>
               </div>
               <div>
-                <span className="pip-label">SPECIAL</span>
-                <p>{SPECIAL_KEYS.map((k) => `${k} ${getStats(draft)[k]}`).join(" · ")}</p>
+                <span className="pip-label">{ui.statsLabel}</span>
+                <p>{ui.stats.map((s) => `${s.key} ${(getStats(draft)[s.key] ?? s.defaultValue ?? 5)}`).join(" · ")}</p>
               </div>
               <div>
                 <span className="pip-label">Traits</span>
@@ -556,8 +571,12 @@ export function CharacterWizard({
                 const now = new Date().toISOString();
                 const final: Character = {
                   ...draft,
-                  currentHp: getMaxHp(draft, rules),
-                  currentApr: getMaxApr(draft, rules),
+                  stats: getStats(draft),
+                  resources: {
+                    ...draft.resources,
+                    hp: getMaxHp(draft, rules),
+                    apr: getMaxApr(draft, rules),
+                  },
                   createdAt: now,
                   updatedAt: now,
                 };

@@ -12,10 +12,10 @@ import { SessionLogPanel } from "./SessionLogPanel";
 import { PrintSheet } from "./PrintSheet";
 import { LevelUpModal } from "./LevelUpModal";
 import { getResource, setResource, getCaps } from "../../lib/compat";
-import { getMaxHp, getMaxApr } from "../../lib/derived";
+import { getMaxHp, getMaxApr, getCarryWeight, getHealingRate } from "../../lib/derived";
 import { buildCharacterPdf } from "../../lib/pdf";
 import { Character } from "../../types/character";
-import { RuleSet } from "../../types/rules";
+import { RuleSet, getUiTemplate } from "../../types/rules";
 import * as api from "../../lib/api";
 
 export function CharacterSheet() {
@@ -81,27 +81,39 @@ export function CharacterSheet() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <ResourceBar
-          label="Trefferpunkte"
-          value={getResource(char, "hp")}
-          max={maxHp}
-          color="bg-pip-red"
-          onChange={(v) => update(setResource(char, "hp", v))}
-        />
-        <ResourceBar
-          label="Aktionen pro Runde (APR)"
-          value={getResource(char, "apr")}
-          max={maxApr}
-          color="bg-pip-amber"
-          onChange={(v) => update(setResource(char, "apr", v))}
-        />
-        <div className="pip-panel flex items-center justify-between rounded-sm p-3">
-          {karmaEnabled && (
-            <div>
-              <span className="pip-label">Karma</span>
-              <div className="font-display text-2xl text-glow">{getResource(char, "karma")}</div>
+        {getUiTemplate(rules).resources.map((res) => {
+          const resVal = getResource(char, res.key);
+          const formulaMap: Record<string, number> = {
+            maxHp, maxApr,
+            carryWeight: getCarryWeight(char, rules),
+            healingRate: getHealingRate(char, rules),
+          };
+          const maxVal = res.formula ? formulaMap[res.formula] : undefined;
+          const barColor: Record<string, string> = {
+            red: "bg-pip-red", amber: "bg-pip-amber", blue: "bg-pip-blue", green: "bg-pip-green",
+          };
+          if (maxVal !== undefined && maxVal > 0) {
+            return (
+              <ResourceBar
+                key={res.key}
+                label={res.label}
+                value={resVal}
+                max={maxVal}
+                color={barColor[res.color] ?? "bg-pip-amber"}
+                onChange={(v) => update(setResource(char, res.key, v))}
+              />
+            );
+          }
+          return (
+            <div key={res.key} className="pip-panel flex items-center justify-between rounded-sm p-3">
+              <div>
+                <span className="pip-label">{res.label}</span>
+                <div className="font-display text-2xl text-glow">{resVal}</div>
+              </div>
             </div>
-          )}
+          );
+        })}
+        <div className="pip-panel flex items-center justify-between rounded-sm p-3">
           <div>
             <span className="pip-label">Caps</span>
             <div className="font-display text-2xl text-glow">{getCaps(char)}</div>
@@ -118,8 +130,12 @@ export function CharacterSheet() {
       <SkillsPanel char={char} rules={rules} onChange={update} />
       <PerksTraitsPanel char={char} rules={rules} onChange={update} />
       <InventoryPanel char={char} rules={rules} onChange={update} />
-      <HitLocationPanel char={char} rules={rules} onChange={update} />
-      <NeedsPanel char={char} onChange={update} />
+      {getUiTemplate(rules).panels.hitLocations.enabled && (
+        <HitLocationPanel char={char} rules={rules} onChange={update} />
+      )}
+      {getUiTemplate(rules).panels.needs.enabled && (
+        <NeedsPanel char={char} onChange={update} />
+      )}
       <DiceRollerPanel char={char} rules={rules} onCharChange={update} />
 
       <div className="pip-panel rounded-sm p-4">

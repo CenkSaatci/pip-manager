@@ -1,7 +1,8 @@
 import { Character } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, SPECIAL_LABELS } from "../../types/rules";
+import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
 import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate, isExtremeSpecialValue } from "../../lib/derived";
 import { specialBonus } from "../../lib/formula";
+import { getStats } from "../../lib/compat";
 
 export function SpecialPanel({
   char,
@@ -13,35 +14,51 @@ export function SpecialPanel({
   onChange: (c: Character) => void;
 }) {
   const effective = getEffectiveSpecial(char, rules);
-  const [min, max] = rules.specialRange;
-  const stats = char.stats ?? (char.special as Record<string, number> | undefined) ?? {};
-  const invested = SPECIAL_KEYS.reduce((sum, k) => sum + (stats[k] ?? 0), 0);
-  const budget = rules.characterCreation.specialStart * 7 + rules.characterCreation.freeSpecialPoints;
+  const ui = getUiTemplate(rules);
+  const stats = getStats(char);
+
+  const resourceValue = (res: typeof ui.resources[number]): string | number => {
+    if (res.key === "hp") return getMaxHp(char, rules);
+    if (res.key === "apr") return getMaxApr(char, rules);
+    if (res.formula === "maxHp") return getMaxHp(char, rules);
+    if (res.formula === "maxApr") return getMaxApr(char, rules);
+    if (res.formula === "carryWeight") return getCarryWeight(char, rules);
+    if (res.formula === "healingRate") return getHealingRate(char, rules);
+    return char.resources?.[res.key] ?? 0;
+  };
+
+  const resourceSuffix = (key: string): string => {
+    if (key === "carryWeight" || key === "Traglast") return " kg";
+    return "";
+  };
+
+  const isSpecialKey = (key: string): boolean => SPECIAL_KEYS.includes(key as any);
 
   return (
     <div className="pip-panel rounded-sm p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="pip-label">S.P.E.C.I.A.L.</h3>
-        <span className="text-xs text-pip-amber">
-          Punkte verteilt: {invested} / {budget}
-        </span>
+        <h3 className="pip-label">{ui.statsLabel}</h3>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {SPECIAL_KEYS.map((key) => {
-          const raceMod = effective[key] - (stats[key] ?? 0);
-          const extreme = isExtremeSpecialValue(stats[key] ?? 0, rules);
+        {ui.stats.map((stat) => {
+          const val = stats[stat.key] ?? stat.defaultValue ?? 5;
+          const effectiveVal = effective[stat.key] ?? val;
+          const raceMod = effectiveVal - val;
+          const extremeThreshold = stat.extremeThreshold ?? 2;
+          const extreme = val <= extremeThreshold;
+          const st = stat;
           return (
-            <div key={key} className="flex flex-col items-center gap-1">
-              <label className="text-xs text-pip-greendim">{SPECIAL_LABELS[key]}</label>
+            <div key={st.key} className="flex flex-col items-center gap-1">
+              <label className="text-xs text-pip-greendim">{st.label}</label>
               <input
                 type="number"
-                min={min}
-                max={max}
-                value={stats[key] ?? 0}
+                min={st.min ?? 1}
+                max={st.max ?? 10}
+                value={val}
                 onChange={(e) =>
                   onChange({
                     ...char,
-                    stats: { ...(char.stats ?? {}), [key]: Number(e.target.value) },
+                    stats: { ...stats, [st.key]: Number(e.target.value) },
                   })
                 }
                 className={`pip-input w-16 rounded-sm px-2 py-1 text-center font-display text-2xl ${
@@ -49,22 +66,25 @@ export function SpecialPanel({
                 }`}
               />
               <span className="text-xs text-pip-amber">
-                {effective[key]}
-                {raceMod !== 0 ? ` (${raceMod > 0 ? "+" : ""}${raceMod} Rasse/Traits)` : ""}
+                {effectiveVal}
+                {raceMod !== 0 ? ` (${raceMod > 0 ? "+" : ""}${raceMod} Mod.)` : ""}
               </span>
-              <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effective[key])}</span>
+              {isSpecialKey(st.key) && (
+                <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effectiveVal)}</span>
+              )}
               {extreme && <span className="text-xs text-pip-amber">SL-Genehmigung nötig</span>}
             </div>
           );
         })}
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pip-line pt-3 sm:grid-cols-4">
-        <Derived label="Max. HP" value={getMaxHp(char, rules)} />
-        <Derived label="APR" value={getMaxApr(char, rules)} />
-        <Derived label="Traglast" value={`${getCarryWeight(char, rules)} kg`} />
-        <Derived label="Heilrate" value={getHealingRate(char, rules)} />
-      </div>
+      {ui.resources.length > 0 && (
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pip-line pt-3 sm:grid-cols-4">
+          {ui.resources.map((res) => (
+            <Derived key={res.key} label={res.label} value={`${resourceValue(res)}${resourceSuffix(res.key)}`} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
