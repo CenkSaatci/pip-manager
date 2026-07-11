@@ -4,7 +4,7 @@ import { RuleSet } from "../../types/rules";
 import { getDicePoolSize, getSkillEffectiveValue, getEffectiveSpecial } from "../../lib/derived";
 import { rollDicePool, rollInitiative, rollArmorCheck, PoolRollResult } from "../../lib/dice";
 
-export function DiceRollerPanel({ char, rules }: { char: Character; rules: RuleSet }) {
+export function DiceRollerPanel({ char, rules, onCharChange }: { char: Character; rules: RuleSet; onCharChange?: (c: Character) => void }) {
   const [selectedSkill, setSelectedSkill] = useState(rules.skills[0]?.id ?? "");
   const [difficultyName, setDifficultyName] = useState(rules.difficultyLevels[2]?.name ?? "");
   const [coverPenalty, setCoverPenalty] = useState(0);
@@ -20,10 +20,13 @@ export function DiceRollerPanel({ char, rules }: { char: Character; rules: RuleS
   const skill = rules.skills.find((s) => s.id === selectedSkill);
   const difficulty = rules.difficultyLevels.find((d) => d.name === difficultyName);
   const weapon = rules.items.find((i) => i.id === selectedWeapon);
+  const weaponEntry = char.inventory.find((i) => i.itemId === selectedWeapon);
   const weaponsForSkill = rules.items.filter((i) => i.type === "weapon" && (!i.skillId || i.skillId === selectedSkill));
   const zone = rules.hitLocations.find((h) => h.id === targetZone);
   const zonePenalty = zone?.penalty ?? 0;
   const effectiveSpecial = getEffectiveSpecial(char, rules);
+  const ammoCount = weapon?.isAutomatic ? (weaponEntry?.currentAmmo ?? 0) : 0;
+  const canBurst = weapon?.isAutomatic && ammoCount >= (weapon.burstAmmoCost ?? 0);
 
   const doRoll = () => {
     if (!skill) return;
@@ -36,6 +39,17 @@ export function DiceRollerPanel({ char, rules }: { char: Character; rules: RuleS
       setLastDamage(weapon.damage + result.successes + burstBonus);
     } else {
       setLastDamage(null);
+    }
+    if (burstFire && weapon?.isAutomatic && weaponEntry && weapon.burstAmmoCost && onCharChange) {
+      const cost = weapon.burstAmmoCost;
+      onCharChange({
+        ...char,
+        inventory: char.inventory.map((i) =>
+          i.itemId === selectedWeapon
+            ? { ...i, currentAmmo: Math.max(0, (i.currentAmmo ?? 0) - cost) }
+            : i
+        ),
+      });
     }
   };
 
@@ -77,9 +91,15 @@ export function DiceRollerPanel({ char, rules }: { char: Character; rules: RuleS
           ))}
         </select>
         {weapon?.isAutomatic && (
-          <label className="flex items-center gap-1 rounded-sm border border-pip-line px-2 py-1 text-xs">
-            <input type="checkbox" checked={burstFire} onChange={(e) => setBurstFire(e.target.checked)} />
+          <label className={`flex items-center gap-1 rounded-sm border px-2 py-1 text-xs ${canBurst ? "border-pip-line" : "border-pip-red/50 opacity-60"}`}>
+            <input
+              type="checkbox"
+              checked={burstFire}
+              disabled={!canBurst}
+              onChange={(e) => setBurstFire(e.target.checked)}
+            />
             Dauerfeuer (+{weapon.burstDamageBonus ?? 0} Schaden, −{weapon.burstAmmoCost ?? 0} Munition)
+            <span className="ml-1 text-pip-amber">[{ammoCount} Schuss]</span>
           </label>
         )}
         <select value={difficultyName} onChange={(e) => setDifficultyName(e.target.value)} className="pip-input rounded-sm px-2 py-1">

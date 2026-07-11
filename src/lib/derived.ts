@@ -158,6 +158,36 @@ export function checkPerkRequirements(
   return { met: reasons.length === 0, reasons };
 }
 
+/**
+ * Wendet die Effekte eines Konsumgutes (item.type === "consumable") auf
+ * den Charakter an (z.B. Stimpak heilt HP). Gibt ein neues Character-Objekt
+ * mit den angewendeten Änderungen zurück.
+ *
+ * Unterstützte effect.target-Werte:
+ *   "hp"      → currentHp erhöhen (gedeckelt auf getMaxHp)
+ *   "hunger"  → hunger = Math.max(0, hunger + amount)
+ *   "thirst"  → thirst = Math.max(0, thirst + amount)
+ */
+export function applyConsumable(char: Character, rules: RuleSet, item: RuleSet["items"][number]): Character {
+  if (item.type !== "consumable" || !item.effects) return char;
+  let result = { ...char };
+  const maxHp = getMaxHp(char, rules);
+  for (const effect of item.effects) {
+    switch (effect.target) {
+      case "hp":
+        result = { ...result, currentHp: Math.min(maxHp, Math.max(0, result.currentHp + effect.amount)) };
+        break;
+      case "hunger":
+        result = { ...result, hunger: Math.max(0, result.hunger - effect.amount) };
+        break;
+      case "thirst":
+        result = { ...result, thirst: Math.max(0, result.thirst - effect.amount) };
+        break;
+    }
+  }
+  return result;
+}
+
 /** Extremwerte (SPECIAL <= extremeValueThreshold) brauchen laut Regelwerk Meistergenehmigung */
 export function isExtremeSpecialValue(value: number, rules: RuleSet): boolean {
   return value <= rules.characterCreation.extremeValueThreshold;

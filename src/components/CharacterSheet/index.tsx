@@ -119,7 +119,7 @@ export function CharacterSheet() {
       <InventoryPanel char={char} rules={rules} onChange={update} />
       <HitLocationPanel char={char} rules={rules} onChange={update} />
       <NeedsPanel char={char} onChange={update} />
-      <DiceRollerPanel char={char} rules={rules} />
+      <DiceRollerPanel char={char} rules={rules} onCharChange={update} />
 
       <div className="pip-panel rounded-sm p-4">
         <h3 className="pip-label mb-2">Notizen &amp; Hintergrund</h3>

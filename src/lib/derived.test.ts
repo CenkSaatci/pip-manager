@@ -12,6 +12,7 @@ import {
   checkPerkRequirements,
   getLevelReward,
   isExtremeSpecialValue,
+  applyConsumable,
 } from "./derived";
 
 function makeRules(overrides?: Partial<RuleSet>): RuleSet {
@@ -304,6 +305,63 @@ describe("getLevelReward", () => {
     const rules = makeRules();
     const reward = getLevelReward(4, rules);
     expect(reward.specialPoints).toBe(1);
+  });
+});
+
+describe("applyConsumable", () => {
+  it("returns the same char if the item is not a consumable", () => {
+    const rules = makeRules({
+      items: [{ id: "pistol", name: "Pistole", type: "weapon", weight: 1, value: 50, damage: 3, skillId: "handfeuerwaffen" }],
+    });
+    const char = makeChar({ currentHp: 20 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.currentHp).toBe(20);
+  });
+
+  it("returns the same char if the item has no effects", () => {
+    const rules = makeRules({
+      items: [{ id: "useless", name: "Nutzlos", type: "consumable", weight: 0, value: 0 }],
+    });
+    const char = makeChar({ currentHp: 20 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.currentHp).toBe(20);
+  });
+
+  it("heals HP from a Stimpak", () => {
+    const rules = makeRules({
+      items: [{ id: "stimpak", name: "Stimpak", type: "consumable", weight: 0.1, value: 50, effects: [{ target: "hp", amount: 20 }] }],
+    });
+    const char = makeChar({ currentHp: 30 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.currentHp).toBe(50); // 30 + 20
+  });
+
+  it("caps HP at maxHp", () => {
+    const rules = makeRules({
+      items: [{ id: "super_stimpak", name: "Super Stimpak", type: "consumable", weight: 0.1, value: 100, effects: [{ target: "hp", amount: 100 }] }],
+    });
+    const char = makeChar({ currentHp: 45 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.currentHp).toBe(50); // maxHp = (5+5)*5 = 50
+  });
+
+  it("does not reduce HP below 0", () => {
+    const rules = makeRules({
+      items: [{ id: "poison", name: "Gift", type: "consumable", weight: 0.1, value: 0, effects: [{ target: "hp", amount: -100 }] }],
+    });
+    const char = makeChar({ currentHp: 10 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.currentHp).toBe(0);
+  });
+
+  it("reduces hunger and thirst (positive amount = nourishment)", () => {
+    const rules = makeRules({
+      items: [{ id: "food", name: "Essen", type: "consumable", weight: 0.5, value: 10, effects: [{ target: "hunger", amount: 20 }, { target: "thirst", amount: 10 }] }],
+    });
+    const char = makeChar({ hunger: 30, thirst: 40 });
+    const result = applyConsumable(char, rules, rules.items[0]);
+    expect(result.hunger).toBe(10); // 30 - 20
+    expect(result.thirst).toBe(30); // 40 - 10
   });
 });
 

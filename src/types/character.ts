@@ -4,6 +4,7 @@ export interface InventoryEntry {
   itemId: string;
   quantity: number;
   equipped: boolean;
+  currentAmmo?: number;
 }
 
 export interface CharacterPerk {

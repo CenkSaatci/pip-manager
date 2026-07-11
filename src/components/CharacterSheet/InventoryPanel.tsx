@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
-import { getCarryWeight, getCurrentCarriedWeight } from "../../lib/derived";
+import { getCarryWeight, getCurrentCarriedWeight, applyConsumable } from "../../lib/derived";
 
 export function InventoryPanel({
   char,
@@ -53,6 +53,19 @@ export function InventoryPanel({
     });
   };
 
+  const useItem = (entry: Character["inventory"][number]) => {
+    const item = rules.items.find((i) => i.id === entry.itemId);
+    if (!item) return;
+    const updated = applyConsumable(char, rules, item);
+    const qty = entry.quantity - 1;
+    onChange({
+      ...updated,
+      inventory: qty <= 0
+        ? updated.inventory.filter((i) => i.itemId !== entry.itemId)
+        : updated.inventory.map((i) => (i.itemId === entry.itemId ? { ...i, quantity: qty } : i)),
+    });
+  };
+
   return (
     <div className="pip-panel rounded-sm p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
@@ -97,10 +110,34 @@ export function InventoryPanel({
                 </span>
               </div>
               <div className="flex items-center gap-2">
+                {item.type === "consumable" && item.effects && item.effects.length > 0 && (
+                  <button onClick={() => useItem(entry)} className="text-xs text-pip-amber hover:text-pip-green">
+                    Benutzen
+                  </button>
+                )}
                 {(item.type === "weapon" || item.type === "armor") && (
                   <button onClick={() => toggleEquip(entry.itemId)} className="text-xs text-pip-greendim hover:text-pip-green">
                     {entry.equipped ? "Ablegen" : "Ausrüsten"}
                   </button>
+                )}
+                {item.isAutomatic && (
+                  <span className="flex items-center gap-1 text-xs text-pip-amber">
+                    Mun: {entry.currentAmmo ?? 0}
+                    <button
+                      onClick={() => {
+                        const max = (item.burstAmmoCost ?? 1) * 10;
+                        onChange({
+                          ...char,
+                          inventory: char.inventory.map((i) =>
+                            i.itemId === entry.itemId ? { ...i, currentAmmo: (i.currentAmmo ?? 0) + max } : i
+                          ),
+                        });
+                      }}
+                      className="ml-1 rounded-sm border border-pip-line px-1 hover:border-pip-green"
+                    >
+                      + Nachladen
+                    </button>
+                  </span>
                 )}
                 <input
                   type="number"
