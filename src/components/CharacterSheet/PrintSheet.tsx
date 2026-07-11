@@ -50,7 +50,7 @@ export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet })
           {rules.skills.map((skill) => (
             <div key={skill.id} className="flex justify-between border-b border-dotted border-black/30">
               <span>
-                {skill.name} {(char.tagSkillIds ?? []).includes(skill.id) ? "★" : ""}
+                {skill.name} {getTags(char).includes(skill.id) ? "★" : ""}
               </span>
               <span className="font-bold">{getSkillEffectiveValue(skill, char, rules)}</span>
             </div>

@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Character, LevelUpRecord } from "../../types/character";
 import { RuleSet, getUiTemplate } from "../../types/rules";
 import { getMaxHp, getMaxApr, getLevelReward, checkPerkRequirements } from "../../lib/derived";
+import { getStats, getTags, getResource } from "../../lib/compat";
 
 export function LevelUpModal({
   char,
@@ -16,7 +17,7 @@ export function LevelUpModal({
 }) {
   const nextLevel = char.level + 1;
   const reward = getLevelReward(nextLevel, rules);
-  const specialStats = char.stats ?? (char.special as Record<string, number> | undefined) ?? {};
+  const specialStats = getStats(char);
 
   const [specialAlloc, setSpecialAlloc] = useState<Record<string, number>>({});
   const [skillAlloc, setSkillAlloc] = useState<Record<string, number>>({});
@@ -29,7 +30,7 @@ export function LevelUpModal({
   // Vorschau-Charakter mit den bisher getroffenen Zuteilungen dieses Levelaufstiegs,
   // damit Perk-Voraussetzungen (z.B. neue SPECIAL-Werte) korrekt geprüft werden.
   const previewChar: Character = useMemo(() => {
-    const special = { ...(char.stats ?? (char.special as Record<string, number> | undefined) ?? {}) };
+    const special = { ...getStats(char) };
     for (const [k, v] of Object.entries(specialAlloc)) {
       special[k] = (special[k] ?? 0) + (v ?? 0);
     }
@@ -37,7 +38,7 @@ export function LevelUpModal({
     for (const [k, v] of Object.entries(skillAlloc)) {
       skills[k] = (skills[k] ?? 0) + (v ?? 0);
     }
-    return { ...char, level: nextLevel, stats: special, skills, tagSkillIds: [...(char.tagSkillIds ?? []), ...newTagSkills] };
+    return { ...char, level: nextLevel, stats: special, skills, tagSkillIds: [...getTags(char), ...newTagSkills] };
   }, [char, specialAlloc, skillAlloc, newTagSkills, nextLevel]);
 
   const gainedHp = getMaxHp(previewChar, rules) - getMaxHp(char, rules);
@@ -62,7 +63,7 @@ export function LevelUpModal({
   };
 
   const toggleTagSkill = (skillId: string) => {
-    if ((char.tagSkillIds ?? []).includes(skillId)) return;
+    if (getTags(char).includes(skillId)) return;
     const has = newTagSkills.includes(skillId);
     if (has) {
       setNewTagSkills(newTagSkills.filter((id) => id !== skillId));
@@ -81,7 +82,7 @@ export function LevelUpModal({
   };
 
   const confirm = () => {
-    const nextSpecial = { ...(char.stats ?? (char.special as Record<string, number> | undefined) ?? {}) };
+    const nextSpecial = { ...getStats(char) };
     for (const [k, v] of Object.entries(specialAlloc)) {
       nextSpecial[k] = (nextSpecial[k] ?? 0) + (v ?? 0);
     }
@@ -111,11 +112,11 @@ export function LevelUpModal({
       level: nextLevel,
       stats: nextSpecial,
       skills: nextSkills,
-      tagSkillIds: [...(char.tagSkillIds ?? []), ...newTagSkills],
+      tagSkillIds: [...getTags(char), ...newTagSkills],
       perks: nextPerks,
       resources: {
         ...char.resources,
-        hp: (char.currentHp ?? char.resources?.hp ?? 0) + gainedHp,
+        hp: getResource(char, "hp") + gainedHp,
         apr: getMaxApr({ ...char, level: nextLevel }, rules),
       },
       levelHistory: [...char.levelHistory, record],
@@ -196,7 +197,7 @@ export function LevelUpModal({
             </h3>
             <div className="flex flex-wrap gap-1">
               {rules.skills
-                .filter((s) => !(char.tagSkillIds ?? []).includes(s.id))
+                .filter((s) => !getTags(char).includes(s.id))
                 .map((skill) => {
                   const active = newTagSkills.includes(skill.id);
                   return (

@@ -3,6 +3,7 @@ import { useAppStore } from "../store/useAppStore";
 import { blankCharacter, Character } from "../types/character";
 import { CharacterWizard } from "./CharacterWizard";
 import * as api from "../lib/api";
+import { migrateCharacter } from "../lib/migration";
 
 export function CharacterList() {
   const { characters, activeRuleSet, selectCharacter, upsertCharacter, removeCharacter } = useAppStore();
@@ -21,13 +22,9 @@ export function CharacterList() {
   const handleImport = async () => {
     const imported = await api.importJsonFile<Character>();
     if (!imported) return;
-    if (!imported.name || !imported.special) {
-      alert("Ungültige Charakter-Datei: 'name' und 'special' werden benötigt.");
-      return;
-    }
     imported.id = imported.id ?? crypto.randomUUID();
     imported.updatedAt = new Date().toISOString();
-    await upsertCharacter(imported);
+    await upsertCharacter(migrateCharacter(imported));
   };
 
   const handleExportAll = async () => {
@@ -39,17 +36,18 @@ export function CharacterList() {
   };
 
   const handleImportAll = async () => {
-    const imported = await api.importJsonFile<{ characters?: Character[] } | Character[]>();
-    if (!imported) return;
-    const list = Array.isArray(imported) ? imported : imported.characters ?? [];
+    const raw = await api.importJsonFile<{ characters?: Character[] } | Character[]>();
+    if (!raw) return;
+    const list = Array.isArray(raw) ? raw : raw.characters ?? [];
     if (list.length === 0) {
       alert("Keine Charaktere in dieser Datei gefunden.");
       return;
     }
     for (const c of list) {
-      c.id = c.id ?? crypto.randomUUID();
-      c.updatedAt = new Date().toISOString();
-      await upsertCharacter(c);
+      const migrated = migrateCharacter(c);
+      migrated.id = migrated.id ?? crypto.randomUUID();
+      migrated.updatedAt = new Date().toISOString();
+      await upsertCharacter(migrated);
     }
     alert(`${list.length} Charakter(e) importiert/aktualisiert.`);
   };

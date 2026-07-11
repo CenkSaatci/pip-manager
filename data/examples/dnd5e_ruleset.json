@@ -111,6 +111,7 @@
   ],
   "ui": {
     "statsLabel": "Attribute",
+    "currencyLabel": "GM",
     "stats": [
       { "key": "STR", "label": "Stärke", "shortLabel": "ST", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },
       { "key": "DEX", "label": "Geschicklichkeit", "shortLabel": "GE", "defaultValue": 10, "min": 3, "max": 20, "extremeThreshold": 3 },

@@ -3,6 +3,7 @@ import { Character } from "../types/character";
 import { RuleSet, getUiTemplate } from "../types/rules";
 import { getEffectiveSpecial, getMaxHp, getMaxApr, getCarryWeight, getSkillEffectiveValue } from "./derived";
 import { specialBonus } from "./formula";
+import { getResource, getCaps, getTags } from "./compat";
 
 const MARGIN = 14;
 const PAGE_WIDTH = 210; // A4 in mm
@@ -64,10 +65,10 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   const core = [
-    `HP: ${char.currentHp} / ${getMaxHp(char, rules)}`,
-    `APR: ${char.currentApr} / ${getMaxApr(char, rules)}`,
+    `HP: ${getResource(char, "hp")} / ${getMaxHp(char, rules)}`,
+    `APR: ${getResource(char, "apr")} / ${getMaxApr(char, rules)}`,
     `Traglast: ${getCarryWeight(char, rules)} kg`,
-    `${getUiTemplate(rules).currencyLabel ?? "Caps"}: ${char.caps ?? 0}`,
+    `${getUiTemplate(rules).currencyLabel ?? "Caps"}: ${getCaps(char)}`,
   ];
   doc.text(core.join("   ·   "), MARGIN, y);
   line(12);
@@ -86,7 +87,7 @@ export function buildCharacterPdf(char: Character, rules: RuleSet): jsPDF {
     const x = MARGIN + col * skillColWidth;
     const rowY = y + row * 5;
     if (rowY > 280) return; // simplistic overflow guard
-    const tag = (char.tagSkillIds ?? []).includes(skill.id) ? " *" : "";
+    const tag = getTags(char).includes(skill.id) ? " *" : "";
     doc.text(`${skill.name}${tag}: ${getSkillEffectiveValue(skill, char, rules)}`, x, rowY);
   });
   line(Math.ceil(rules.skills.length / 3) * 5 + 8);

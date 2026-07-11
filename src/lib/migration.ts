@@ -55,7 +55,6 @@ export function migrateCharacter(raw: Character): Character {
   delete migrated.currentApr;
   delete migrated.karma;
   delete migrated.tagSkillIds;
-  delete migrated.backgroundAllocations;
   delete migrated.hunger;
   delete migrated.thirst;
   delete migrated.injuredLimbs;

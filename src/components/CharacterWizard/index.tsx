@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { blankCharacter, Character } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
+import { RuleSet, getUiTemplate } from "../../types/rules";
 import {
   getEffectiveSpecial,
   getSkillBaseValue,
   getMaxHp,
   getMaxApr,
 } from "../../lib/derived";
-import { specialBonus } from "../../lib/formula";
+import { getBonusValue } from "../../lib/formula";
 import { getTags, setTags, getStats } from "../../lib/compat";
 
 type Step = "name" | "race" | "special" | "background" | "skills" | "traits" | "review";
@@ -225,9 +225,7 @@ export function CharacterWizard({
                       {effectiveVal}
                       {raceMod !== 0 && ` (${raceMod > 0 ? "+" : ""}${raceMod})`}
                     </span>
-                    {SPECIAL_KEYS.includes(st.key as any) && (
-                      <span className="text-xs text-pip-greendim">Bonus +{specialBonus(effectiveVal)}</span>
-                    )}
+                    <span className="text-xs text-pip-greendim">Mod +{getBonusValue(effectiveVal, rules)}</span>
                     {val <= (st.extremeThreshold ?? 2) && <span className="text-xs text-pip-amber">SL-Genehmigung</span>}
                   </div>
                 );

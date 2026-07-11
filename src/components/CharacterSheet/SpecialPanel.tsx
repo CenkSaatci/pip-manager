@@ -1,5 +1,5 @@
 import { Character } from "../../types/character";
-import { RuleSet, SPECIAL_KEYS, getUiTemplate } from "../../types/rules";
+import { RuleSet, getUiTemplate } from "../../types/rules";
 import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRate } from "../../lib/derived";
 import { getBonusValue } from "../../lib/formula";
 import { getStats } from "../../lib/compat";
@@ -31,8 +31,6 @@ export function SpecialPanel({
     if (key === "carryWeight" || key === "Traglast") return " kg";
     return "";
   };
-
-  const isSpecialKey = (key: string): boolean => SPECIAL_KEYS.includes(key as any);
 
   return (
     <div className="pip-panel rounded-sm p-4">
@@ -69,9 +67,7 @@ export function SpecialPanel({
                 {effectiveVal}
                 {raceMod !== 0 ? ` (${raceMod > 0 ? "+" : ""}${raceMod} Mod.)` : ""}
               </span>
-              {isSpecialKey(st.key) && (
-                <span className="text-xs text-pip-greendim">Bonus +{getBonusValue(effectiveVal, rules)}</span>
-              )}
+              <span className="text-xs text-pip-greendim">Mod +{getBonusValue(effectiveVal, rules)}</span>
               {extreme && <span className="text-xs text-pip-amber">SL-Genehmigung nötig</span>}
             </div>
           );
