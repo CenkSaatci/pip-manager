@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useT } from "../../i18n/context";
 import { SpecialPanel } from "./SpecialPanel";
@@ -23,7 +23,14 @@ export function CharacterSheet() {
   const { t } = useT();
   const { characters, selectedCharacterId, activeRuleSet, upsertCharacter, selectCharacter } = useAppStore();
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [localName, setLocalName] = useState("");
   const char = characters.find((c) => c.id === selectedCharacterId);
+
+  useEffect(() => { if (char) setLocalName(char.name); }, [char?.id, char?.name]);
+
+  const commitName = () => {
+    if (char && localName !== char.name) update({ ...char, name: localName });
+  };
 
   if (!char) {
     return <p className="text-pip-greendim">{t('sheet.noCharacter')}</p>;
@@ -60,8 +67,10 @@ export function CharacterSheet() {
             {t('sheet.back')}
           </button>
           <input
-            value={char.name}
-            onChange={(e) => update({ ...char, name: e.target.value })}
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
+            onBlur={commitName}
+            onKeyDown={(e) => { if (e.key === "Enter") { (e.target as HTMLInputElement).blur(); } }}
             className="pip-input rounded-sm px-2 py-1 font-display text-2xl"
           />
           <RaceBackgroundSelect char={char} rules={rules} onChange={update} />
