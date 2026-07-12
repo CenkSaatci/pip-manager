@@ -35,6 +35,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   loadAll: async () => {
     set({ loading: true });
     try {
+      await api.ensureSeedData();
       const [ruleSets, active, characters] = await Promise.all([
         api.listRuleSets(),
         api.getActiveRuleSet(),
