@@ -26,13 +26,31 @@ export function getBonusValue(statValue: number, rules?: { formulas?: { bonusFor
   return specialBonus(statValue);
 }
 
+/** Cache für kompilierte Formeln: formula+keyHash → Function */
+const formulaCache = new WeakMap<object, Function>();
+let counter = 0;
+const keyCache = new Map<string, { keys: string[]; id: object }>();
+
+function getOrCreateFormula(formula: string, keys: string[]): Function {
+  const keyStr = formula + "|" + keys.join(",");
+  let entry = keyCache.get(keyStr);
+  if (!entry) {
+    const id = { id: ++counter };
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(...keys, `"use strict"; return (${formula});`);
+    formulaCache.set(id, fn);
+    entry = { keys, id };
+    keyCache.set(keyStr, entry);
+  }
+  return formulaCache.get(entry.id)!;
+}
+
 export function evalFormula(formula: string, scope: FormulaScope): number {
   if (!formula || !formula.trim()) return 0;
   const keys = [...Object.keys(scope), "specialBonus"];
   const values: unknown[] = [...Object.values(scope), specialBonus];
   try {
-    // eslint-disable-next-line no-new-func
-    const fn = new Function(...keys, `"use strict"; return (${formula});`);
+    const fn = getOrCreateFormula(formula, keys);
     const result = fn(...values);
     if (typeof result !== "number" || Number.isNaN(result)) return 0;
     return Math.round(result * 100) / 100;

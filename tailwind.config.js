@@ -29,14 +29,9 @@ export default {
           "93%": { opacity: 0.82 },
           "94%": { opacity: 1 },
         },
-        scan: {
-          "0%": { backgroundPosition: "0 0" },
-          "100%": { backgroundPosition: "0 100%" },
-        },
       },
       animation: {
         flicker: "flicker 6s infinite",
-        scan: "scan 8s linear infinite",
       },
     },
   },

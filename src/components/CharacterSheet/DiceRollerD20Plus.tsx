@@ -55,11 +55,11 @@ export function DiceRollerD20Plus({
         <button onClick={doRoll} className="pip-btn">{t("dice.rollD20")}</button>
       </div>
 
-      {skill && (
-        <p className="mb-2 text-xs text-pip-greendim">
-          {t("dice.skillInfo", { name: skill.name, val: getSkillEffectiveValue(skill, char, rules), mod: getBonusValue(getSkillEffectiveValue(skill, char, rules), rules), dc })}
-        </p>
-      )}
+      {skill && (() => {
+        const skillVal = getSkillEffectiveValue(skill, char, rules);
+        const mod = getBonusValue(skillVal, rules);
+        return <p className="mb-2 text-xs text-pip-greendim">{t("dice.skillInfo", { name: skill.name, val: skillVal, mod, dc })}</p>;
+      })()}
 
       {lastResult && (
         <div className="mb-4 rounded-sm border border-pip-line p-2 text-sm">

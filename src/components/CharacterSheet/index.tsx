@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useT } from "../../i18n/context";
 import { SpecialPanel } from "./SpecialPanel";

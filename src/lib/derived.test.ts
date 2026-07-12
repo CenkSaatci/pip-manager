@@ -352,10 +352,10 @@ describe("applyConsumable", () => {
     const rules = makeRules({
       items: [{ id: "food", name: "Essen", type: "consumable", weight: 0.5, value: 10, effects: [{ target: "hunger", amount: 20 }, { target: "thirst", amount: 10 }] }],
     });
-    const char = makeChar({ hunger: 30, thirst: 40 });
+    const char = makeChar({ resources: { hp: 0, apr: 0, karma: 0, hunger: 30, thirst: 40 } });
     const result = applyConsumable(char, rules, rules.items[0]);
-    expect(result.hunger).toBe(10); // 30 - 20
-    expect(result.thirst).toBe(30); // 40 - 10
+    expect(result.resources?.hunger).toBe(10); // 30 - 20
+    expect(result.resources?.thirst).toBe(30); // 40 - 10
   });
 });
 

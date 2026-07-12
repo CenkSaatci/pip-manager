@@ -162,10 +162,10 @@ export function applyConsumable(char: Character, rules: RuleSet, item: RuleSet["
         result = setResource(result, "hp", Math.min(maxHp, Math.max(0, current + effect.amount)));
         break;
       case "hunger":
-        result = { ...result, hunger: Math.max(0, (result.hunger ?? 0) - effect.amount) };
+        result = { ...result, resources: { ...(result.resources ?? {}), hunger: Math.max(0, (result.resources?.hunger ?? 0) - effect.amount) } };
         break;
       case "thirst":
-        result = { ...result, thirst: Math.max(0, (result.thirst ?? 0) - effect.amount) };
+        result = { ...result, resources: { ...(result.resources ?? {}), thirst: Math.max(0, (result.resources?.thirst ?? 0) - effect.amount) } };
         break;
     }
   }

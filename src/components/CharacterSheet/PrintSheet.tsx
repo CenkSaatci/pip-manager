@@ -1,5 +1,5 @@
 import { Character } from "../../types/character";
-import { RuleSet } from "../../types/rules";
+import { RuleSet, getUiTemplate } from "../../types/rules";
 import {
   getEffectiveSpecial,
   getMaxHp,
@@ -9,7 +9,6 @@ import {
 } from "../../lib/derived";
 import { getBonusValue } from "../../lib/formula";
 import { getTags, getResource, getCaps } from "../../lib/compat";
-import { getUiTemplate } from "../../types/rules";
 
 export function PrintSheet({ char, rules }: { char: Character; rules: RuleSet }) {
   const race = rules.races.find((r) => r.id === char.raceId);
