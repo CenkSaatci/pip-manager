@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Character } from "../../types/character";
 import { RuleSet, getUiTemplate } from "../../types/rules";
 import { useT } from "../../i18n/context";
@@ -5,7 +6,7 @@ import { getEffectiveSpecial, getMaxApr, getMaxHp, getCarryWeight, getHealingRat
 import { getBonusValue } from "../../lib/formula";
 import { getStats } from "../../lib/compat";
 
-export function SpecialPanel({
+export const SpecialPanel = memo(function SpecialPanel({
   char,
   rules,
   onChange,
@@ -85,7 +86,7 @@ export function SpecialPanel({
       )}
     </div>
   );
-}
+});
 
 function Derived({ label, value }: { label: string; value: string | number }) {
   return (

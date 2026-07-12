@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Character } from "../../types/character";
 import { RuleSet } from "../../types/rules";
 import { useT } from "../../i18n/context";
@@ -9,7 +10,7 @@ import {
   isTagSkill,
 } from "../../lib/derived";
 
-export function SkillsPanel({
+export const SkillsPanel = memo(function SkillsPanel({
   char,
   rules,
   onChange,
@@ -87,4 +88,4 @@ export function SkillsPanel({
       </div>
     </div>
   );
-}
+});
