@@ -85,16 +85,17 @@ export function CharacterList() {
         <button onClick={handleCreate} className="pip-btn">
           {t('charList.createGuided')}
         </button>
-        <button onClick={handleQuickCreate} className="pip-btn-ghost">
+        <button onClick={handleQuickCreate} className="pip-btn-ghost px-2 py-1 text-xs">
           {t('charList.createQuick')}
         </button>
-        <button onClick={handleImport} className="pip-btn-ghost">
+        <button onClick={handleImport} className="pip-btn-ghost px-2 py-1 text-xs">
           {t('charList.import')}
         </button>
-        <button onClick={handleExportAll} className="pip-btn-ghost">
+        <span className="w-px self-stretch bg-pip-line/50" />
+        <button onClick={handleExportAll} className="pip-btn-ghost px-2 py-1 text-xs">
           {t('charList.exportAll')}
         </button>
-        <button onClick={handleImportAll} className="pip-btn-ghost">
+        <button onClick={handleImportAll} className="pip-btn-ghost px-2 py-1 text-xs">
           {t('charList.importAll')}
         </button>
       </div>
@@ -143,9 +144,9 @@ export function CharacterList() {
               )}
               <div className="mt-2 flex items-center justify-between text-xs">
                 <span>{t('charList.hp', { hp: c.resources?.hp ?? c.currentHp ?? 0 })}</span>
-                <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span onClick={(e) => handleExport(c, e)} className="text-pip-green hover:text-glow">{t('charList.export')}</span>
-                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-red hover:text-glow">{t('charList.delete')}</span>
+                <div className="flex gap-2">
+                  <span onClick={(e) => handleExport(c, e)} className="text-pip-greendim hover:text-pip-green cursor-pointer">{t('charList.export')}</span>
+                  <span onClick={(e) => handleDelete(c.id, e)} className="text-pip-greendim hover:text-pip-red cursor-pointer">{t('charList.delete')}</span>
                 </div>
               </div>
             </button>

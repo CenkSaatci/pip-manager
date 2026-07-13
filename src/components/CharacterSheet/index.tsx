@@ -24,12 +24,16 @@ export function CharacterSheet() {
   const { characters, selectedCharacterId, activeRuleSet, upsertCharacter, selectCharacter } = useAppStore();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [localName, setLocalName] = useState("");
+  const [localNotes, setLocalNotes] = useState("");
   const char = characters.find((c) => c.id === selectedCharacterId);
 
-  useEffect(() => { if (char) setLocalName(char.name); }, [char?.id, char?.name]);
+  useEffect(() => { if (char) { setLocalName(char.name); setLocalNotes(char.backstory ?? ""); } }, [char?.id, char?.name, char?.backstory]);
 
   const commitName = () => {
     if (char && localName !== char.name) update({ ...char, name: localName });
+  };
+  const commitNotes = () => {
+    if (char && localNotes !== (char.backstory ?? "")) update({ ...char, backstory: localNotes });
   };
 
   if (!char) {
@@ -152,8 +156,9 @@ export function CharacterSheet() {
       <div className="pip-panel rounded-sm p-4">
         <h3 className="pip-label mb-2">{t('sheet.notesLabel')}</h3>
         <textarea
-          value={char.backstory ?? ""}
-          onChange={(e) => update({ ...char, backstory: e.target.value })}
+          value={localNotes}
+          onChange={(e) => setLocalNotes(e.target.value)}
+          onBlur={commitNotes}
           rows={4}
           className="pip-input w-full rounded-sm p-2 text-sm"
           placeholder={t('sheet.notesPlaceholder')}

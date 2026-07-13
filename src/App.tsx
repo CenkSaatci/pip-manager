@@ -15,7 +15,10 @@ export default function App() {
   return (
     <Layout>
       {loading ? (
-        <p className="text-pip-greendim">Terminal wird initialisiert…</p>
+        <div className="flex flex-col items-center justify-center gap-4 py-24">
+          <div className="font-display text-6xl text-pip-greendim animate-pulse">⟳</div>
+          <p className="text-pip-greendim">Lade Daten…</p>
+        </div>
       ) : (
         <>
           {view === "characters" && <CharacterList />}
