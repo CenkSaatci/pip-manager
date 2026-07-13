@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { THEMES, getUiTemplate } from "../types/rules";
 import { useT } from "../i18n/context";
@@ -39,6 +39,17 @@ export function Layout({ children }: { children: ReactNode }) {
   const ui = getUiTemplate(activeRuleSet);
   const currentTheme = ui.theme ?? "pip-boy";
   const [customThemes, setCustomThemes] = useState<CustomTheme[]>(loadCustomThemes);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const el = document.querySelector("main");
+    if (!el) return;
+    const onScroll = () => setShowScrollTop(el.scrollTop > 400);
+    el.addEventListener("scroll", onScroll);
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollTop = () => document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" });
 
   useEffect(() => { saveCustomThemes(customThemes); }, [customThemes]);
 
@@ -154,6 +165,16 @@ export function Layout({ children }: { children: ReactNode }) {
           </nav>
         </header>
         <main className="flex-1 overflow-y-auto pr-1">{children}</main>
+
+        {showScrollTop && (
+          <button
+            onClick={scrollTop}
+            className="fixed bottom-6 right-6 z-50 rounded-sm border border-pip-green bg-pip-bg px-3 py-2 text-xs text-pip-green shadow-lg transition-all hover:bg-pip-green/20"
+            title="Nach oben"
+          >
+            ↑
+          </button>
+        )}
       </div>
     </div>
   );

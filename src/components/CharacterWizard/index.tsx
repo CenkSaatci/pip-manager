@@ -78,6 +78,18 @@ export function CharacterWizard({
 
   const idx = steps.findIndex((s) => s.id === step);
 
+  // Leere Schritte automatisch überspringen
+  const stepIsEmpty = (s: Step): boolean => {
+    if (s === "race" && rules.races.length === 0) return true;
+    if (s === "background" && rules.backgrounds.length === 0 && ws.background !== false) return true;
+    if (s === "traits" && rules.traits.length === 0 && ws.traits !== false) return true;
+    return false;
+  };
+  if (steps.length > 0 && stepIsEmpty(step) && idx < steps.length - 1) {
+    // Don't auto-advance during render – schedule it
+    setTimeout(() => setStep(steps[idx + 1].id), 0);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="mx-4 max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-sm border border-pip-green bg-black p-6 shadow-2xl">
