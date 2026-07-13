@@ -211,6 +211,7 @@
   "needs.hint": "Manual counters only. Thresholds and consequences are handled at the table.",
 
   "hitZones.title": "Hit Locations (click to cycle: healthy → injured → crippled)",
+  "hitZones.titleLong": "Hit Locations",
   "hitZones.healthy": "healthy",
   "hitZones.injured": "injured",
   "hitZones.crippled": "crippled",

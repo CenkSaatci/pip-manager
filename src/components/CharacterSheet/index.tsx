@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAppStore } from "../../store/useAppStore";
 import { useT } from "../../i18n/context";
+import { CollapsiblePanel } from "../CollapsiblePanel";
 import { SpecialPanel } from "./SpecialPanel";
 import { SkillsPanel } from "./SkillsPanel";
 import { BackgroundPanel } from "./BackgroundPanel";
@@ -142,16 +143,16 @@ export function CharacterSheet() {
 
       <SpecialPanel char={char} rules={rules} onChange={update} />
       <BackgroundPanel char={char} rules={rules} onChange={update} />
-      <SkillsPanel char={char} rules={rules} onChange={update} />
-      <PerksTraitsPanel char={char} rules={rules} onChange={update} />
-      <InventoryPanel char={char} rules={rules} onChange={update} />
+      <CollapsiblePanel label={t('skills.title')}><SkillsPanel char={char} rules={rules} onChange={update} /></CollapsiblePanel>
+      <CollapsiblePanel label={t('perksTraits.perks') + " & " + t('perksTraits.traits')}><PerksTraitsPanel char={char} rules={rules} onChange={update} /></CollapsiblePanel>
+      <CollapsiblePanel label={t('inventory.title')}><InventoryPanel char={char} rules={rules} onChange={update} /></CollapsiblePanel>
       {getUiTemplate(rules).panels.hitLocations.enabled && (
-        <HitLocationPanel char={char} rules={rules} onChange={update} />
+        <CollapsiblePanel label={t('hitZones.titleLong') ?? "Trefferzonen"}><HitLocationPanel char={char} rules={rules} onChange={update} /></CollapsiblePanel>
       )}
       {getUiTemplate(rules).panels.needs.enabled && (
-        <NeedsPanel char={char} onChange={update} />
+        <CollapsiblePanel label={t('needs.title')}><NeedsPanel char={char} onChange={update} /></CollapsiblePanel>
       )}
-      <DiceRollerPanel char={char} rules={rules} onCharChange={update} />
+      <CollapsiblePanel label={t('dice.title', { desc: "" })}><DiceRollerPanel char={char} rules={rules} onCharChange={update} /></CollapsiblePanel>
 
       <div className="pip-panel rounded-sm p-4">
         <h3 className="pip-label mb-2">{t('sheet.notesLabel')}</h3>
@@ -165,7 +166,7 @@ export function CharacterSheet() {
         />
       </div>
 
-      <SessionLogPanel char={char} onChange={update} />
+      <CollapsiblePanel label={t('sessionLog.title')}><SessionLogPanel char={char} onChange={update} /></CollapsiblePanel>
 
       {showLevelUp && (
         <LevelUpModal char={char} rules={rules} onClose={() => setShowLevelUp(false)} onChange={update} />

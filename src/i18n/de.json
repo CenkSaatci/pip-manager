@@ -211,6 +211,7 @@
   "needs.hint": "Reine Zählwerte ohne automatische Auswirkung — die Schwellen/Konsequenzen legt ihr am Tisch fest.",
 
   "hitZones.title": "Trefferzonen (klicken zum Durchschalten: gesund → verwundet → verkrüppelt)",
+  "hitZones.titleLong": "Trefferzonen",
   "hitZones.healthy": "gesund",
   "hitZones.injured": "verwundet",
   "hitZones.crippled": "verkrüppelt",
