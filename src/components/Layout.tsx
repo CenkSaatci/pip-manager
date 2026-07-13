@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { useAppStore } from "../store/useAppStore";
 import { THEMES, getUiTemplate } from "../types/rules";
 import { useT } from "../i18n/context";
@@ -40,6 +40,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const currentTheme = ui.theme ?? "pip-boy";
   const [customThemes, setCustomThemes] = useState<CustomTheme[]>(loadCustomThemes);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const el = document.querySelector("main");
@@ -48,6 +49,13 @@ export function Layout({ children }: { children: ReactNode }) {
     el.addEventListener("scroll", onScroll);
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (!showSettings) return;
+    const close = () => setShowSettings(false);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [showSettings]);
 
   const scrollTop = () => document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -134,34 +142,40 @@ export function Layout({ children }: { children: ReactNode }) {
                 {t.label}
               </button>
             ))}
-            <select value={locale} onChange={(e) => setLocale(e.target.value)} className="pip-input rounded-sm px-2 py-1 text-xs" title="Language">
-              <option value="de">DE</option>
-              <option value="en">EN</option>
-              <option value="fr">FR</option>
-              <option value="it">IT</option>
-              <option value="es">ES</option>
-              <option value="tr">TR</option>
-            </select>
-            <select
-              value={currentTheme}
-              onChange={(e) => setTheme(e.target.value)}
-              className="pip-input rounded-sm px-2 py-1 text-xs"
-              title={t("app.theme.importTitle")}
-            >
-              <optgroup label={t("app.theme.builtin")}>
-                {THEMES.map((th) => (
-                  <option key={th.id} value={th.id}>{t(`theme.${th.id}`)}</option>
-                ))}
-              </optgroup>
-              {customThemes.length > 0 && (
-                <optgroup label={t("app.theme.custom")}>
-                  {customThemes.map((th) => (
-                    <option key={th.id} value={th.id}>{th.label}</option>
-                  ))}
-                </optgroup>
+            <div className="relative">
+              <button onClick={() => setShowSettings(!showSettings)} className="pip-btn-ghost px-2 py-1 text-xs" title="Einstellungen">⚙</button>
+              {showSettings && (
+                <div className="absolute right-0 top-full z-50 mt-1 flex flex-col gap-2 rounded-sm border border-pip-line bg-pip-bg p-3 shadow-lg" onClick={(e) => e.stopPropagation()}>
+                  <select value={locale} onChange={(e) => setLocale(e.target.value)} className="pip-input rounded-sm px-2 py-1 text-xs" title="Language">
+                    <option value="de">DE</option>
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    <option value="it">IT</option>
+                    <option value="es">ES</option>
+                    <option value="tr">TR</option>
+                  </select>
+                  <select
+                    value={currentTheme}
+                    onChange={(e) => setTheme(e.target.value)}
+                    className="pip-input rounded-sm px-2 py-1 text-xs"
+                  >
+                    <optgroup label={t("app.theme.builtin")}>
+                      {THEMES.map((th) => (
+                        <option key={th.id} value={th.id}>{t(`theme.${th.id}`)}</option>
+                      ))}
+                    </optgroup>
+                    {customThemes.length > 0 && (
+                      <optgroup label={t("app.theme.custom")}>
+                        {customThemes.map((th) => (
+                          <option key={th.id} value={th.id}>{th.label}</option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </select>
+                  <button onClick={handleImportTheme} className="pip-btn-ghost px-2 py-1 text-xs text-center">{t("app.theme.import")}</button>
+                </div>
               )}
-            </select>
-            <button onClick={handleImportTheme} className="pip-btn-ghost px-2 py-1 text-xs">{t("app.theme.import")}</button>
+            </div>
           </nav>
         </header>
         <main className="flex-1 overflow-y-auto pr-1">{children}</main>
