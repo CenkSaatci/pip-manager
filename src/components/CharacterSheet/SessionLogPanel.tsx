@@ -28,11 +28,11 @@ export function SessionLogPanel({ char, onChange }: { char: Character; onChange:
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addEntry()}
-          placeholder="Was ist diese Session passiert?"
+          placeholder={t('sessionLog.placeholder')}
           className="pip-input flex-1 rounded-sm px-2 py-1 text-sm"
         />
         <button onClick={addEntry} className="pip-btn-ghost px-3">
-          Eintrag hinzufügen
+          {t('sessionLog.add')}
         </button>
       </div>
       <div className="flex max-h-64 flex-col gap-1 overflow-y-auto">
@@ -45,11 +45,11 @@ export function SessionLogPanel({ char, onChange }: { char: Character; onChange:
               <div>{entry.text}</div>
             </div>
             <button onClick={() => removeEntry(entry.id)} className="shrink-0 text-xs text-pip-red hover:text-glow">
-              Löschen
+              {t('charList.delete')}
             </button>
           </div>
         ))}
-        {char.sessionLog.length === 0 && <p className="text-sm text-pip-greendim">Noch keine Einträge.</p>}
+        {char.sessionLog.length === 0 && <p className="text-sm text-pip-greendim">{t('sessionLog.empty')}</p>}
       </div>
     </div>
   );

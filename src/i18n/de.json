@@ -217,6 +217,9 @@
   "hitZones.penalty": "Zielmalus {penalty}",
 
   "sessionLog.title": "Sitzungslog",
+  "sessionLog.placeholder": "Was ist diese Session passiert?",
+  "sessionLog.add": "Eintrag hinzufügen",
+  "sessionLog.empty": "Noch keine Einträge.",
 
   "levelUp.title": "Aufstieg auf Level {level}",
   "levelUp.hpGain": "+ {hp} maximale TP (neu: {max})",

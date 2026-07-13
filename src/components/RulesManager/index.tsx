@@ -419,7 +419,7 @@ function UiTab({ rules, onChange }: { rules: RuleSet; onChange: (patch: Partial<
   const { t } = useT();
   const template = getUiTemplate(rules);
 
-  const setUi = (patch: any) => {
+  const setUi = (patch: Record<string, unknown>) => {
     const next = { ...template, ...patch };
     onChange({ ui: next });
   };

@@ -1,6 +1,7 @@
 {
   "app.title": "PIP-MANAGER",
   "app.subtitle": "Rule Set: {name} · v{version}",
+  "app.titleNeutral": "CHARACTER MANAGER",
   "app.theme.builtin": "Built-in Themes",
   "app.theme.custom": "Custom Themes",
   "app.theme.import": "+ Theme",
@@ -216,6 +217,9 @@
   "hitZones.penalty": "Target penalty {penalty}",
 
   "sessionLog.title": "Session Log",
+  "sessionLog.placeholder": "What happened this session?",
+  "sessionLog.add": "Add entry",
+  "sessionLog.empty": "No entries yet.",
 
   "levelUp.title": "Advance to Level {level}",
   "levelUp.hpGain": "+ {hp} max HP (new: {max})",

@@ -96,7 +96,7 @@ export function blankCharacter(ruleSetId: string): Character {
     xp: 0,
     caps: 0,
     stats: { STR: 5, PER: 5, END: 5, CHA: 5, INT: 5, AGI: 5, LUK: 5 },
-    resources: { hp: 0, apr: 0, karma: 0 },
+    resources: { hp: 0, apr: 0, karma: 0, hunger: 0, thirst: 0 },
     tags: [],
     skills: {},
     backgroundAllocations: {},

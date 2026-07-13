@@ -1,6 +1,7 @@
 {
   "app.title": "PIP-MANAGER",
   "app.subtitle": "Kural Seti: {name} · v{version}",
+  "app.titleNeutral": "KARAKTER YÖNETİCİSİ",
   "app.theme.builtin": "Dahili Temalar",
   "app.theme.custom": "Özel Temalar",
   "app.theme.import": "+ Tema",
