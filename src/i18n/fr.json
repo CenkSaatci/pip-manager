@@ -1,7 +1,6 @@
 {
-  "app.title": "PIP-MANAGER",
+  "app.title": "Byte & Dice",
   "app.subtitle": "Règles : {name} · v{version}",
-  "app.titleNeutral": "GESTIONNAIRE DE PERSONNAGES",
   "app.theme.builtin": "Thèmes intégrés",
   "app.theme.custom": "Thèmes personnalisés",
   "app.theme.import": "+ Thème",

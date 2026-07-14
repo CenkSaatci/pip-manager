@@ -1,15 +1,13 @@
-# PIP-Manager
+# Byte & Dice
 
-Charaktererstellung & -verwaltung für euer **Wasteland-Testregelwerk v0.1**
-(Big-Apple-Wasteland-Kampfmotor + eure Hausregeln: W10-Würfelpool,
-SPECIAL 5+5-Punkte-Verteilung, erweiterte Skillliste, Punkte-Kauf-
-Hintergründe, Tag-Skills, DR-Rüstungswurf). Tauri 2.x + React/TypeScript/
-TailwindCSS im Frontend, Rust + SQLite im Backend, Pip-Boy-Terminal-Optik.
+Multi-System Tabletop Character Manager. Erstelle und verwalte Charaktere
+für jedes Pen & Paper Regelwerk – Fallout, D&D 5e, Das Schwarze Auge und
+eigene Systeme. Tauri 2.x + React/TypeScript/TailwindCSS im Frontend,
+Rust + SQLite im Backend.
 
-Das komplette Regelwerk (Skills, Hintergründe, Perks, Traits, Waffen,
-Rüstungen, Testgegner, sogar die Formeln für HP/APR/Traglast/Würfelpool)
-ist zur Laufzeit per JSON editierbar, import- und exportierbar. Ändert sich
-etwas an den Hausregeln, muss dafür keine Zeile Code angefasst werden.
+Das komplette Regelwerk ist zur Laufzeit per JSON editierbar, import- und
+exportierbar. Ändert sich etwas an den Hausregeln, muss dafür keine Zeile
+Code angefasst werden.
 
 ## Setup
 

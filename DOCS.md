@@ -1,7 +1,7 @@
-# PIP-Manager — App-Dokumentation
+# Byte & Dice — App-Dokumentation
 
-**Stand:** `feature/character-wizard-and-import` (v0.1.0)  
-**App-ID:** `com.cenk.pipmanager`  
+**Stand:** `feature/multi-system-abstraction` (v0.1.0)  
+**App-ID:** `com.cenk.byteanddice`  
 **Sprache:** Deutsch (UI, Fehlermeldungen, Kommentare)
 
 ---
