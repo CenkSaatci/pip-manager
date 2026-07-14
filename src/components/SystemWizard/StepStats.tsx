@@ -133,7 +133,7 @@ export function StepStats({ value, onChange, onNext, onBack }: Props) {
         </table>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           <span className="pip-label">Bonus/Modifikator-Formel</span>
           <select value={value.bonusFormula} onChange={(e) => onChange({ ...value, bonusFormula: e.target.value })}

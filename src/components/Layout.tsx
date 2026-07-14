@@ -122,13 +122,13 @@ export function Layout({ children }: { children: ReactNode }) {
       className={`${currentTheme === "pip-boy" ? "crt-frame " : ""}min-h-screen w-full text-pip-green ${currentTheme === "pip-boy" ? "animate-flicker" : ""} ${isBuiltin ? `theme-${currentTheme}` : ""}`}
       style={customStyle as React.CSSProperties}
     >
-      <div className="relative z-10 mx-auto flex h-screen max-w-6xl flex-col p-4 md:p-6">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col p-4 sm:p-5 md:p-6">
         <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-pip-line pb-3">
           <div>
             <h1 className="font-display text-4xl tracking-widest text-glow">Byte &amp; Dice</h1>
             <p className="text-xs text-pip-greendim">{t("app.subtitle", { name: activeRuleSet.name, version: activeRuleSet.version })}</p>
           </div>
-          <nav className="flex gap-1">
+          <nav className="flex flex-wrap gap-1">
             {tabs.map((t) => (
               <button
                 key={t.id}

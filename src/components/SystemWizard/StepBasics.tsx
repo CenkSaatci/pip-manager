@@ -32,7 +32,7 @@ export function StepBasics({ value, onChange, onNext }: Props) {
           className="pip-input rounded-sm px-3 py-2 font-display text-xl" placeholder="z.B. Mein Hausregel-System" />
       </label>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           <span className="pip-label">Version</span>
           <input value={value.version} onChange={(e) => onChange({ ...value, version: e.target.value })}
@@ -55,7 +55,7 @@ export function StepBasics({ value, onChange, onNext }: Props) {
           className="pip-input rounded-sm px-3 py-2 text-sm" rows={2} placeholder="Kurze Beschreibung des Systems…" />
       </label>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           <span className="pip-label">Währung</span>
           <select value={CURRENCY_OPTIONS.includes(value.currencyLabel) ? value.currencyLabel : "__other__"}

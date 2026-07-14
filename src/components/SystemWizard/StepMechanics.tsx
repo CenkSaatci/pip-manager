@@ -28,7 +28,7 @@ export function StepMechanics({ value, onChange, onNext, onBack }: Props) {
     <div className="flex flex-col gap-4">
       <h2 className="font-display text-2xl text-glow">Mechaniken konfigurieren</h2>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex items-center gap-2 rounded-sm border border-pip-line p-3 text-sm cursor-pointer hover:border-pip-green">
           <input type="checkbox" checked={value.hpEnabled} onChange={(e) => onChange({ ...value, hpEnabled: e.target.checked })} />
           <span>Trefferpunkte (HP)</span>
@@ -71,7 +71,7 @@ export function StepMechanics({ value, onChange, onNext, onBack }: Props) {
         </label>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 border-t border-pip-line pt-4">
+      <div className="grid grid-cols-1 gap-3 border-t border-pip-line pt-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           <span className="pip-label">Freie Skillpunkte bei Erstellung</span>
           <input type="number" min={0} value={value.freeSkillPoints} onChange={(e) => onChange({ ...value, freeSkillPoints: Number(e.target.value) })}

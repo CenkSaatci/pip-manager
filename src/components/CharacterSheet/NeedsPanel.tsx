@@ -21,7 +21,7 @@ export function NeedsPanel({ char, onChange }: { char: Character; onChange: (c: 
           {t('needs.newDay')}
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <NeedRow label={t('needs.hunger')} value={char.resources?.hunger ?? 0} onAdjust={(d) => adjust("hunger", d)} />
         <NeedRow label={t('needs.thirst')} value={char.resources?.thirst ?? 0} onAdjust={(d) => adjust("thirst", d)} />
       </div>

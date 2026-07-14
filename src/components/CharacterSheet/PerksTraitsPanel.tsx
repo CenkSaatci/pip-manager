@@ -38,7 +38,7 @@ export function PerksTraitsPanel({
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div className="pip-panel rounded-sm p-4">
         <h3 className="pip-label mb-3">{t('perksTraits.traits')}</h3>
         {rules.traits.length === 0 && <p className="text-sm text-pip-greendim">{t('perksTraits.traitsEmpty')}</p>}

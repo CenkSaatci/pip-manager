@@ -143,7 +143,7 @@ export function LevelUpModal({
                 {t('levelUp.statsSpent', { spent: specialSpent, points: reward.specialPoints })}
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-7">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
               {getUiTemplate(rules).stats.map((stat) => (
                 <div key={stat.key} className="flex flex-col items-center gap-1 rounded-sm border border-pip-line p-2">
                   <span className="text-xs text-pip-greendim">{stat.label}</span>

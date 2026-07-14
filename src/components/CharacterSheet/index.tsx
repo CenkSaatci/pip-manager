@@ -80,7 +80,7 @@ export function CharacterSheet() {
           />
           <RaceBackgroundSelect char={char} rules={rules} onChange={update} />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button onClick={() => setShowLevelUp(true)} className="pip-btn">
             {t('sheet.levelUp')}
           </button>

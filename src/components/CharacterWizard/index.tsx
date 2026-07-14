@@ -536,7 +536,7 @@ export function CharacterWizard({
         {step === "review" && (
           <div className="flex flex-col gap-3">
             <p className="text-sm text-pip-greendim">{t("wizard.reviewPrompt")}</p>
-            <div className="grid grid-cols-2 gap-3 rounded-sm border border-pip-line p-3 text-sm">
+            <div className="grid grid-cols-1 gap-3 rounded-sm border border-pip-line p-3 text-sm sm:grid-cols-2">
               <div>
                 <span className="pip-label">{t("wizard.reviewName")}</span>
                 <p className="font-display text-xl">{draft.name}</p>
