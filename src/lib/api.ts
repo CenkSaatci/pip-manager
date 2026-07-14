@@ -1,6 +1,6 @@
 import { Character } from "../types/character";
 import { RuleSet } from "../types/rules";
-import { seedRuleSet } from "./seed";
+import { seedRuleSets } from "./seed";
 
 /** Prüft, ob die App innerhalb von Tauri läuft (vs. Browser dev mode). */
 function isTauri(): boolean {
@@ -191,7 +191,7 @@ export async function ensureSeedData(): Promise<void> {
   if (isTauri()) return;
   const existing = lsGet<RuleSet[]>(LS_RULESETS, []);
   if (existing.length > 0) return;
-  const ruleset = seedRuleSet();
-  lsSet(LS_RULESETS, [ruleset]);
-  localStorage.setItem(LS_ACTIVE, ruleset.id);
+  const rulesets = seedRuleSets();
+  lsSet(LS_RULESETS, rulesets);
+  localStorage.setItem(LS_ACTIVE, rulesets[0].id);
 }

@@ -1,4 +1,6 @@
 import { RuleSet, fallbackUiTemplate } from "../types/rules";
+import dndExample from "../../data/examples/dnd5e_ruleset.json";
+import dsaExample from "../../data/examples/dsa_ruleset.json";
 
 /** Erzeugt das Standard-Fallout-Regelwerk für den Browser-Mode (ohne Rust-Backend). */
 export function seedRuleSet(): RuleSet {
@@ -94,4 +96,12 @@ export function seedRuleSet(): RuleSet {
     enemies: [],
     ui: fallbackUiTemplate(),
   };
+}
+
+/** Gibt alle Standard-Regelwerke zurück (Fallout + D&D + DSA). */
+export function seedRuleSets(): RuleSet[] {
+  const fallout = seedRuleSet();
+  const dnd = dndExample as unknown as RuleSet;
+  const dsa = dsaExample as unknown as RuleSet;
+  return [fallout, dnd, dsa];
 }
